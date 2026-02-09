@@ -1,0 +1,62 @@
+import { Metadata } from 'next';
+import Link from 'next/link';
+
+export const metadata: Metadata = {
+    title: 'Climate Guides',
+    description: 'Expert guides on climate data, sustainability reporting, and ESG frameworks for professionals.',
+};
+
+const GUIDES = [
+    {
+        slug: 'climate-data-sources',
+        title: 'The Complete Guide to Free Climate Data Sources (2026)',
+        description: 'Comprehensive overview of World Bank, Climate Watch, NASA POWER, NOAA, and IMF climate data APIs with practical examples.',
+        readTime: '12 min read',
+        category: 'Data',
+    },
+    {
+        slug: 'issb-s2-beginners',
+        title: 'ISSB S2 Climate Disclosure: A Practical Guide for Beginners',
+        description: 'Understand IFRS S2 requirements, physical vs transition risks, and how to prepare your first climate disclosure.',
+        readTime: '15 min read',
+        category: 'Reporting',
+    },
+];
+
+export default function GuidesPage() {
+    return (
+        <div className="bg-slate-950 px-4 py-12">
+            <div className="mx-auto max-w-4xl">
+                <h1 className="text-3xl font-bold text-white sm:text-4xl">Climate Guides</h1>
+                <p className="mt-4 text-lg text-slate-400">
+                    Expert guides on climate data, sustainability reporting, and ESG frameworks for professionals.
+                </p>
+
+                <div className="mt-12 space-y-6">
+                    {GUIDES.map((guide) => (
+                        <Link
+                            key={guide.slug}
+                            href={`/guides/${guide.slug}`}
+                            className="block rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-900"
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className="rounded-full bg-emerald-900/50 px-3 py-1 text-xs font-medium text-emerald-400">
+                                    {guide.category}
+                                </span>
+                                <span className="text-sm text-slate-500">{guide.readTime}</span>
+                            </div>
+                            <h2 className="mt-3 text-xl font-semibold text-white">{guide.title}</h2>
+                            <p className="mt-2 text-slate-400">{guide.description}</p>
+                            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald-400">
+                                Read guide
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                </svg>
+                            </span>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}

@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VisualClimate 🌍
+
+AI-powered climate data intelligence platform for sustainability professionals.
+
+## Features
+
+- **200 Country Profiles** — Comprehensive climate indicators, emissions data, and policy analysis
+- **Interactive Dashboard** — D3.js visualizations of CO2, renewable energy, and climate risks
+- **Report Library + RAG** — AI-powered search across IPCC, UNEP, and WMO reports
+- **Climate Guides** — Expert guides on data sources and ISSB S2 disclosure
+- **Pricing Tiers** — Free → Climate Kit with API access
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router), TypeScript
+- **Styling**: Tailwind CSS 4
+- **Database**: Supabase (PostgreSQL + Auth + pgvector)
+- **AI**: OpenAI `text-embedding-3-small` + `gpt-4o-mini`
+- **Charts**: D3.js + TopoJSON
+- **Payments**: Stripe
+- **Hosting**: Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- Supabase project (with pgvector extension)
+- OpenAI API key
+
+### Installation
+
+```bash
+npm install
+cp .env.local.example .env.local
+# Fill in your environment variables in .env.local
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Data Seeding
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# 1. Seed country data from REST Countries API
+npm run seed:countries
 
-## Learn More
+# 2. Fetch World Bank climate indicators
+npm run seed:worldbank
 
-To learn more about Next.js, take a look at the following resources:
+# 3. Fetch Climate Watch GHG emissions
+npm run seed:climatewatch
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 4. Embed climate reports (requires OpenAI key)
+npm run seed:reports
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Build
 
-## Deploy on Vercel
+```bash
+npm run build
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Data Sources
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Source | Data | API |
+|--------|------|-----|
+| [World Bank](https://data.worldbank.org/) | CO2, renewables, GDP, forest area | Free, no auth |
+| [Climate Watch](https://www.climatewatchdata.org/) | GHG emissions by sector | Free, no auth |
+| [REST Countries](https://restcountries.com/) | Country metadata, flags | Free, no auth |
+| [IPCC](https://www.ipcc.ch/) | AR6 reports | PDF |
+| [UNEP](https://www.unep.org/) | Emissions Gap Report | PDF |
+| [WMO](https://wmo.int/) | State of Global Climate | PDF |
+
+## Deployment
+
+Deploy to Vercel:
+
+```bash
+npm run deploy
+```
+
+Or use the [Vercel Dashboard](https://vercel.com) for automatic Git-based deployments.
+
+## License
+
+© 2026 VisualClimate. All rights reserved.

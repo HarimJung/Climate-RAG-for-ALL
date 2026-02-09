@@ -1,0 +1,9 @@
+# VisualClimate robots.txt
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://visualclimate.io/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
