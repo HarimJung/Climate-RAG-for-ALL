@@ -10,23 +10,18 @@
     "seed:countries": "npx tsx scripts/seed-countries.ts",
     "seed:worldbank": "npx tsx scripts/fetch-worldbank.ts",
     "seed:climatewatch": "npx tsx scripts/fetch-climatewatch.ts",
-    "seed:reports": "npx tsx scripts/embed-reports.ts",
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "@stripe/stripe-js": "^8.7.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "@types/d3": "^7.4.3",
     "@types/topojson-client": "^3.1.5",
     "d3": "^7.9.0",
     "next": "16.1.6",
-    "openai": "^6.18.0",
-    "pdf-parse": "^2.4.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
-    "stripe": "^20.3.1",
     "topojson-client": "^3.1.0"
   },
   "devDependencies": {

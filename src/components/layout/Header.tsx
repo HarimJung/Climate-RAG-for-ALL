@@ -8,18 +8,17 @@ const NAV_LINKS = [
     { href: '/compare', label: 'Compare' },
     { href: '/library', label: 'Library' },
     { href: '/guides', label: 'Guides' },
-    { href: '/pricing', label: 'Pricing' },
 ];
 
 export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl">
-            <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-50 w-full border-b border-[--border-card] bg-[--bg-primary]/80 backdrop-blur-xl">
+            <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                 <Link href="/" className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-white">
-                        Visual<span className="text-emerald-500">Climate</span>
+                    <span className="text-2xl font-bold text-[--text-primary]">
+                        Visual<span className="text-[--accent-primary]">Climate</span>
                     </span>
                 </Link>
 
@@ -29,23 +28,17 @@ export function Header() {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className="text-sm font-medium text-slate-400 transition-colors hover:text-white"
+                            className="text-sm font-medium text-[--text-secondary] transition-colors hover:text-[--text-primary]"
                         >
                             {link.label}
                         </Link>
                     ))}
-                    <Link
-                        href="/login"
-                        className="rounded-lg bg-emerald-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
-                    >
-                        Sign In
-                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
                 <button
                     type="button"
-                    className="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-white md:hidden"
+                    className="inline-flex items-center justify-center rounded-md p-2 text-[--text-secondary] hover:bg-white/5 hover:text-[--text-primary] md:hidden"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     aria-label="Toggle menu"
                 >
@@ -61,25 +54,18 @@ export function Header() {
 
             {/* Mobile Menu */}
             {mobileMenuOpen && (
-                <div className="border-t border-slate-800 md:hidden">
+                <div className="border-t border-[--border-card] md:hidden">
                     <div className="space-y-1 px-4 py-3">
                         {NAV_LINKS.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="block rounded-lg px-3 py-2 text-base font-medium text-slate-400 hover:bg-slate-800 hover:text-white"
+                                className="block rounded-lg px-3 py-2 text-base font-medium text-[--text-secondary] hover:bg-white/5 hover:text-[--text-primary]"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 {link.label}
                             </Link>
                         ))}
-                        <Link
-                            href="/login"
-                            className="mt-2 block rounded-lg bg-emerald-600 px-3 py-2 text-center text-base font-medium text-white hover:bg-emerald-500"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Sign In
-                        </Link>
                     </div>
                 </div>
             )}

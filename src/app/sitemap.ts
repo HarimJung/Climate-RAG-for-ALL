@@ -10,10 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/guides',
         '/guides/climate-data-sources',
         '/guides/issb-s2-beginners',
-        '/pricing',
-        '/chat',
-        '/login',
-        '/signup',
+        '/compare',
     ];
 
     const entries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({

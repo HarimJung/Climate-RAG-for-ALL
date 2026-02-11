@@ -177,10 +177,10 @@ export default function IssbS2BeginnersGuide() {
                         VisualClimate provides country-level climate data and AI-powered analysis for ISSB S2 reporting.
                     </p>
                     <Link
-                        href="/chat"
+                        href="/dashboard"
                         className="mt-6 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 font-medium text-white hover:bg-emerald-500"
                     >
-                        Ask VisualClimate AI
+                        Explore Dashboard
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                         </svg>

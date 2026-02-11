@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
 import { CLIMATE_INDICATORS } from '@/lib/constants';
 import type { CountryCompareData } from './page';
 
@@ -39,10 +38,6 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
     const router = useRouter();
     const [selected, setSelected] = useState<string[]>(selectedIso3);
     const [search, setSearch] = useState('');
-    const [brief, setBrief] = useState<string | null>(null);
-    const [briefLoading, setBriefLoading] = useState(false);
-    const [briefSources, setBriefSources] = useState<{ title: string; org: string }[]>([]);
-
     const data = initialData;
 
     function addCountry(iso3: string) {
@@ -62,45 +57,6 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
         .filter(c => !selected.includes(c.iso3))
         .filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.iso3.toLowerCase().includes(search.toLowerCase()))
         .slice(0, 8);
-
-    async function generateBrief() {
-        if (data.length === 0) return;
-        setBriefLoading(true);
-        setBrief(null);
-        setBriefSources([]);
-
-        const countryNames = data.map(c => c.name).join(', ');
-        const dataContext = data.map(c => {
-            const lines = INDICATOR_META.map(ind => {
-                const val = c.indicators[ind.code];
-                return val ? `${ind.name}: ${val.value} ${ind.unit} (${val.year})` : null;
-            }).filter(Boolean).join('\n');
-            return `[${c.name} (${c.iso3})]\n${lines}`;
-        }).join('\n\n');
-
-        const message = `Compare climate risk across these countries: ${countryNames}.
-For each country, analyze: emissions profile, renewable energy transition, climate vulnerability, and economic context.
-Rank them by overall climate risk (highest to lowest).
-End with a "Key Takeaway" paragraph.
-
-Country data:
-${dataContext}`;
-
-        try {
-            const res = await fetch('/api/rag', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message }),
-            });
-            const result = await res.json();
-            setBrief(result.answer);
-            setBriefSources(result.sources || []);
-        } catch {
-            setBrief('Failed to generate brief. Please try again.');
-        } finally {
-            setBriefLoading(false);
-        }
-    }
 
     // Find max value per indicator for bar widths
     const maxValues: Record<string, number> = {};
@@ -230,57 +186,6 @@ ${dataContext}`;
                         </div>
                     </div>
 
-                    {/* Generate Brief */}
-                    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 className="text-lg font-semibold text-white">AI Climate Risk Brief</h2>
-                                <p className="text-sm text-slate-500">AI-generated comparison with IPCC citations</p>
-                            </div>
-                            <button
-                                onClick={generateBrief}
-                                disabled={briefLoading}
-                                className="rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {briefLoading ? 'Generating...' : 'Generate Brief'}
-                            </button>
-                        </div>
-
-                        {briefLoading && (
-                            <div className="flex items-center gap-3 py-8 justify-center text-slate-400">
-                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-                                Analyzing {data.length} countries with IPCC data...
-                            </div>
-                        )}
-
-                        {brief && (
-                            <div>
-                                <div className="prose prose-invert prose-emerald max-w-none rounded-lg bg-slate-800/50 p-6">
-                                    <ReactMarkdown>{brief}</ReactMarkdown>
-                                </div>
-                                {briefSources.length > 0 && (
-                                    <div className="mt-4 flex flex-wrap gap-2">
-                                        <span className="text-xs text-slate-500">Sources:</span>
-                                        {briefSources.map((s, i) => (
-                                            <span key={i} className="text-xs bg-emerald-900/30 text-emerald-400 px-2 py-1 rounded">
-                                                {s.title} ({s.org})
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-                                <div className="mt-4 flex gap-3">
-                                    <button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(brief);
-                                        }}
-                                        className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
-                                    >
-                                        Copy to Clipboard
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </>
             )}
 

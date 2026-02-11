@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,24 +9,29 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: {
     template: "%s | VisualClimate",
     default: "VisualClimate - Climate Intelligence for Sustainability Professionals",
   },
-  description: "AI-powered climate data platform. 200 countries. Real-time data. One search.",
+  description: "Open climate data platform. 200 countries. Real-time indicators.",
   keywords: ["climate data", "sustainability", "ESG", "carbon emissions", "climate intelligence"],
   authors: [{ name: "VisualClimate" }],
   openGraph: {
     title: "VisualClimate - Climate Intelligence for Sustainability Professionals",
-    description: "AI-powered climate data platform. 200 countries. Real-time data. One search.",
+    description: "Open climate data platform. 200 countries. Real-time indicators.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "VisualClimate - Climate Intelligence for Sustainability Professionals",
-    description: "AI-powered climate data platform. 200 countries. Real-time data. One search.",
+    description: "Open climate data platform. 200 countries. Real-time indicators.",
   },
   robots: {
     index: true,
@@ -41,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased bg-slate-950 text-white`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />

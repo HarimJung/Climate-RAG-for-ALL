@@ -1,9 +1,7 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-
 export const metadata: Metadata = {
     title: 'Climate Report Library',
-    description: 'Browse authoritative climate reports from IPCC, UNEP, WMO, and more. AI-powered search across thousands of pages.',
+    description: 'Browse authoritative climate reports from IPCC, UNEP, WMO, and more.',
 };
 
 const REPORTS = [
@@ -82,31 +80,7 @@ export default function LibraryPage() {
                     </h1>
                     <p className="mt-4 max-w-2xl text-lg text-slate-400">
                         Browse authoritative climate reports from the world&apos;s leading institutions.
-                        Use our AI-powered search to find specific insights across thousands of pages.
                     </p>
-                </div>
-
-                {/* AI Search CTA */}
-                <div className="mb-10 rounded-xl border border-emerald-600/30 bg-emerald-950/20 p-6 sm:p-8">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 className="text-lg font-semibold text-white">
-                                🔍 AI-Powered Report Search
-                            </h2>
-                            <p className="mt-1 text-sm text-slate-400">
-                                Ask questions across all reports and get instant, cited answers.
-                            </p>
-                        </div>
-                        <Link
-                            href="/chat"
-                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white hover:bg-emerald-500"
-                        >
-                            Try AI Search
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                            </svg>
-                        </Link>
-                    </div>
                 </div>
 
                 {/* Stats */}

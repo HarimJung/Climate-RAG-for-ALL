@@ -1,56 +1,100 @@
-# VisualClimate
+# VisualClimate — System Context
 
-## 개요
-기후/지속가능성 전문가를 위한 데이터 인텔리전스 플랫폼.
+## Mission
+세계 수준의 기후 데이터 위키피디아. 6개국 파일럿(KOR, USA, DEU, BRA, NGA, BGD) → 200개국 확장.
 
-## 기술 스택
-- Next.js (App Router), TypeScript, Tailwind CSS
-- Supabase (PostgreSQL + Auth + Storage + pgvector)
-- OpenAI API (text-embedding-3-small + gpt-4o-mini)
-- D3.js, Stripe, Vercel
+## Tech Stack
+- Next.js 16 (App Router), TypeScript strict, Tailwind CSS (dark theme)
+- Supabase (PostgreSQL) via Supabase MCP
+- D3.js for charts (client-only, no SSR), Vercel for deployment
+- MCP Servers: supabase, sequential-thinking, context7
 
-## 프로젝트 구조
+## Code Style
+- ES modules (import/export), no CommonJS
+- Destructure imports: `import { useState } from 'react'`
+- Components → `src/components/`, Pages → `src/app/`
+- Korean comments: data files & tasks/ only. English for all code.
+- camelCase (functions/vars), PascalCase (components), kebab-case (files)
+
+## Absolute Rules
+
+1. **STOP and THINK**: Error → read message exactly → analyze root cause → fix once. 2 failures → `/clear` + new prompt.
+2. **Read once**: Never re-read the same file twice in one task. Delegate to subagent if needed.
+3. **Build always**: Run `npm run build` after every code change. Do not proceed if build fails.
+4. **Data integrity**: Every data point needs source, year, unit. Log row counts after insertion. `quality_score < 0.70` → block chart rendering.
+5. **File ownership**: Claude Code owns `src/**`, `.claude/**`, `CLAUDE.md`, `tasks/**`. Antigravity owns `mockups/*`, `docs/drafts/*`, `GEMINI.md`. Never cross boundaries.
+6. **Token discipline**: Large tasks → subagents. Phase switch → `/clear`. Heavy context → `/compact`.
+7. **Tables**: Always `IF NOT EXISTS`. Never drop existing data.
+8. **Git**: Commit message `[Phase X] description`. Branch `phase-{N}/{feature}`. No unreviewed merges to main.
+
+## Pilot Countries
+
+| ISO3 | ISO2 | Country | Why |
+|------|------|---------|-----|
+| KOR | KR | South Korea | High-income Asia, energy transition |
+| USA | US | United States | Largest historical emitter |
+| DEU | DE | Germany | EU leader, Energiewende |
+| BRA | BR | Brazil | Tropical forests, LULUCF |
+| NGA | NG | Nigeria | Africa's largest economy |
+| BGD | BD | Bangladesh | Extreme climate vulnerability |
+
+## Key Indicator Codes (Phase 1)
+
+| Code | Domain | Unit |
+|------|--------|------|
+| EN.ATM.CO2E.PC | GHG Emissions | metric tons per capita |
+| EG.USE.PCAP.KG.OE | Energy | kg oil equivalent per capita |
+| AG.LND.FRST.ZS | Land & Forests | % of land area |
+| EN.ATM.PM25.MC.M3 | Physical Risk | micrograms per cubic meter |
+| NY.GDP.PCAP.CD | Socioeconomic | current USD |
+
+## Data Sources (Priority)
+1. **Tier 1 Emissions**: Climate TRACE, EDGAR JRC, Climate Watch
+2. **Tier 2 Energy/Economy**: World Bank WDI, Ember, IRENA
+3. **Tier 3 Vulnerability**: ND-GAIN, World Bank CCKP
+4. **Tier 4 Policy**: UNFCCC NDC, ISSB/IFRS S2, TCFD, Our World in Data
+
+WDI API: `https://api.worldbank.org/v2/country/{iso2}/indicator/{code}?format=json&date=2000:2023&per_page=500`
+
+## Key Tables (Supabase)
+countries, indicators, country_data, reports, report_chunks — all with `IF NOT EXISTS`
+
+## Phase Execution
+
 ```
-src/
-├── app/
-│   ├── page.tsx (랜딩)
-│   ├── dashboard/ (공개 대시보드)
-│   ├── country/[iso3]/ (국가 프로파일)
-│   ├── library/ (리포트 라이브러리)
-│   ├── chat/ (RAG 챗)
-│   ├── guides/ (ESG 가이드)
-│   ├── pricing/ (요금제)
-│   └── api/
-│       ├── rag/ (RAG 엔드포인트)
-│       └── stripe/ (결제 webhook)
-├── components/
-│   ├── charts/ (D3.js)
-│   ├── rag/ (챗 UI)
-│   ├── layout/ (헤더/푸터)
-│   └── ui/ (공통)
-├── lib/
-│   ├── supabase/ (client.ts, server.ts)
-│   ├── openai.ts
-│   ├── stripe.ts
-│   └── constants.ts
-scripts/ (데이터 수집)
-supabase/migrations/
+Phase 0 → Infra (schema, seed, build)
+Phase 1 → Data collection (WDI 6 countries → Supabase)
+Phase 2 → QA + Analysis (cross-validation, derived indicators, framework mapping)
+Phase 3 → UI + Charts (D3, design system)
+Phase 4 → Content + PDF + SEO
+Phase 5 → Deploy + Monitoring
+```
+Complete each phase before moving to next. Record results in `qa-report.md`.
+
+## Error Recovery
+```
+Error → STOP (read) → THINK (root cause) → FIX ONCE → BUILD
+  → Fail twice? → /clear → new prompt
+  → Success? → Record in tasks/lessons.md
 ```
 
-## 코딩 규칙
-- TypeScript strict, 서버 컴포넌트 우선
-- 'use client' 명시, try-catch 필수, 환경변수 하드코딩 금지
-- 컴포넌트 150줄 이하, RLS 필수, 데이터 출처 UI 표시
+## Build & Dev
+```bash
+npm run build       # Required after code changes
+npm run dev         # Local dev server
+npx tsc --noEmit    # Type check only
+vercel --prod       # Production deploy
+```
 
-## 디자인 시스템
-- **참조**: `tasks/design-system.md` (Stripe.com 스타일)
-- 배경: `#0a2540` (네이비), 카드: `bg-white/5 backdrop-blur-sm`, 보더: `border-white/10`
-- 액센트 그라디언트: `from-[#00d4ff] to-[#7b61ff]`
-- CTA 버튼: `rounded-full` 그라디언트, 세컨더리: `border-white/20 rounded-full`
-- 텍스트: primary `#fff`, secondary `#adbdcc`
-- 모든 페이지 다크 테마 통일 (로그인/회원가입 포함)
+## Subagents (14) & Skills (5)
+See `tasks/workflow.md` for full agent roster and phase checklists.
+Agents are created only when their phase is reached.
 
-## 외부 API (인증 불필요, 무료)
-- World Bank: `https://api.worldbank.org/v2/country/all/indicator/{code}?format=json&per_page=1000&date=2000:2023`
-- Climate Watch: `https://www.climatewatchdata.org/api/v1/data/historical_emissions`
-- REST Countries: `https://restcountries.com/v3.1/all?fields=name,cca3,region,subregion,latlng,population,flags`
+## Skills (loaded on demand)
+- Data source catalog: @.claude/skills/data-source-catalog/SKILL.md
+- Indicator map (50+ indicators): @.claude/skills/indicator-map/SKILL.md
+- ISSB S2/TCFD/GRI/SDG mapping: @.claude/skills/issb-s2-mapping/SKILL.md
+- Design system tokens: @.claude/skills/design-system/SKILL.md
+- Country profile template: @.claude/skills/country-profile-template/SKILL.md
+
+**When collecting data or mapping frameworks, ALWAYS load the relevant skill first.**
