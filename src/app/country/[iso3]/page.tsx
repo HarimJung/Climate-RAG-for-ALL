@@ -6,6 +6,8 @@ import { createServiceClient } from '@/lib/supabase/server';
 import { CLIMATE_INDICATORS } from '@/lib/constants';
 import { StatCard } from '@/components/StatCard';
 import { CountryClient } from './CountryClient';
+import { createMetaTags } from '@/components/seo/MetaTags';
+import { JsonLd, buildCountryJsonLd } from '@/components/seo/JsonLd';
 
 interface Props {
   params: Promise<{ iso3: string }>;
@@ -23,10 +25,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single();
 
   const name = country?.name || iso3;
-  return {
+  return createMetaTags({
     title: `${name} Climate Profile`,
     description: `Climate data, emissions trends, and sustainability indicators for ${name}.`,
-  };
+    path: `/country/${iso3.toUpperCase()}`,
+  });
 }
 
 async function getCountryData(iso3: string) {
@@ -71,6 +74,13 @@ export default async function CountryPage({ params }: Props) {
 
   return (
     <div className="px-4 py-12">
+      <JsonLd
+        data={buildCountryJsonLd({
+          name: country.name,
+          iso3: country.iso3,
+          description: `Climate data, emissions trends, and sustainability indicators for ${country.name}.`,
+        })}
+      />
       <div className="mx-auto max-w-[1200px]">
         {/* Header */}
         <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-center">

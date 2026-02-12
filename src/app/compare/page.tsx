@@ -1,12 +1,13 @@
-import { Metadata } from 'next';
 import { createServiceClient } from '@/lib/supabase/server';
 import { CLIMATE_INDICATORS } from '@/lib/constants';
 import { CompareClient } from './CompareClient';
+import { createMetaTags } from '@/components/seo/MetaTags';
 
-export const metadata: Metadata = {
-    title: 'Compare Countries — VisualClimate',
+export const metadata = createMetaTags({
+    title: 'Compare Countries',
     description: 'Side-by-side climate risk comparison across countries with citable data and AI-generated briefs.',
-};
+    path: '/compare',
+});
 
 export const dynamic = 'force-dynamic';
 

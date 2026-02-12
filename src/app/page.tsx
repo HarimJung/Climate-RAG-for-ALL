@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import type { Metadata } from 'next';
 import { createServiceClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/StatCard';
 import { HomeCharts } from './HomeCharts';
+import { createMetaTags } from '@/components/seo/MetaTags';
 
-export const metadata: Metadata = {
+export const metadata = createMetaTags({
   title: 'Climate Intelligence for Sustainability Professionals',
   description: 'Open climate data platform. 200 countries. Real-time indicators for ESG analysts, consultants, and sustainability managers.',
-};
+  path: '/',
+});
 
 const PILOT_COLORS: Record<string, string> = {
   KOR: '#3b82f6', USA: '#ef4444', DEU: '#f59e0b', BRA: '#22c55e', NGA: '#a855f7', BGD: '#06b6d4',

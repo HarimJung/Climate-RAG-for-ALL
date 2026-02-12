@@ -1,12 +1,13 @@
-import { Metadata } from 'next';
 import { createServiceClient } from '@/lib/supabase/server';
 import { CLIMATE_INDICATORS } from '@/lib/constants';
 import { DashboardClient } from './DashboardClient';
+import { createMetaTags } from '@/components/seo/MetaTags';
 
-export const metadata: Metadata = {
+export const metadata = createMetaTags({
     title: 'Climate Dashboard',
     description: 'Interactive global climate data dashboard with CO2 emissions, renewable energy, and climate risk indicators for 200+ countries.',
-};
+    path: '/dashboard',
+});
 
 export const dynamic = 'force-dynamic';
 

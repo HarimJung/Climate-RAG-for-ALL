@@ -1,8 +1,10 @@
-import { Metadata } from 'next';
-export const metadata: Metadata = {
+import { createMetaTags } from '@/components/seo/MetaTags';
+
+export const metadata = createMetaTags({
     title: 'Climate Report Library',
     description: 'Browse authoritative climate reports from IPCC, UNEP, WMO, and more.',
-};
+    path: '/library',
+});
 
 const REPORTS = [
     {

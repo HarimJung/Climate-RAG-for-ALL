@@ -1,10 +1,11 @@
-import { Metadata } from 'next';
 import Link from 'next/link';
+import { createMetaTags } from '@/components/seo/MetaTags';
 
-export const metadata: Metadata = {
+export const metadata = createMetaTags({
     title: 'Climate Guides',
     description: 'Expert guides on climate data, sustainability reporting, and ESG frameworks for professionals.',
-};
+    path: '/guides',
+});
 
 const GUIDES = [
     {
