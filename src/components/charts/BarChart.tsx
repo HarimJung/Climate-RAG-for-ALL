@@ -3,114 +3,127 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-interface BarChartProps {
-    data: { iso3: string; name: string; value: number }[];
-    unit: string;
-    title: string;
+interface BarDatum {
+  label: string;
+  value: number;
+  color?: string;
+  href?: string;
 }
 
-export function BarChart({ data, unit, title }: BarChartProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const svgRef = useRef<SVGSVGElement>(null);
+interface BarChartProps {
+  data: BarDatum[];
+  title?: string;
+  unit?: string;
+  height?: number;
+}
 
-    useEffect(() => {
-        if (!svgRef.current || !containerRef.current || data.length === 0) return;
+const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#22c55e', '#a855f7', '#06b6d4'];
 
-        const container = containerRef.current;
-        const width = container.clientWidth;
-        const height = 500;
-        const margin = { top: 30, right: 30, bottom: 60, left: 180 };
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
+export function BarChart({ data, title, unit = '', height: fixedHeight }: BarChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-        const svg = d3.select(svgRef.current)
-            .attr('viewBox', `0 0 ${width} ${height}`)
-            .attr('preserveAspectRatio', 'xMidYMid meet');
+  useEffect(() => {
+    if (!containerRef.current || data.length === 0) return;
 
-        svg.selectAll('*').remove();
+    const container = containerRef.current;
 
-        const sortedData = [...data].sort((a, b) => b.value - a.value).slice(0, 20);
+    function draw() {
+      container.innerHTML = '';
 
-        const xScale = d3.scaleLinear()
-            .domain([0, d3.max(sortedData, d => d.value) || 0])
-            .range([0, innerWidth]);
+      const barH = 36;
+      const gap = 8;
+      const margin = { top: 10, right: 60, bottom: 10, left: 110 };
+      const computedH = fixedHeight ?? (data.length * (barH + gap) + margin.top + margin.bottom);
+      const width = container.clientWidth;
+      const innerW = width - margin.left - margin.right;
 
-        const yScale = d3.scaleBand()
-            .domain(sortedData.map(d => d.name))
-            .range([0, innerHeight])
-            .padding(0.2);
+      const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', computedH);
 
-        const g = svg.append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
+      const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // Bars
-        g.selectAll('rect')
-            .data(sortedData)
-            .enter()
-            .append('rect')
-            .attr('x', 0)
-            .attr('y', d => yScale(d.name) || 0)
-            .attr('width', d => xScale(d.value))
-            .attr('height', yScale.bandwidth())
-            .attr('fill', '#10b981')
-            .attr('rx', 4)
-            .attr('cursor', 'pointer')
-            .on('mouseenter', function () {
-                d3.select(this).attr('fill', '#34d399');
-            })
-            .on('mouseleave', function () {
-                d3.select(this).attr('fill', '#10b981');
-            })
-            .on('click', (_, d) => {
-                window.location.href = `/country/${d.iso3}`;
-            });
+      const sorted = [...data].sort((a, b) => b.value - a.value);
 
-        // Values
-        g.selectAll('.value-label')
-            .data(sortedData)
-            .enter()
-            .append('text')
-            .attr('class', 'value-label')
-            .attr('x', d => xScale(d.value) + 5)
-            .attr('y', d => (yScale(d.name) || 0) + yScale.bandwidth() / 2)
-            .attr('dy', '0.35em')
-            .attr('fill', '#94a3b8')
-            .attr('font-size', '11px')
-            .text(d => d.value.toLocaleString());
+      const x = d3.scaleLinear()
+        .domain([0, d3.max(sorted, d => d.value)! * 1.15])
+        .range([0, innerW]);
 
-        // Y Axis
-        g.append('g')
-            .call(d3.axisLeft(yScale).tickSize(0))
-            .selectAll('text')
-            .attr('fill', '#94a3b8')
-            .attr('font-size', '12px');
+      const y = d3.scaleBand()
+        .domain(sorted.map(d => d.label))
+        .range([0, sorted.length * (barH + gap)])
+        .padding(0.15);
 
-        g.select('.domain').remove();
+      // Bars
+      g.selectAll('rect')
+        .data(sorted)
+        .join('rect')
+        .attr('x', 0)
+        .attr('y', d => y(d.label)!)
+        .attr('width', d => x(d.value))
+        .attr('height', y.bandwidth())
+        .attr('rx', 4)
+        .attr('fill', (d, i) => d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length])
+        .attr('cursor', d => d.href ? 'pointer' : 'default')
+        .on('mouseenter', function (_, d) {
+          d3.select(this).attr('opacity', 0.8);
+        })
+        .on('mouseleave', function () {
+          d3.select(this).attr('opacity', 1);
+        })
+        .on('click', (_, d) => {
+          if (d.href) window.location.href = d.href;
+        });
 
-        // Title
-        svg.append('text')
-            .attr('x', width / 2)
-            .attr('y', 20)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#e2e8f0')
-            .attr('font-size', '14px')
-            .attr('font-weight', '600')
-            .text(title);
+      // Country labels
+      g.selectAll('.label')
+        .data(sorted)
+        .join('text')
+        .attr('x', -8)
+        .attr('y', d => y(d.label)! + y.bandwidth() / 2)
+        .attr('dy', '0.35em')
+        .attr('text-anchor', 'end')
+        .attr('fill', '#94a3b8')
+        .attr('font-size', '13')
+        .text(d => d.label);
 
-        // Unit label
-        svg.append('text')
-            .attr('x', width - margin.right)
-            .attr('y', height - 10)
-            .attr('text-anchor', 'end')
-            .attr('fill', '#64748b')
-            .attr('font-size', '11px')
-            .text(`Unit: ${unit}`);
+      // Value labels
+      g.selectAll('.val')
+        .data(sorted)
+        .join('text')
+        .attr('x', d => x(d.value) + 6)
+        .attr('y', d => y(d.label)! + y.bandwidth() / 2)
+        .attr('dy', '0.35em')
+        .attr('fill', '#cbd5e1')
+        .attr('font-size', '12')
+        .attr('font-family', 'var(--font-jetbrains-mono), monospace')
+        .text(d => d.value.toLocaleString(undefined, { maximumFractionDigits: 1 }));
+    }
 
-    }, [data, unit, title]);
+    draw();
 
+    const observer = new ResizeObserver(() => draw());
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [data, fixedHeight]);
+
+  if (data.length === 0) {
     return (
-        <div ref={containerRef} className="w-full">
-            <svg ref={svgRef} className="w-full" />
-        </div>
+      <div className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900 p-6" style={{ height: 200 }}>
+        <p className="text-sm text-slate-500">No data available</p>
+      </div>
     );
+  }
+
+  return (
+    <div>
+      {title && (
+        <h3 className="mb-4 text-sm font-medium text-slate-400">
+          {title}{unit && <span className="ml-1 text-slate-600">({unit})</span>}
+        </h3>
+      )}
+      <div ref={containerRef} className="w-full" />
+    </div>
+  );
 }

@@ -3,153 +3,124 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-interface LineChartProps {
-    data: { year: number; value: number }[];
-    title: string;
-    unit: string;
+interface DataPoint {
+  year: number;
+  value: number;
 }
 
-export function LineChart({ data, title, unit }: LineChartProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const svgRef = useRef<SVGSVGElement>(null);
+interface LineChartProps {
+  data: DataPoint[];
+  title?: string;
+  unit?: string;
+  color?: string;
+  height?: number;
+}
 
-    useEffect(() => {
-        if (!svgRef.current || !containerRef.current || data.length === 0) return;
+export function LineChart({ data, title, unit = '', color = '#34d399', height = 300 }: LineChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-        const container = containerRef.current;
-        const width = container.clientWidth;
-        const height = 300;
-        const margin = { top: 40, right: 30, bottom: 50, left: 60 };
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
+  useEffect(() => {
+    if (!containerRef.current || data.length === 0) return;
 
-        const svg = d3.select(svgRef.current)
-            .attr('viewBox', `0 0 ${width} ${height}`)
-            .attr('preserveAspectRatio', 'xMidYMid meet');
+    const container = containerRef.current;
 
-        svg.selectAll('*').remove();
+    function draw() {
+      container.innerHTML = '';
 
-        const sortedData = [...data].sort((a, b) => a.year - b.year);
+      const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+      const width = container.clientWidth;
+      const innerW = width - margin.left - margin.right;
+      const innerH = height - margin.top - margin.bottom;
 
-        const xScale = d3.scaleLinear()
-            .domain(d3.extent(sortedData, d => d.year) as [number, number])
-            .range([0, innerWidth]);
+      const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
 
-        const yScale = d3.scaleLinear()
-            .domain([0, d3.max(sortedData, d => d.value) || 0])
-            .nice()
-            .range([innerHeight, 0]);
+      const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-        const g = svg.append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
+      const sorted = [...data].sort((a, b) => a.year - b.year);
 
-        // Grid lines
-        g.append('g')
-            .attr('class', 'grid')
-            .call(
-                d3.axisLeft(yScale)
-                    .tickSize(-innerWidth)
-                    .tickFormat(() => '')
-            )
-            .selectAll('line')
-            .attr('stroke', '#334155')
-            .attr('stroke-opacity', 0.5);
-        g.select('.grid .domain').remove();
+      const x = d3.scaleLinear()
+        .domain(d3.extent(sorted, d => d.year) as [number, number])
+        .range([0, innerW]);
 
-        // Area
-        const area = d3.area<{ year: number; value: number }>()
-            .x(d => xScale(d.year))
-            .y0(innerHeight)
-            .y1(d => yScale(d.value))
-            .curve(d3.curveMonotoneX);
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(sorted, d => d.value)! * 1.1])
+        .nice()
+        .range([innerH, 0]);
 
-        const gradient = svg.append('defs')
-            .append('linearGradient')
-            .attr('id', 'areaGradient')
-            .attr('x1', '0%')
-            .attr('y1', '0%')
-            .attr('x2', '0%')
-            .attr('y2', '100%');
+      // Grid
+      g.append('g')
+        .call(d3.axisLeft(y).tickSize(-innerW).tickFormat(() => ''))
+        .call(sel => sel.selectAll('line').attr('stroke', '#1e293b').attr('stroke-dasharray', '2,2'))
+        .call(sel => sel.select('.domain').remove());
 
-        gradient.append('stop')
-            .attr('offset', '0%')
-            .attr('stop-color', '#10b981')
-            .attr('stop-opacity', 0.3);
+      // X axis
+      g.append('g')
+        .attr('transform', `translate(0,${innerH})`)
+        .call(d3.axisBottom(x).tickFormat(d => String(d)).ticks(Math.min(sorted.length, 8)))
+        .call(sel => sel.select('.domain').attr('stroke', '#334155'))
+        .call(sel => sel.selectAll('text').attr('fill', '#64748b').attr('font-size', '12'));
 
-        gradient.append('stop')
-            .attr('offset', '100%')
-            .attr('stop-color', '#10b981')
-            .attr('stop-opacity', 0);
+      // Y axis
+      g.append('g')
+        .call(d3.axisLeft(y).ticks(5))
+        .call(sel => sel.select('.domain').attr('stroke', '#334155'))
+        .call(sel => sel.selectAll('text').attr('fill', '#64748b').attr('font-size', '12'));
 
-        g.append('path')
-            .datum(sortedData)
-            .attr('fill', 'url(#areaGradient)')
-            .attr('d', area);
+      // Area gradient
+      const gradId = `lg-${Math.random().toString(36).slice(2, 8)}`;
+      const defs = svg.append('defs');
+      const grad = defs.append('linearGradient').attr('id', gradId)
+        .attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
+      grad.append('stop').attr('offset', '0%').attr('stop-color', color).attr('stop-opacity', 0.3);
+      grad.append('stop').attr('offset', '100%').attr('stop-color', color).attr('stop-opacity', 0);
 
-        // Line
-        const line = d3.line<{ year: number; value: number }>()
-            .x(d => xScale(d.year))
-            .y(d => yScale(d.value))
-            .curve(d3.curveMonotoneX);
+      // Area
+      const area = d3.area<DataPoint>()
+        .x(d => x(d.year)).y0(innerH).y1(d => y(d.value)).curve(d3.curveMonotoneX);
 
-        g.append('path')
-            .datum(sortedData)
-            .attr('fill', 'none')
-            .attr('stroke', '#10b981')
-            .attr('stroke-width', 2.5)
-            .attr('d', line);
+      g.append('path').datum(sorted).attr('fill', `url(#${gradId})`).attr('d', area);
 
-        // Dots
-        g.selectAll('circle')
-            .data(sortedData)
-            .enter()
-            .append('circle')
-            .attr('cx', d => xScale(d.year))
-            .attr('cy', d => yScale(d.value))
-            .attr('r', 4)
-            .attr('fill', '#10b981')
-            .attr('stroke', '#0f172a')
-            .attr('stroke-width', 2);
+      // Line
+      const line = d3.line<DataPoint>()
+        .x(d => x(d.year)).y(d => y(d.value)).curve(d3.curveMonotoneX);
 
-        // X Axis
-        g.append('g')
-            .attr('transform', `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale).tickFormat(d => String(d)).ticks(8))
-            .selectAll('text')
-            .attr('fill', '#94a3b8');
+      g.append('path').datum(sorted)
+        .attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2).attr('d', line);
 
-        // Y Axis
-        g.append('g')
-            .call(d3.axisLeft(yScale).ticks(5))
-            .selectAll('text')
-            .attr('fill', '#94a3b8');
+      // Dots
+      g.selectAll('.dot').data(sorted).join('circle')
+        .attr('cx', d => x(d.year)).attr('cy', d => y(d.value))
+        .attr('r', 3).attr('fill', color).attr('stroke', '#0f172a').attr('stroke-width', 1.5);
 
-        g.selectAll('.domain').attr('stroke', '#334155');
-        g.selectAll('.tick line').attr('stroke', '#334155');
+      // Unit label
+      if (unit) {
+        g.append('text').attr('x', -margin.left + 10).attr('y', -8)
+          .attr('fill', '#64748b').attr('font-size', '11').text(unit);
+      }
+    }
 
-        // Title
-        svg.append('text')
-            .attr('x', width / 2)
-            .attr('y', 20)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#e2e8f0')
-            .attr('font-size', '14px')
-            .attr('font-weight', '600')
-            .text(title);
+    draw();
 
-        // Y Label
-        svg.append('text')
-            .attr('transform', `translate(15,${height / 2}) rotate(-90)`)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#64748b')
-            .attr('font-size', '12px')
-            .text(unit);
+    const observer = new ResizeObserver(() => draw());
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [data, color, height, unit]);
 
-    }, [data, title, unit]);
-
+  if (data.length === 0) {
     return (
-        <div ref={containerRef} className="w-full">
-            <svg ref={svgRef} className="w-full" />
-        </div>
+      <div className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900 p-6" style={{ height }}>
+        <p className="text-sm text-slate-500">No data available</p>
+      </div>
     );
+  }
+
+  return (
+    <div>
+      {title && <h3 className="mb-4 text-sm font-medium text-slate-400">{title}</h3>}
+      <div ref={containerRef} className="w-full" />
+    </div>
+  );
 }

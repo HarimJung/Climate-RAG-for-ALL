@@ -45,7 +45,7 @@ export function DashboardClient({ indicatorData, lastUpdated }: DashboardClientP
             {/* Bar Chart */}
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
                 <BarChart
-                    data={ghgData.map(d => ({ iso3: d.iso3, name: d.name, value: d.value }))}
+                    data={ghgData.map(d => ({ label: d.name, value: d.value, href: `/country/${d.iso3}` }))}
                     unit={selectedIndicator === 'TOTAL_GHG' ? 'MtCO2e' : currentIndicator.unit}
                     title="Top 20 Countries by GHG Emissions"
                 />
