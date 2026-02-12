@@ -252,3 +252,61 @@ All hard requirements pass (build, types, data integrity, no duplicates, correct
 | **Total** | **13** | **0** | **0** |
 
 **Phase 4 Sign-off: PASS**
+
+---
+
+## Phase 5 — Production Deploy
+
+**Date**: 2026-02-12
+**Validator**: Claude (Opus 4.6)
+
+---
+
+### 1. Environment Variable Audit
+
+| Variable | Present | Exposed to Client? | Status |
+|----------|:-------:|:-------------------:|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Yes (intended) | **PASS** |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Yes (intended, publishable key) | **PASS** |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | No — server-only (`src/lib/supabase/server.ts`) | **PASS** |
+| `OPENAI_API_KEY` | Yes | No — server-only | **PASS** |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Yes (intended) | **PASS** |
+
+No `NEXT_PUBLIC_` prefix on any secret key. Service role key used only in `createServiceClient()` on server side.
+
+---
+
+### 2. Build Check
+
+| Check | Result |
+|-------|--------|
+| `npm run build` | **PASS** |
+
+- Next.js 16.1.6 (Turbopack) compiled successfully
+- 9 routes generated (5 static, 4 dynamic)
+- No TypeScript errors
+
+---
+
+### 3. Vercel Production Deployment
+
+| Check | Result |
+|-------|--------|
+| `vercel --prod` | **PASS** |
+| Production URL | https://visualclimate.vercel.app |
+| Alias | https://visualclimate.vercel.app |
+| Build time | ~30s |
+| Region | iad1 (Washington, D.C.) |
+
+---
+
+### Phase 5 Summary
+
+| Category | PASS | WARN | FAIL |
+|----------|:----:|:----:|:----:|
+| Env audit | 5 | 0 | 0 |
+| Build | 1 | 0 | 0 |
+| Deploy | 1 | 0 | 0 |
+| **Total** | **7** | **0** | **0** |
+
+**Phase 5 Sign-off: PASS — Production deployed**
