@@ -1,0 +1,380 @@
+[
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2015,
+    "value": 289842018,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2015,
+    "value": 1296949052,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2015,
+    "value": 1026728433,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2015,
+    "value": 751063407,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2015,
+    "value": 444229318,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2015,
+    "value": 7041552434,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2016,
+    "value": 296737879,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2016,
+    "value": 1259559907,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2016,
+    "value": 1024054758,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2016,
+    "value": 765753047,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2016,
+    "value": 430564775,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2016,
+    "value": 6934816719,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2017,
+    "value": 298854942,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2017,
+    "value": 1278119264,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2017,
+    "value": 976233643,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2017,
+    "value": 783135127,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2017,
+    "value": 437400014,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2017,
+    "value": 6889748020,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2018,
+    "value": 308078060,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2018,
+    "value": 1264833103,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2018,
+    "value": 945515048,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2018,
+    "value": 792525677,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2018,
+    "value": 449593219,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2018,
+    "value": 7146652118,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2019,
+    "value": 309014097,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2019,
+    "value": 1278295308,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2019,
+    "value": 882273829,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2019,
+    "value": 777840575,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2019,
+    "value": 467150912,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2019,
+    "value": 7066706654,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2020,
+    "value": 305901513,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2020,
+    "value": 1274328348,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2020,
+    "value": 812657822,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2020,
+    "value": 731044151,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2020,
+    "value": 438699120,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2020,
+    "value": 6500934063,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2021,
+    "value": 319916003,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2021,
+    "value": 1354907667,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2021,
+    "value": 849881233,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2021,
+    "value": 756926330,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2021,
+    "value": 425073459,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2021,
+    "value": 6853018784,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2022,
+    "value": 316909525,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2022,
+    "value": 1342568547,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2022,
+    "value": 843883166,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2022,
+    "value": 716637496,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2022,
+    "value": 416932476,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2022,
+    "value": 6967058143,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2023,
+    "value": 319808918,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2023,
+    "value": 1353682234,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2023,
+    "value": 772045744,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2023,
+    "value": 709157837,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2023,
+    "value": 428931465,
+    "source": "Climate TRACE"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "CT.GHG.TOTAL",
+    "year": 2023,
+    "value": 6919705407,
+    "source": "Climate TRACE"
+  }
+]
