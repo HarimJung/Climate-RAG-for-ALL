@@ -1,0 +1,2018 @@
+[
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2000,
+    "value": 0.565245,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2001,
+    "value": 0.567013,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2002,
+    "value": 0.563576,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2003,
+    "value": 0.563865,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2004,
+    "value": 0.56343,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2005,
+    "value": 0.560103,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2006,
+    "value": 0.554116,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2007,
+    "value": 0.56341,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2008,
+    "value": 0.557823,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2009,
+    "value": 0.556202,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2010,
+    "value": 0.554066,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2011,
+    "value": 0.553562,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2012,
+    "value": 0.544983,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2013,
+    "value": 0.544997,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2014,
+    "value": 0.548922,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2015,
+    "value": 0.538382,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2016,
+    "value": 0.534509,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2017,
+    "value": 0.529671,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2018,
+    "value": 0.528898,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2019,
+    "value": 0.529206,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2020,
+    "value": 0.528184,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2021,
+    "value": 0.557246,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2022,
+    "value": 0.568568,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2023,
+    "value": 0.568383,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2000,
+    "value": 0.39711,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2001,
+    "value": 0.394592,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2002,
+    "value": 0.391494,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2003,
+    "value": 0.389058,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2004,
+    "value": 0.388078,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2005,
+    "value": 0.385046,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2006,
+    "value": 0.383436,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2007,
+    "value": 0.38311,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2008,
+    "value": 0.38161,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2009,
+    "value": 0.3789,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2010,
+    "value": 0.378527,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2011,
+    "value": 0.377965,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2012,
+    "value": 0.37758,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2013,
+    "value": 0.375542,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2014,
+    "value": 0.374012,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2015,
+    "value": 0.370835,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2016,
+    "value": 0.369249,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2017,
+    "value": 0.368032,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2018,
+    "value": 0.367247,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2019,
+    "value": 0.368939,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2020,
+    "value": 0.368475,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2021,
+    "value": 0.369146,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2022,
+    "value": 0.368167,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2023,
+    "value": 0.36852,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2000,
+    "value": 0.30892,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2001,
+    "value": 0.309769,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2002,
+    "value": 0.309475,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2003,
+    "value": 0.308724,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2004,
+    "value": 0.308243,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2005,
+    "value": 0.307765,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2006,
+    "value": 0.307254,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2007,
+    "value": 0.304535,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2008,
+    "value": 0.305939,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2009,
+    "value": 0.306769,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2010,
+    "value": 0.302628,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2011,
+    "value": 0.303223,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2012,
+    "value": 0.302376,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2013,
+    "value": 0.301419,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2014,
+    "value": 0.301651,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2015,
+    "value": 0.301075,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2016,
+    "value": 0.299711,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2017,
+    "value": 0.300363,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2018,
+    "value": 0.300053,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2019,
+    "value": 0.300727,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2020,
+    "value": 0.29945,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2021,
+    "value": 0.299431,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2022,
+    "value": 0.301358,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2023,
+    "value": 0.301489,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2000,
+    "value": 0.373756,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2001,
+    "value": 0.372476,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2002,
+    "value": 0.371131,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2003,
+    "value": 0.370502,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2004,
+    "value": 0.370439,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2005,
+    "value": 0.370105,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2006,
+    "value": 0.367749,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2007,
+    "value": 0.368168,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2008,
+    "value": 0.367269,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2009,
+    "value": 0.366517,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2010,
+    "value": 0.366045,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2011,
+    "value": 0.365383,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2012,
+    "value": 0.364158,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2013,
+    "value": 0.364353,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2014,
+    "value": 0.363306,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2015,
+    "value": 0.362112,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2016,
+    "value": 0.362199,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2017,
+    "value": 0.361798,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2018,
+    "value": 0.362063,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2019,
+    "value": 0.362295,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2020,
+    "value": 0.360179,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2021,
+    "value": 0.358262,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2022,
+    "value": 0.357529,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2023,
+    "value": 0.356707,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2000,
+    "value": 0.531077,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2001,
+    "value": 0.519405,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2002,
+    "value": 0.515656,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2003,
+    "value": 0.506717,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2004,
+    "value": 0.506381,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2005,
+    "value": 0.502594,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2006,
+    "value": 0.501917,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2007,
+    "value": 0.501913,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2008,
+    "value": 0.496121,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2009,
+    "value": 0.496339,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2010,
+    "value": 0.493774,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2011,
+    "value": 0.501718,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2012,
+    "value": 0.498388,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2013,
+    "value": 0.496801,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2014,
+    "value": 0.493095,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2015,
+    "value": 0.490498,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2016,
+    "value": 0.489853,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2017,
+    "value": 0.48686,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2018,
+    "value": 0.480405,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2019,
+    "value": 0.483237,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2020,
+    "value": 0.482535,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2021,
+    "value": 0.484804,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2022,
+    "value": 0.481958,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2023,
+    "value": 0.481085,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2000,
+    "value": 0.31667,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2001,
+    "value": 0.317226,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2002,
+    "value": 0.316719,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2003,
+    "value": 0.317032,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2004,
+    "value": 0.317248,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2005,
+    "value": 0.317202,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2006,
+    "value": 0.31707,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2007,
+    "value": 0.316557,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2008,
+    "value": 0.314881,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2009,
+    "value": 0.314812,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2010,
+    "value": 0.313212,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2011,
+    "value": 0.312287,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2012,
+    "value": 0.311227,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2013,
+    "value": 0.310888,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2014,
+    "value": 0.310315,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2015,
+    "value": 0.310548,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2016,
+    "value": 0.310518,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2017,
+    "value": 0.307306,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2018,
+    "value": 0.309703,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2019,
+    "value": 0.310249,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2020,
+    "value": 0.311741,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2021,
+    "value": 0.310526,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2022,
+    "value": 0.311794,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.VULNERABILITY",
+    "year": 2023,
+    "value": 0.312019,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2000,
+    "value": 0.329813,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2001,
+    "value": 0.325006,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2002,
+    "value": 0.319566,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2003,
+    "value": 0.314383,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2004,
+    "value": 0.308095,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2005,
+    "value": 0.329678,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2006,
+    "value": 0.40691,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2007,
+    "value": 0.420007,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2008,
+    "value": 0.426015,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2009,
+    "value": 0.427492,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2010,
+    "value": 0.45453,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2011,
+    "value": 0.45746,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2012,
+    "value": 0.458983,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2013,
+    "value": 0.460143,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2014,
+    "value": 0.25419,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2015,
+    "value": 0.251238,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2016,
+    "value": 0.267236,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2017,
+    "value": 0.268129,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2018,
+    "value": 0.271837,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2019,
+    "value": 0.272147,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2020,
+    "value": 0.277684,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2021,
+    "value": 0.277504,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2022,
+    "value": 0.275165,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BGD",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2023,
+    "value": 0.279308,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2000,
+    "value": 0.360198,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2001,
+    "value": 0.363404,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2002,
+    "value": 0.368021,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2003,
+    "value": 0.36543,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2004,
+    "value": 0.361208,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2005,
+    "value": 0.368916,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2006,
+    "value": 0.399587,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2007,
+    "value": 0.403547,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2008,
+    "value": 0.411336,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2009,
+    "value": 0.42533,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2010,
+    "value": 0.442071,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2011,
+    "value": 0.444353,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2012,
+    "value": 0.44263,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2013,
+    "value": 0.44083,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2014,
+    "value": 0.354706,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2015,
+    "value": 0.346652,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2016,
+    "value": 0.350054,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2017,
+    "value": 0.343825,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2018,
+    "value": 0.341657,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2019,
+    "value": 0.3473,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2020,
+    "value": 0.351806,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2021,
+    "value": 0.350042,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2022,
+    "value": 0.350412,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "BRA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2023,
+    "value": 0.350466,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2000,
+    "value": 0.631566,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2001,
+    "value": 0.631971,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2002,
+    "value": 0.635131,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2003,
+    "value": 0.629169,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2004,
+    "value": 0.631203,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2005,
+    "value": 0.638751,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2006,
+    "value": 0.681348,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2007,
+    "value": 0.687703,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2008,
+    "value": 0.684389,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2009,
+    "value": 0.678988,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2010,
+    "value": 0.695114,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2011,
+    "value": 0.693038,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2012,
+    "value": 0.694297,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2013,
+    "value": 0.701953,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2014,
+    "value": 0.722033,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2015,
+    "value": 0.710152,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2016,
+    "value": 0.693688,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2017,
+    "value": 0.69109,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2018,
+    "value": 0.69106,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2019,
+    "value": 0.688057,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2020,
+    "value": 0.683271,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2021,
+    "value": 0.68748,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2022,
+    "value": 0.685482,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "DEU",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2023,
+    "value": 0.681611,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2000,
+    "value": 0.562165,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2001,
+    "value": 0.576141,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2002,
+    "value": 0.588461,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2003,
+    "value": 0.597089,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2004,
+    "value": 0.600374,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2005,
+    "value": 0.608535,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2006,
+    "value": 0.619478,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2007,
+    "value": 0.645843,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2008,
+    "value": 0.666395,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2009,
+    "value": 0.662471,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2010,
+    "value": 0.668145,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2011,
+    "value": 0.698022,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2012,
+    "value": 0.701392,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2013,
+    "value": 0.702286,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2014,
+    "value": 0.713929,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2015,
+    "value": 0.728337,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2016,
+    "value": 0.722231,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2017,
+    "value": 0.706506,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2018,
+    "value": 0.711051,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2019,
+    "value": 0.716559,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2020,
+    "value": 0.714079,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2021,
+    "value": 0.714338,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2022,
+    "value": 0.718529,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "KOR",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2023,
+    "value": 0.722298,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2000,
+    "value": 0.291148,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2001,
+    "value": 0.283916,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2002,
+    "value": 0.276807,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2003,
+    "value": 0.278259,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2004,
+    "value": 0.278531,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2005,
+    "value": 0.31491,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2006,
+    "value": 0.38277,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2007,
+    "value": 0.388262,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2008,
+    "value": 0.39843,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2009,
+    "value": 0.394006,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2010,
+    "value": 0.414731,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2011,
+    "value": 0.417107,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2012,
+    "value": 0.41875,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2013,
+    "value": 0.422124,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2014,
+    "value": 0.20213,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2015,
+    "value": 0.21004,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2016,
+    "value": 0.228811,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2017,
+    "value": 0.228059,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2018,
+    "value": 0.230296,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2019,
+    "value": 0.235428,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2020,
+    "value": 0.247069,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2021,
+    "value": 0.250501,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2022,
+    "value": 0.24634,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "NGA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2023,
+    "value": 0.252553,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2000,
+    "value": 0.62864,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2001,
+    "value": 0.626648,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2002,
+    "value": 0.625323,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2003,
+    "value": 0.622107,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2004,
+    "value": 0.619505,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2005,
+    "value": 0.641463,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2006,
+    "value": 0.716642,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2007,
+    "value": 0.717558,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2008,
+    "value": 0.725585,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2009,
+    "value": 0.718447,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2010,
+    "value": 0.743429,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2011,
+    "value": 0.745158,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2012,
+    "value": 0.749563,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2013,
+    "value": 0.749285,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2014,
+    "value": 0.683961,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2015,
+    "value": 0.682308,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2016,
+    "value": 0.669964,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2017,
+    "value": 0.669526,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2018,
+    "value": 0.665879,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2019,
+    "value": 0.651693,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2020,
+    "value": 0.645656,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2021,
+    "value": 0.648829,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2022,
+    "value": 0.647666,
+    "source": "ND-GAIN"
+  },
+  {
+    "country_iso3": "USA",
+    "indicator_code": "NDGAIN.READINESS",
+    "year": 2023,
+    "value": 0.647313,
+    "source": "ND-GAIN"
+  }
+]
