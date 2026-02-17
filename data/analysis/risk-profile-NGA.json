@@ -1,0 +1,80 @@
+{
+  "iso3": "NGA",
+  "country": "Nigeria",
+  "generated": "2026-02-16",
+  "risk_level": "high",
+  "ndgain": {
+    "vulnerability": 0.4811,
+    "readiness": 0.2526,
+    "vulnerability_trend": "stable",
+    "readiness_trend": "improving",
+    "trend": "stable"
+  },
+  "key_vulnerabilities": [
+    "높은 기후 취약성 (ND-GAIN 취약성 0.48, 사헬 지역 사막화·홍수 이중 위험)",
+    "대기오염 극심 (PM2.5 56.5 µg/m³, WHO 기준 11배 초과)",
+    "낮은 기후 적응 준비도 (ND-GAIN 준비도 0.25, 방글라데시보다 낮음)",
+    "석유 의존 경제 구조의 탈탄소화 전환 리스크",
+    "삼림 벌채 지속 (24.1% → 23.2%, 0.9%p 감소)"
+  ],
+  "strengths": [
+    "재생에너지(수력) 비중 22.9%로 상대적으로 높은 편",
+    "1인당 CO2 배출량 매우 낮음 (0.55 mt, 6개국 중 최저)",
+    "GDP 대비 탄소 집약도 개선 (0.288 → 0.258)"
+  ],
+  "indicators_snapshot": {
+    "EN.GHG.CO2.PC.CE.AR5": {
+      "value": 0.5523,
+      "year": 2023
+    },
+    "EN.ATM.PM25.MC.M3": {
+      "value": 56.5313,
+      "year": 2020
+    },
+    "AG.LND.FRST.ZS": {
+      "value": 23.2079,
+      "year": 2023
+    },
+    "EMBER.RENEWABLE.PCT": {
+      "value": 22.889,
+      "year": 2023
+    },
+    "EMBER.FOSSIL.PCT": {
+      "value": 77.111,
+      "year": 2023
+    },
+    "EMBER.CARBON.INTENSITY": {
+      "value": 508.82,
+      "year": 2023
+    },
+    "NY.GDP.PCAP.CD": {
+      "value": 2138.7638,
+      "year": 2023
+    },
+    "EG.USE.PCAP.KG.OE": {
+      "value": 333.0607,
+      "year": 2022
+    },
+    "DERIVED.CO2_PER_GDP": {
+      "value": 0.2583,
+      "year": 2023
+    },
+    "DERIVED.DECOUPLING": {
+      "value": -21.7438,
+      "year": 2023
+    },
+    "DERIVED.ENERGY_TRANSITION": {
+      "value": 1.723,
+      "year": 2023
+    },
+    "NDGAIN.VULNERABILITY": {
+      "value": 0.4811,
+      "year": 2023
+    },
+    "NDGAIN.READINESS": {
+      "value": 0.2526,
+      "year": 2023
+    }
+  },
+  "summary": "나이지리아는 아프리카 최대 경제국으로, 석유 자원 의존도와 높은 기후 취약성이 동시에 존재하는 복잡한 상황에 처해 있습니다. ND-GAIN 취약성 지수 0.48은 방글라데시 다음으로 높으며, 사헬 지역의 사막화와 남부 삼각주 지역의 홍수가 동시에 위협하는 이중 리스크 구조를 가지고 있습니다. 대기오염(PM2.5 56.5 µg/m³)은 WHO 기준의 11배를 초과하며, 도시화 및 발전소 연료 연소가 주요 원인입니다. 기후 적응 준비도(0.25)는 6개국 중 최하위로, 제도적·재정적 대응 역량이 매우 부족합니다. 1인당 탄소 배출량(0.55 mt)은 낮지만 이는 에너지 빈곤의 반영이며, 개발 필요와 기후 목표의 균형이 핵심 과제입니다. 탈동조화 지수가 음수(−21.7)로 나타나 최근 경제 충격과 에너지 불안정이 지표를 왜곡하고 있습니다. 에너지 접근성 확대와 재생에너지 전환을 동시에 추진하는 정의로운 전환 전략이 필요합니다."
+}

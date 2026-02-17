@@ -1,0 +1,80 @@
+{
+  "iso3": "BGD",
+  "country": "Bangladesh",
+  "generated": "2026-02-16",
+  "risk_level": "high",
+  "ndgain": {
+    "vulnerability": 0.5684,
+    "readiness": 0.2793,
+    "vulnerability_trend": "worsening",
+    "readiness_trend": "improving",
+    "trend": "worsening"
+  },
+  "key_vulnerabilities": [
+    "극단적인 홍수 및 해수면 상승 위험 (연안 저지대 인구 노출)",
+    "식량 안보 취약성 (농업용 담수 부족 심화 예상)",
+    "높은 대기오염 수준 (PM2.5 42.4 µg/m³, WHO 기준 8배 초과)",
+    "에너지 전환 지연 (화석연료 의존도 98.4%, 재생에너지 1.6%)",
+    "낮은 적응 역량 (ND-GAIN 준비도 0.28, 최하위권)"
+  ],
+  "strengths": [
+    "GDP 대비 탄소 집약도 지속 개선 (0.327 → 0.272 kg CO2/USD)",
+    "경제 성장 지속 (GDP 1인당 1,965 → 2,551 USD, 30% 증가)",
+    "삼림 면적 소폭 증가 (14.47% → 14.49%)"
+  ],
+  "indicators_snapshot": {
+    "EN.GHG.CO2.PC.CE.AR5": {
+      "value": 0.6939,
+      "year": 2023
+    },
+    "EN.ATM.PM25.MC.M3": {
+      "value": 42.3814,
+      "year": 2020
+    },
+    "AG.LND.FRST.ZS": {
+      "value": 14.4899,
+      "year": 2023
+    },
+    "EMBER.RENEWABLE.PCT": {
+      "value": 1.62,
+      "year": 2023
+    },
+    "EMBER.FOSSIL.PCT": {
+      "value": 98.38,
+      "year": 2023
+    },
+    "EMBER.CARBON.INTENSITY": {
+      "value": 682.93,
+      "year": 2023
+    },
+    "NY.GDP.PCAP.CD": {
+      "value": 2551.0177,
+      "year": 2023
+    },
+    "EG.USE.PCAP.KG.OE": {
+      "value": 297.1184,
+      "year": 2022
+    },
+    "DERIVED.CO2_PER_GDP": {
+      "value": 0.272,
+      "year": 2023
+    },
+    "DERIVED.DECOUPLING": {
+      "value": -3.3432,
+      "year": 2023
+    },
+    "DERIVED.ENERGY_TRANSITION": {
+      "value": -0.149,
+      "year": 2023
+    },
+    "NDGAIN.VULNERABILITY": {
+      "value": 0.5684,
+      "year": 2023
+    },
+    "NDGAIN.READINESS": {
+      "value": 0.2793,
+      "year": 2023
+    }
+  },
+  "summary": "방글라데시는 기후변화에 가장 취약한 국가 중 하나로, ND-GAIN 취약성 지수 0.568(6개 파일럿 국가 중 최고)을 기록하고 있습니다. 벵골만 연안 저지대에 위치한 지형적 특성상 해수면 상승과 사이클론, 홍수 피해가 극심하며, 전체 인구의 상당 부분이 침수 위험 지역에 거주합니다. 에너지 믹스에서 화석연료 비중이 98.4%에 달하고 재생에너지는 1.6%에 불과해 에너지 전환이 매우 지연된 상태입니다. 대기오염(PM2.5 42.4 µg/m³)은 WHO 권고 기준을 8배 이상 초과하며 공중보건에 심각한 위협을 가합니다. 준비도 지수 0.28은 6개국 중 최저로, 기후 적응을 위한 제도적·재정적 역량이 극히 부족합니다. 1인당 CO2 배출량은 0.69 mt로 낮지만, GDP 성장과 함께 산업화가 가속되면서 배출량이 증가 추세입니다. 기후 재원 확보, 조기경보 시스템 강화, 재생에너지 인프라 투자가 시급히 필요한 국가입니다."
+}

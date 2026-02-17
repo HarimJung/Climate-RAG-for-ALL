@@ -1,0 +1,80 @@
+{
+  "iso3": "KOR",
+  "country": "South Korea",
+  "generated": "2026-02-16",
+  "risk_level": "medium",
+  "ndgain": {
+    "vulnerability": 0.3567,
+    "readiness": 0.7223,
+    "vulnerability_trend": "improving",
+    "readiness_trend": "improving",
+    "trend": "improving"
+  },
+  "key_vulnerabilities": [
+    "화석연료 전력 의존도 높음 (61.2%, 석탄·LNG 중심)",
+    "높은 1인당 에너지 소비 및 탄소 배출 (11.4 mt CO2, OECD 상위권)",
+    "미세먼지 문제 심각 (PM2.5 25.9 µg/m³, OECD 최하위 수준)",
+    "재생에너지 전환 지연 (9.6%, EU·미국 대비 현저히 낮음)",
+    "중공업·반도체 제조 산업의 탈탄소화 기술 전환 필요"
+  ],
+  "strengths": [
+    "높은 기후 적응 준비도 (ND-GAIN 준비도 0.72, 6개국 중 1위)",
+    "탈동조화 진전 (decoupling 지수 4.36 → 6.30, GDP 성장 중 배출 감소)",
+    "전력 탄소 집약도 개선 (518.8 → 427.3 gCO2/kWh, 17.6% 감소)"
+  ],
+  "indicators_snapshot": {
+    "EN.GHG.CO2.PC.CE.AR5": {
+      "value": 11.4163,
+      "year": 2023
+    },
+    "EN.ATM.PM25.MC.M3": {
+      "value": 25.944,
+      "year": 2020
+    },
+    "AG.LND.FRST.ZS": {
+      "value": 64.1086,
+      "year": 2023
+    },
+    "EMBER.RENEWABLE.PCT": {
+      "value": 9.566,
+      "year": 2023
+    },
+    "EMBER.FOSSIL.PCT": {
+      "value": 61.204,
+      "year": 2023
+    },
+    "EMBER.CARBON.INTENSITY": {
+      "value": 427.29,
+      "year": 2023
+    },
+    "NY.GDP.PCAP.CD": {
+      "value": 35674.096,
+      "year": 2023
+    },
+    "EG.USE.PCAP.KG.OE": {
+      "value": 5336.9249,
+      "year": 2023
+    },
+    "DERIVED.CO2_PER_GDP": {
+      "value": 0.32,
+      "year": 2023
+    },
+    "DERIVED.DECOUPLING": {
+      "value": 6.2986,
+      "year": 2023
+    },
+    "DERIVED.ENERGY_TRANSITION": {
+      "value": 4.877,
+      "year": 2023
+    },
+    "NDGAIN.VULNERABILITY": {
+      "value": 0.3567,
+      "year": 2023
+    },
+    "NDGAIN.READINESS": {
+      "value": 0.7223,
+      "year": 2023
+    }
+  },
+  "summary": "한국은 고소득 아시아 국가로, 기후 적응 준비도(0.72)는 6개 파일럿 국가 중 가장 높지만 온실가스 배출 측면에서는 여전히 상당한 과제를 안고 있습니다. 1인당 CO2 배출량 11.4 mt는 독일(7.1 mt)보다 높으며, 전력 믹스에서 화석연료 비중이 61.2%에 달합니다. 재생에너지 전력 비중은 2018년 4.7%에서 2023년 9.6%로 두 배 이상 증가했으나, 글로벌 평균에 비해 여전히 낮습니다. 미세먼지(PM2.5 25.9 µg/m³)는 OECD 최하위 수준으로 공중보건과 기후정책 이중 과제를 안고 있습니다. 긍정적으로는 GDP 대비 탄소 집약도가 꾸준히 개선(0.373 → 0.320)되고 있으며, 탈동조화 지수도 개선 추세입니다. 2030 NDC 목표 달성을 위해 재생에너지 가속 전환, 중공업 수소화, 원전 지속 활용, 탄소시장 고도화 등 복합적 정책 조합이 필요합니다."
+}

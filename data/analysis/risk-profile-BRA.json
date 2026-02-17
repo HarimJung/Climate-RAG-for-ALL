@@ -1,0 +1,79 @@
+{
+  "iso3": "BRA",
+  "country": "Brazil",
+  "generated": "2026-02-16",
+  "risk_level": "medium",
+  "ndgain": {
+    "vulnerability": 0.3685,
+    "readiness": 0.3505,
+    "vulnerability_trend": "stable",
+    "readiness_trend": "improving",
+    "trend": "stable"
+  },
+  "key_vulnerabilities": [
+    "산림 벌채 지속 (삼림 면적 59.7% → 58.98%, LULUCF 배출 증가)",
+    "수자원 스트레스 및 극단적 가뭄 위험 (아마존 유역 강수 패턴 변화)",
+    "농업 생산성 위협 (세라도 지역 기온 상승 및 건조화)",
+    "기후 적응 준비도 중간 수준 (ND-GAIN 준비도 0.35)"
+  ],
+  "strengths": [
+    "세계 최고 수준의 재생에너지 전력 믹스 (88.99%, 주로 수력)",
+    "탄소 집약도 대폭 개선 (전력 그리드 96.3 gCO2/kWh, 세계 최저 수준)",
+    "1인당 CO2 배출량 안정적 유지 (2.27 mt, 소폭 감소)"
+  ],
+  "indicators_snapshot": {
+    "EN.GHG.CO2.PC.CE.AR5": {
+      "value": 2.2745,
+      "year": 2023
+    },
+    "EN.ATM.PM25.MC.M3": {
+      "value": 12.1793,
+      "year": 2020
+    },
+    "AG.LND.FRST.ZS": {
+      "value": 58.9819,
+      "year": 2023
+    },
+    "EMBER.RENEWABLE.PCT": {
+      "value": 88.995,
+      "year": 2023
+    },
+    "EMBER.FOSSIL.PCT": {
+      "value": 8.958,
+      "year": 2023
+    },
+    "EMBER.CARBON.INTENSITY": {
+      "value": 96.26,
+      "year": 2023
+    },
+    "NY.GDP.PCAP.CD": {
+      "value": 10377.5898,
+      "year": 2023
+    },
+    "EG.USE.PCAP.KG.OE": {
+      "value": 1481.2244,
+      "year": 2023
+    },
+    "DERIVED.CO2_PER_GDP": {
+      "value": 0.2192,
+      "year": 2023
+    },
+    "DERIVED.DECOUPLING": {
+      "value": 12.0053,
+      "year": 2023
+    },
+    "DERIVED.ENERGY_TRANSITION": {
+      "value": 6.637,
+      "year": 2023
+    },
+    "NDGAIN.VULNERABILITY": {
+      "value": 0.3685,
+      "year": 2023
+    },
+    "NDGAIN.READINESS": {
+      "value": 0.3505,
+      "year": 2023
+    }
+  },
+  "summary": "브라질은 세계 최대 열대우림인 아마존을 보유한 국가로, 기후변화 완화와 적응 양면에서 중요한 위치를 차지합니다. 전력 생산의 88.99%가 재생에너지(주로 수력발전)에서 공급되며, 전력 탄소 집약도(96.3 gCO2/kWh)는 세계 최저 수준으로 에너지 전환 분야의 강점을 보입니다. 그러나 산림 벌채가 지속되면서 삼림 면적이 2018년 59.7%에서 2023년 58.98%로 감소하였고, 이는 생태계 서비스 손실과 탄소 흡수원 약화로 이어집니다. ND-GAIN 취약성 지수 0.37은 중간 수준으로, 기후 리스크가 완전히 낮지는 않습니다. 수자원 스트레스와 아마존 지역의 강수 패턴 변화는 농업과 수력발전 모두에 위협입니다. GDP 대비 탄소 집약도는 꾸준히 개선(0.246 → 0.219)되고 있으며, 탈동조화(decoupling) 지수도 양수로 전환되어 경제성장과 탄소 배출 분리가 진행 중입니다."
+}

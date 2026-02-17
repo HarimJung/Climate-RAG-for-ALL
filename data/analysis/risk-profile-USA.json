@@ -1,0 +1,79 @@
+{
+  "iso3": "USA",
+  "country": "United States",
+  "generated": "2026-02-16",
+  "risk_level": "medium",
+  "ndgain": {
+    "vulnerability": 0.312,
+    "readiness": 0.6473,
+    "vulnerability_trend": "stable",
+    "readiness_trend": "worsening",
+    "trend": "stable"
+  },
+  "key_vulnerabilities": [
+    "대규모 화석연료 배출 (1인당 13.7 mt CO2, 6개국 중 최고)",
+    "서부 산불, 허리케인, 홍수 등 다양한 급성 기후 리스크 노출",
+    "전력 화석연료 비중 여전히 높음 (59.1%, 천연가스 및 석탄)",
+    "ND-GAIN 준비도 하락 추세 (0.666 → 0.647, 정치적 불안정 반영)"
+  ],
+  "strengths": [
+    "GDP 대비 탄소 집약도 큰 폭 개선 (0.249 → 0.169 kg CO2/USD, 32% 감소)",
+    "재생에너지 전력 빠른 성장 (17.4% → 22.7%, IRA 정책 효과)",
+    "높은 기후 적응 역량 (ND-GAIN 준비도 0.65, 기술·재정 역량 우수)"
+  ],
+  "indicators_snapshot": {
+    "EN.GHG.CO2.PC.CE.AR5": {
+      "value": 13.7119,
+      "year": 2023
+    },
+    "EN.ATM.PM25.MC.M3": {
+      "value": 7.8149,
+      "year": 2020
+    },
+    "AG.LND.FRST.ZS": {
+      "value": 33.8669,
+      "year": 2023
+    },
+    "EMBER.RENEWABLE.PCT": {
+      "value": 22.679,
+      "year": 2023
+    },
+    "EMBER.FOSSIL.PCT": {
+      "value": 59.106,
+      "year": 2023
+    },
+    "EMBER.CARBON.INTENSITY": {
+      "value": 392.89,
+      "year": 2023
+    },
+    "NY.GDP.PCAP.CD": {
+      "value": 81032.2621,
+      "year": 2023
+    },
+    "EG.USE.PCAP.KG.OE": {
+      "value": 6363.5002,
+      "year": 2023
+    },
+    "DERIVED.CO2_PER_GDP": {
+      "value": 0.1692,
+      "year": 2023
+    },
+    "DERIVED.DECOUPLING": {
+      "value": 10.6024,
+      "year": 2023
+    },
+    "DERIVED.ENERGY_TRANSITION": {
+      "value": 5.229,
+      "year": 2023
+    },
+    "NDGAIN.VULNERABILITY": {
+      "value": 0.312,
+      "year": 2023
+    },
+    "NDGAIN.READINESS": {
+      "value": 0.6473,
+      "year": 2023
+    }
+  },
+  "summary": "미국은 역사적 최대 온실가스 누적 배출국으로, 1인당 CO2 배출량 13.7 mt는 6개 파일럿 국가 중 최고 수준입니다. 그러나 GDP 대비 탄소 집약도(0.249 → 0.169)가 크게 개선되고 있으며, 인플레이션 감축법(IRA, 2022) 시행 이후 재생에너지 투자와 전환이 가속화되고 있습니다. 전력 부문 탄소 집약도는 462.6에서 392.9 gCO2/kWh로 감소하였고, 재생에너지 비중도 2018년 17.4%에서 2023년 22.7%로 증가했습니다. ND-GAIN 취약성 지수 0.31은 낮지만, 서부 산불, 허리케인, 해안 홍수 등 다양한 급성 기후 리스크에 노출되어 있습니다. 준비도 지수가 0.666에서 0.647로 소폭 하락한 것은 정치적 기후정책 불연속성을 반영합니다. 에너지 소비 효율 개선(6,738 → 6,364 kg oil eq/인)과 탈동조화 지수의 꾸준한 상승은 긍정적 신호입니다. 글로벌 기후 리더십 복원과 산업 탈탄소화 가속이 핵심 과제입니다."
+}
