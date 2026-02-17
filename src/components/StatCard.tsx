@@ -3,9 +3,10 @@ interface StatCardProps {
   value: string | number;
   unit?: string;
   trend?: { direction: 'up' | 'down' | 'flat'; label: string };
+  source?: string;
 }
 
-export function StatCard({ title, value, unit, trend }: StatCardProps) {
+export function StatCard({ title, value, unit, trend, source }: StatCardProps) {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-slate-700">
       <p className="text-sm font-medium text-slate-400">{title}</p>
@@ -23,6 +24,7 @@ export function StatCard({ title, value, unit, trend }: StatCardProps) {
           {trend.label}
         </p>
       )}
+      {source && <p className="mt-2 text-xs text-slate-600">Source: {source}</p>}
     </div>
   );
 }
