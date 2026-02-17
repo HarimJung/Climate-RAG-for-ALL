@@ -1,7 +1,12 @@
 export const CLIMATE_INDICATORS = [
-  { source: 'worldbank', code: 'EN.ATM.CO2E.PC', name: 'CO2 emissions (metric tons per capita)', unit: 'metric tons', category: 'emissions' },
-  { source: 'worldbank', code: 'EG.FEC.RNEW.ZS', name: 'Renewable energy consumption (% of total)', unit: '%', category: 'energy' },
-  { source: 'worldbank', code: 'EN.CLC.MDAT.ZS', name: 'Population affected by droughts/floods/extreme temps (%)', unit: '%', category: 'risk' },
-  { source: 'worldbank', code: 'NY.GDP.MKTP.CD', name: 'GDP (current US$)', unit: 'US$', category: 'economy' },
-  { source: 'worldbank', code: 'AG.LND.FRST.ZS', name: 'Forest area (% of land area)', unit: '%', category: 'land' },
+  { source: 'worldbank', code: 'EN.GHG.CO2.PC.CE.AR5', name: 'CO2 emissions per capita', unit: 't CO2e/capita', category: 'emissions' },
+  { source: 'ember', code: 'EMBER.RENEWABLE.PCT', name: 'Renewable electricity share', unit: '%', category: 'energy' },
+  { source: 'worldbank', code: 'EN.ATM.PM25.MC.M3', name: 'PM2.5 air pollution', unit: 'µg/m³', category: 'risk' },
+  { source: 'worldbank', code: 'NY.GDP.PCAP.CD', name: 'GDP per capita', unit: 'US$', category: 'economy' },
+  { source: 'worldbank', code: 'AG.LND.FRST.ZS', name: 'Forest area', unit: '% of land area', category: 'land' },
+  { source: 'worldbank', code: 'EG.USE.PCAP.KG.OE', name: 'Energy use per capita', unit: 'kg oil eq.', category: 'energy' },
 ] as const;
+
+export const PILOT_ISO3 = ['KOR', 'USA', 'DEU', 'BRA', 'NGA', 'BGD'] as const;
+
+export const CHART_COLORS = ['#0066FF', '#00A67E', '#F59E0B', '#E5484D', '#8B5CF6', '#EC4899'];

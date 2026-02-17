@@ -20,19 +20,19 @@ export const metadata: Metadata = {
     template: "%s | VisualClimate",
     default: "VisualClimate - Climate Intelligence for Sustainability Professionals",
   },
-  description: "Open climate data platform. 200 countries. Real-time indicators.",
+  description: "Open climate data platform. 6 pilot countries, expanding to 250. Real-time indicators.",
   keywords: ["climate data", "sustainability", "ESG", "carbon emissions", "climate intelligence"],
   authors: [{ name: "VisualClimate" }],
   openGraph: {
     title: "VisualClimate - Climate Intelligence for Sustainability Professionals",
-    description: "Open climate data platform. 200 countries. Real-time indicators.",
+    description: "Open climate data platform. 6 pilot countries, expanding to 250. Real-time indicators.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "VisualClimate - Climate Intelligence for Sustainability Professionals",
-    description: "Open climate data platform. 200 countries. Real-time indicators.",
+    description: "Open climate data platform. 6 pilot countries, expanding to 250. Real-time indicators.",
   },
   robots: {
     index: true,
@@ -47,7 +47,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-slate-950 text-white`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <JsonLd data={buildWebsiteJsonLd()} />
         <Header />
         <main className="min-h-screen">{children}</main>
