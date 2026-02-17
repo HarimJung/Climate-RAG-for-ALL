@@ -1,0 +1,241 @@
+{
+  "metadata": {
+    "generated": "2026-02-16",
+    "source_indicators": [
+      "EN.GHG.CO2.PC.CE.AR5",
+      "NY.GDP.PCAP.CD",
+      "EMBER.RENEWABLE.PCT",
+      "DERIVED.DECOUPLING",
+      "DERIVED.ENERGY_TRANSITION",
+      "DERIVED.CO2_PER_GDP"
+    ],
+    "quality_threshold": 0.7,
+    "confidence": "HIGH",
+    "methodology": "CAGR = (end/start)^(1/n) - 1; Annual change = (v[t]-v[t-1])/v[t-1]; Decoupling = GDP_growth% - CO2_growth%"
+  },
+  "cagr_2000_2023": {
+    "KOR": {
+      "cagr_pct": 0.612,
+      "value_2000": 9.9218,
+      "value_2023": 11.4163,
+      "total_change_pct": 15.06
+    },
+    "USA": {
+      "cagr_pct": -1.839,
+      "value_2000": 21.0119,
+      "value_2023": 13.7119,
+      "total_change_pct": -34.74
+    },
+    "DEU": {
+      "cagr_pct": -1.739,
+      "value_2000": 10.5993,
+      "value_2023": 7.0798,
+      "total_change_pct": -33.2
+    },
+    "BRA": {
+      "cagr_pct": 0.544,
+      "value_2000": 2.0079,
+      "value_2023": 2.2745,
+      "total_change_pct": 13.28
+    },
+    "NGA": {
+      "cagr_pct": -1.559,
+      "value_2000": 0.7928,
+      "value_2023": 0.5523,
+      "total_change_pct": -30.33
+    },
+    "BGD": {
+      "cagr_pct": 5.546,
+      "value_2000": 0.2005,
+      "value_2023": 0.6939,
+      "total_change_pct": 246.09
+    }
+  },
+  "pre_paris_vs_post_paris": {
+    "KOR": {
+      "pre_paris_avg_annual_change_pct": 1.661,
+      "post_paris_avg_annual_change_pct": -1.188,
+      "pre_paris_cagr_pct": 1.621,
+      "post_paris_cagr_pct": -1.245,
+      "acceleration": -2.849,
+      "value_2000": 9.9218,
+      "value_2014": 12.4262,
+      "value_2015": 12.6198,
+      "value_2023": 11.4163
+    },
+    "USA": {
+      "pre_paris_avg_annual_change_pct": -1.697,
+      "post_paris_avg_annual_change_pct": -1.758,
+      "pre_paris_cagr_pct": -1.744,
+      "post_paris_cagr_pct": -1.872,
+      "acceleration": -0.061,
+      "value_2000": 21.0119,
+      "value_2014": 16.4249,
+      "value_2015": 15.9501,
+      "value_2023": 13.7119
+    },
+    "DEU": {
+      "pre_paris_avg_annual_change_pct": -0.639,
+      "post_paris_avg_annual_change_pct": -3.644,
+      "pre_paris_cagr_pct": -0.693,
+      "post_paris_cagr_pct": -3.746,
+      "acceleration": -3.005,
+      "value_2000": 10.5993,
+      "value_2014": 9.6163,
+      "value_2015": 9.6088,
+      "value_2023": 7.0798
+    },
+    "BRA": {
+      "pre_paris_avg_annual_change_pct": 2.328,
+      "post_paris_avg_annual_change_pct": -1.332,
+      "pre_paris_cagr_pct": 2.221,
+      "post_paris_cagr_pct": -1.507,
+      "acceleration": -3.659,
+      "value_2000": 2.0079,
+      "value_2014": 2.731,
+      "value_2015": 2.5682,
+      "value_2023": 2.2745
+    },
+    "NGA": {
+      "pre_paris_avg_annual_change_pct": -0.886,
+      "post_paris_avg_annual_change_pct": -1.322,
+      "pre_paris_cagr_pct": -1.299,
+      "post_paris_cagr_pct": -1.459,
+      "acceleration": -0.436,
+      "value_2000": 0.7928,
+      "value_2014": 0.6602,
+      "value_2015": 0.6212,
+      "value_2023": 0.5523
+    },
+    "BGD": {
+      "pre_paris_avg_annual_change_pct": 6.588,
+      "post_paris_avg_annual_change_pct": 3.424,
+      "pre_paris_cagr_pct": 6.517,
+      "post_paris_cagr_pct": 3.279,
+      "acceleration": -3.164,
+      "value_2000": 0.2005,
+      "value_2014": 0.4853,
+      "value_2015": 0.5361,
+      "value_2023": 0.6939
+    }
+  },
+  "decoupling_score": {
+    "USA": {
+      "avg_decoupling_2015_2023": 6.349,
+      "rank": 1,
+      "data_points": 9,
+      "interpretation": "Strong decoupling"
+    },
+    "BGD": {
+      "avg_decoupling_2015_2023": 6.079,
+      "rank": 2,
+      "data_points": 9,
+      "interpretation": "Strong decoupling"
+    },
+    "DEU": {
+      "avg_decoupling_2015_2023": 4.779,
+      "rank": 3,
+      "data_points": 9,
+      "interpretation": "Strong decoupling"
+    },
+    "KOR": {
+      "avg_decoupling_2015_2023": 2.734,
+      "rank": 4,
+      "data_points": 9,
+      "interpretation": "Moderate decoupling"
+    },
+    "BRA": {
+      "avg_decoupling_2015_2023": 1.222,
+      "rank": 5,
+      "data_points": 9,
+      "interpretation": "Moderate decoupling"
+    },
+    "NGA": {
+      "avg_decoupling_2015_2023": 0.077,
+      "rank": 6,
+      "data_points": 9,
+      "interpretation": "Moderate decoupling"
+    }
+  },
+  "energy_transition_ranking": [
+    {
+      "rank": 1,
+      "country": "DEU",
+      "country_name": "Germany",
+      "energy_transition_value": 19.154,
+      "latest_year": 2023,
+      "renewable_pct_latest": 54.41,
+      "unit": "percentage point change over 5 years"
+    },
+    {
+      "rank": 2,
+      "country": "BRA",
+      "country_name": "Brazil",
+      "energy_transition_value": 6.637,
+      "latest_year": 2023,
+      "renewable_pct_latest": 89.0,
+      "unit": "percentage point change over 5 years"
+    },
+    {
+      "rank": 3,
+      "country": "USA",
+      "country_name": "United States",
+      "energy_transition_value": 5.229,
+      "latest_year": 2023,
+      "renewable_pct_latest": 22.68,
+      "unit": "percentage point change over 5 years"
+    },
+    {
+      "rank": 4,
+      "country": "KOR",
+      "country_name": "South Korea",
+      "energy_transition_value": 4.877,
+      "latest_year": 2023,
+      "renewable_pct_latest": 9.57,
+      "unit": "percentage point change over 5 years"
+    },
+    {
+      "rank": 5,
+      "country": "NGA",
+      "country_name": "Nigeria",
+      "energy_transition_value": 1.723,
+      "latest_year": 2023,
+      "renewable_pct_latest": 22.89,
+      "unit": "percentage point change over 5 years"
+    },
+    {
+      "rank": 6,
+      "country": "BGD",
+      "country_name": "Bangladesh",
+      "energy_transition_value": -0.149,
+      "latest_year": 2023,
+      "renewable_pct_latest": 1.62,
+      "unit": "percentage point change over 5 years"
+    }
+  ],
+  "summary_stats": {
+    "co2_per_capita_2023": {
+      "KOR": 11.4163,
+      "USA": 13.7119,
+      "DEU": 7.0798,
+      "BRA": 2.2745,
+      "NGA": 0.5523,
+      "BGD": 0.6939
+    },
+    "highest_co2_per_capita_2023": "USA",
+    "lowest_co2_per_capita_2023": "NGA",
+    "pilot_average_co2_per_capita_2023": 5.9548,
+    "co2_per_gdp_latest": {
+      "KOR": 0.32,
+      "USA": 0.1692,
+      "DEU": 0.1292,
+      "BRA": 0.2192,
+      "NGA": 0.2583,
+      "BGD": 0.272
+    },
+    "highest_emissions_intensity": "KOR",
+    "lowest_emissions_intensity": "DEU",
+    "best_decoupler": "USA",
+    "fastest_energy_transition": "DEU"
+  }
+}
