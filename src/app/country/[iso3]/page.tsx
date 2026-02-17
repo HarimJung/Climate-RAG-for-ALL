@@ -17,14 +17,18 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { iso3 } = await params;
-  const supabase = createServiceClient();
-  const { data: country } = await supabase
-    .from('countries')
-    .select('name')
-    .eq('iso3', iso3.toUpperCase())
-    .single();
-
-  const name = country?.name || iso3;
+  let name = iso3;
+  try {
+    const supabase = createServiceClient();
+    const { data: country } = await supabase
+      .from('countries')
+      .select('name')
+      .eq('iso3', iso3.toUpperCase())
+      .single();
+    if (country?.name) name = country.name;
+  } catch {
+    // fallback to iso3
+  }
   return createMetaTags({
     title: `${name} Climate Profile`,
     description: `Climate data, emissions trends, and sustainability indicators for ${name}.`,
@@ -40,9 +44,10 @@ function getVulnerabilityBadge(score: number): { label: string; color: string; b
 }
 
 async function getCountryData(iso3: string) {
-  const supabase = createServiceClient();
+  try {
+    const supabase = createServiceClient();
 
-  const { data: country } = await supabase
+    const { data: country } = await supabase
     .from('countries')
     .select('*')
     .eq('iso3', iso3)
@@ -122,6 +127,9 @@ async function getCountryData(iso3: string) {
     co2Comparison,
     emberMix,
   };
+  } catch {
+    return null;
+  }
 }
 
 export default async function CountryPage({ params }: Props) {

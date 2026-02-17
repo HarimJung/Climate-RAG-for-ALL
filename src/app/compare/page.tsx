@@ -23,6 +23,7 @@ export interface CountryCompareData {
 }
 
 async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]> {
+  try {
     const supabase = createServiceClient();
 
     // Get countries
@@ -32,8 +33,6 @@ async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]>
         .in('iso3', iso3List);
 
     if (!countries || countries.length === 0) return [];
-
-    const countryIdMap = new Map(countries.map((c: { id: number; iso3: string }) => [c.id, c.iso3.trim()]));
 
     // Get indicators
     const allCodes = [...CLIMATE_INDICATORS.map(i => i.code), 'TOTAL_GHG'];
@@ -46,7 +45,6 @@ async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]>
         ...c, iso3: c.iso3.trim(), indicators: {}, trend: [],
     }));
 
-    const indicatorCodeMap = new Map(indicators.map((i: { id: number; code: string }) => [i.id, i.code]));
     const countryIds = countries.map((c: { id: number }) => c.id);
     const indicatorIds = indicators.map((i: { id: number }) => i.id);
 
@@ -95,10 +93,14 @@ async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]>
     });
 
     return result;
+  } catch {
+    return [];
+  }
 }
 
 // Get all countries for the selector
 async function getAllCountries() {
+  try {
     const supabase = createServiceClient();
     const { data } = await supabase
         .from('countries')
@@ -107,6 +109,9 @@ async function getAllCountries() {
     return (data || []).map((c: { iso3: string; name: string; region: string }) => ({
         iso3: c.iso3.trim(), name: c.name, region: c.region,
     }));
+  } catch {
+    return [];
+  }
 }
 
 interface ComparePageProps {

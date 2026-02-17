@@ -25,58 +25,66 @@ const PILOT_COUNTRIES = [
 ];
 
 async function getStats() {
-  const supabase = createServiceClient();
-  const [countries, indicators, dataPoints] = await Promise.all([
-    supabase.from('countries').select('*', { count: 'exact', head: true }),
-    supabase.from('indicators').select('*', { count: 'exact', head: true }),
-    supabase.from('country_data').select('*', { count: 'exact', head: true }),
-  ]);
-  return {
-    countries: countries.count ?? 0,
-    indicators: indicators.count ?? 0,
-    dataPoints: dataPoints.count ?? 0,
-  };
+  try {
+    const supabase = createServiceClient();
+    const [countries, indicators, dataPoints] = await Promise.all([
+      supabase.from('countries').select('*', { count: 'exact', head: true }),
+      supabase.from('indicators').select('*', { count: 'exact', head: true }),
+      supabase.from('country_data').select('*', { count: 'exact', head: true }),
+    ]);
+    return {
+      countries: countries.count ?? 0,
+      indicators: indicators.count ?? 0,
+      dataPoints: dataPoints.count ?? 0,
+    };
+  } catch {
+    return { countries: 0, indicators: 0, dataPoints: 0 };
+  }
 }
 
 async function getChartData() {
-  const supabase = createServiceClient();
-  const isos = PILOT_COUNTRIES.map(c => c.iso3);
+  try {
+    const supabase = createServiceClient();
+    const isos = PILOT_COUNTRIES.map(c => c.iso3);
 
-  // CO2 time series for all pilots — compute yearly average
-  const { data: co2Rows } = await supabase
-    .from('country_data')
-    .select('country_iso3, year, value')
-    .eq('indicator_code', 'EN.ATM.CO2E.PC')
-    .in('country_iso3', isos)
-    .order('year', { ascending: true });
+    // CO2 time series for all pilots — compute yearly average
+    const { data: co2Rows } = await supabase
+      .from('country_data')
+      .select('country_iso3, year, value')
+      .eq('indicator_code', 'EN.ATM.CO2E.PC')
+      .in('country_iso3', isos)
+      .order('year', { ascending: true });
 
-  const yearMap = new Map<number, { sum: number; cnt: number }>();
-  for (const r of co2Rows || []) {
-    if (r.value == null) continue;
-    const e = yearMap.get(r.year) || { sum: 0, cnt: 0 };
-    e.sum += Number(r.value);
-    e.cnt += 1;
-    yearMap.set(r.year, e);
+    const yearMap = new Map<number, { sum: number; cnt: number }>();
+    for (const r of co2Rows || []) {
+      if (r.value == null) continue;
+      const e = yearMap.get(r.year) || { sum: 0, cnt: 0 };
+      e.sum += Number(r.value);
+      e.cnt += 1;
+      yearMap.set(r.year, e);
+    }
+    const co2Avg = Array.from(yearMap.entries())
+      .map(([year, { sum, cnt }]) => ({ year, value: sum / cnt }))
+      .sort((a, b) => a.year - b.year);
+
+    // Latest CO2 per capita per country
+    const latestByCountry: { label: string; value: number; color: string; href: string }[] = [];
+    for (const c of PILOT_COUNTRIES) {
+      const rows = (co2Rows || []).filter(r => r.country_iso3 === c.iso3 && r.value != null);
+      if (rows.length === 0) continue;
+      const latest = rows.reduce((a, b) => (a.year > b.year ? a : b));
+      latestByCountry.push({
+        label: c.name,
+        value: Number(latest.value),
+        color: PILOT_COLORS[c.iso3] || '#64748b',
+        href: `/country/${c.iso3}`,
+      });
+    }
+
+    return { co2Avg, countryBar: latestByCountry };
+  } catch {
+    return { co2Avg: [], countryBar: [] };
   }
-  const co2Avg = Array.from(yearMap.entries())
-    .map(([year, { sum, cnt }]) => ({ year, value: sum / cnt }))
-    .sort((a, b) => a.year - b.year);
-
-  // Latest CO2 per capita per country
-  const latestByCountry: { label: string; value: number; color: string; href: string }[] = [];
-  for (const c of PILOT_COUNTRIES) {
-    const rows = (co2Rows || []).filter(r => r.country_iso3 === c.iso3 && r.value != null);
-    if (rows.length === 0) continue;
-    const latest = rows.reduce((a, b) => (a.year > b.year ? a : b));
-    latestByCountry.push({
-      label: c.name,
-      value: Number(latest.value),
-      color: PILOT_COLORS[c.iso3] || '#64748b',
-      href: `/country/${c.iso3}`,
-    });
-  }
-
-  return { co2Avg, countryBar: latestByCountry };
 }
 
 export const dynamic = 'force-dynamic';

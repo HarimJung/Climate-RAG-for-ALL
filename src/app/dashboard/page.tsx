@@ -12,52 +12,55 @@ export const metadata = createMetaTags({
 export const dynamic = 'force-dynamic';
 
 async function getIndicatorData() {
-    const supabase = createServiceClient();
     const data: Record<string, { iso3: string; name: string; value: number; year: number }[]> = {};
+    try {
+        const supabase = createServiceClient();
 
-    // Get all countries
-    const { data: countries } = await supabase
-        .from('countries')
-        .select('id, iso3, name');
+        // Get all countries
+        const { data: countries } = await supabase
+            .from('countries')
+            .select('id, iso3, name');
 
-    if (!countries) return data;
-    const countryMap = new Map(countries.map((c: { id: number; iso3: string; name: string }) => [c.id, { iso3: c.iso3.trim(), name: c.name }]));
+        if (!countries) return data;
+        const countryMap = new Map(countries.map((c: { id: number; iso3: string; name: string }) => [c.id, { iso3: c.iso3.trim(), name: c.name }]));
 
-    // Get all indicators (including TOTAL_GHG from climatewatch)
-    const allCodes = [...CLIMATE_INDICATORS.map(i => i.code), 'TOTAL_GHG'];
-    const { data: indicators } = await supabase
-        .from('indicators')
-        .select('id, code')
-        .in('code', allCodes);
+        // Get all indicators (including TOTAL_GHG from climatewatch)
+        const allCodes = [...CLIMATE_INDICATORS.map(i => i.code), 'TOTAL_GHG'];
+        const { data: indicators } = await supabase
+            .from('indicators')
+            .select('id, code')
+            .in('code', allCodes);
 
-    if (!indicators) return data;
+        if (!indicators) return data;
 
-    for (const ind of indicators) {
-        const { data: values } = await supabase
-            .from('indicator_values')
-            .select('country_id, year, value')
-            .eq('indicator_id', ind.id)
-            .order('year', { ascending: false });
+        for (const ind of indicators) {
+            const { data: values } = await supabase
+                .from('indicator_values')
+                .select('country_id, year, value')
+                .eq('indicator_id', ind.id)
+                .order('year', { ascending: false });
 
-        if (!values || values.length === 0) continue;
+            if (!values || values.length === 0) continue;
 
-        // Group by country, take latest year
-        const latestByCountry = new Map<number, { country_id: number; year: number; value: number }>();
-        for (const v of values) {
-            if (!latestByCountry.has(v.country_id)) {
-                latestByCountry.set(v.country_id, v);
+            // Group by country, take latest year
+            const latestByCountry = new Map<number, { country_id: number; year: number; value: number }>();
+            for (const v of values) {
+                if (!latestByCountry.has(v.country_id)) {
+                    latestByCountry.set(v.country_id, v);
+                }
             }
+
+            data[ind.code] = Array.from(latestByCountry.values())
+                .map(v => {
+                    const country = countryMap.get(v.country_id);
+                    if (!country) return null;
+                    return { iso3: country.iso3, name: country.name, value: v.value, year: v.year };
+                })
+                .filter((v): v is NonNullable<typeof v> => v !== null);
         }
-
-        data[ind.code] = Array.from(latestByCountry.values())
-            .map(v => {
-                const country = countryMap.get(v.country_id);
-                if (!country) return null;
-                return { iso3: country.iso3, name: country.name, value: v.value, year: v.year };
-            })
-            .filter((v): v is NonNullable<typeof v> => v !== null);
+    } catch {
+        console.error('Failed to fetch indicator data');
     }
-
     return data;
 }
 
