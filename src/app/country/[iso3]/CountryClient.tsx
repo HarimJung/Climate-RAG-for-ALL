@@ -3,6 +3,17 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
+import riskProfileKOR from '../../../../data/analysis/risk-profile-KOR.json';
+import riskProfileUSA from '../../../../data/analysis/risk-profile-USA.json';
+import riskProfileDEU from '../../../../data/analysis/risk-profile-DEU.json';
+import riskProfileBRA from '../../../../data/analysis/risk-profile-BRA.json';
+import riskProfileNGA from '../../../../data/analysis/risk-profile-NGA.json';
+import riskProfileBGD from '../../../../data/analysis/risk-profile-BGD.json';
+
+const RISK_PROFILES = {
+  KOR: riskProfileKOR, USA: riskProfileUSA, DEU: riskProfileDEU,
+  BRA: riskProfileBRA, NGA: riskProfileNGA, BGD: riskProfileBGD,
+} as const;
 
 // Light theme D3 color constants
 const AXIS_COLOR = '#C8C8D0';
@@ -451,6 +462,9 @@ export function CountryClient({
     .sort((a, b) => a - b);
   const accelRank = parisData ? sortedAccels.indexOf(parisData.acceleration) + 1 : null;
 
+  // ── Risk profile from JSON ──────────────────────────────────────────────────
+  const riskProfile = iso3 in RISK_PROFILES ? RISK_PROFILES[iso3 as keyof typeof RISK_PROFILES] : null;
+
   // ── Vulnerability rank from scatterData ─────────────────────────────────────
   const myScatter = scatterData.find(d => d.iso3 === iso3) ?? null;
   const readinessRank = myScatter
@@ -661,6 +675,38 @@ export function CountryClient({
                 <strong>{countryName}&apos;s climate vulnerability profile</strong> is shown relative to other pilot countries.
                 The target position is low vulnerability with high readiness (lower-left quadrant).
               </InsightText>
+            )}
+
+            {riskProfile && (
+              <>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
+                    <h3 className="mb-3 text-sm font-semibold text-[--text-primary]">Key Vulnerabilities</h3>
+                    <ul className="space-y-2">
+                      {riskProfile.key_vulnerabilities.map((v, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-[--text-secondary]">
+                          <span className="mt-0.5 shrink-0 text-[--accent-negative]">▸</span>
+                          {v}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
+                    <h3 className="mb-3 text-sm font-semibold text-[--text-primary]">Strengths</h3>
+                    <ul className="space-y-2">
+                      {riskProfile.strengths.map((s, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-[--text-secondary]">
+                          <span className="mt-0.5 shrink-0 text-[--accent-positive]">▸</span>
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <InsightText>
+                  <strong>Assessment ({riskProfile.risk_level} risk):</strong>{' '}{riskProfile.summary}
+                </InsightText>
+              </>
             )}
           </div>
         </section>

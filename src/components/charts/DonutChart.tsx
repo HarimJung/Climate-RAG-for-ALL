@@ -53,7 +53,7 @@ export function DonutChart({ data, title, size = 260 }: DonutChartProps) {
         .join('path')
         .attr('d', arc)
         .attr('fill', (d, i) => d.data.color || PALETTE[i % PALETTE.length])
-        .attr('stroke', '#0f172a')
+        .attr('stroke', '#FFFFFF')
         .attr('stroke-width', 2);
 
       arcs.on('mouseenter', function () {
@@ -86,7 +86,7 @@ export function DonutChart({ data, title, size = 260 }: DonutChartProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900 p-6" style={{ height: size }}>
+      <div className="flex items-center justify-center rounded-xl border border-gray-200 bg-white p-6" style={{ height: size }}>
         <p className="text-sm text-slate-500">No data available</p>
       </div>
     );

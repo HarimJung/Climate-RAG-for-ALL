@@ -65,7 +65,7 @@ export default function ClimateDataSourcesGuide() {
                     </ul>
 
                     <h3 className="text-xl font-semibold text-emerald-400">API Access</h3>
-                    <div className="rounded-lg bg-slate-900 p-4">
+                    <div className="rounded-lg bg-gray-50 p-4">
                         <code className="text-emerald-400">
                             https://api.worldbank.org/v2/country/all/indicator/EN.ATM.CO2E.PC?format=json&per_page=1000&date=2000:2023
                         </code>
@@ -104,7 +104,7 @@ export default function ClimateDataSourcesGuide() {
                     </ul>
 
                     <h3 className="text-xl font-semibold text-emerald-400">API Access</h3>
-                    <div className="rounded-lg bg-slate-900 p-4">
+                    <div className="rounded-lg bg-gray-50 p-4">
                         <code className="text-emerald-400">
                             https://www.climatewatchdata.org/api/v1/data/historical_emissions?gas=All%20GHG&source=Climate%20Watch
                         </code>
@@ -142,7 +142,7 @@ export default function ClimateDataSourcesGuide() {
                     </ul>
 
                     <h3 className="text-xl font-semibold text-emerald-400">API Access</h3>
-                    <div className="rounded-lg bg-slate-900 p-4">
+                    <div className="rounded-lg bg-gray-50 p-4">
                         <code className="text-emerald-400">
                             https://power.larc.nasa.gov/api/temporal/daily/point?parameters=ALLSKY_SFC_SW_DWN,T2M&community=RE&longitude=0&latitude=0&format=JSON&start=20200101&end=20231231
                         </code>
@@ -180,7 +180,7 @@ export default function ClimateDataSourcesGuide() {
                     </ul>
 
                     <h3 className="text-xl font-semibold text-emerald-400">API Access</h3>
-                    <div className="rounded-lg bg-slate-900 p-4">
+                    <div className="rounded-lg bg-gray-50 p-4">
                         <code className="text-emerald-400">
                             https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&locationid=FIPS:US&startdate=2023-01-01&enddate=2023-12-31
                         </code>
@@ -222,7 +222,7 @@ export default function ClimateDataSourcesGuide() {
                     <p className="text-slate-300">
                         IMF provides data through their Data REST API and bulk downloads. The Climate Change Indicators Dashboard is accessible at:
                     </p>
-                    <div className="rounded-lg bg-slate-900 p-4">
+                    <div className="rounded-lg bg-gray-50 p-4">
                         <code className="text-emerald-400">
                             https://climatedata.imf.org/
                         </code>

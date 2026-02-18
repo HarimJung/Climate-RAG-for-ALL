@@ -114,7 +114,7 @@ export function WorldMap({ data, indicatorName, unit }: WorldMapProps) {
                         const id = String(d.id).padStart(3, '0');
                         const iso3 = ISO_NUMERIC_TO_3[id];
                         const value = iso3 ? valueMap.get(iso3) : null;
-                        return value ? colorScale(value.value) : '#1e293b';
+                        return value ? colorScale(value.value) : '#E8E8ED';
                     })
                     .attr('stroke', '#334155')
                     .attr('stroke-width', 0.5)
@@ -158,7 +158,7 @@ export function WorldMap({ data, indicatorName, unit }: WorldMapProps) {
             <svg ref={svgRef} className="w-full" />
             {tooltip && (
                 <div
-                    className="pointer-events-none absolute z-10 rounded bg-slate-800 px-3 py-2 text-sm text-white shadow-lg"
+                    className="pointer-events-none absolute z-10 rounded bg-gray-50 px-3 py-2 text-sm text-[--text-primary] shadow-lg border border-gray-200"
                     style={{ left: tooltip.x + 10, top: tooltip.y - 40 }}
                 >
                     {tooltip.content}

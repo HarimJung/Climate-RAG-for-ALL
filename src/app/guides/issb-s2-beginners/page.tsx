@@ -93,7 +93,7 @@ export default function IssbS2BeginnersGuide() {
                     <h2 className="text-2xl font-bold text-white">Physical vs Transition Risks</h2>
 
                     <div className="my-6 grid gap-4 sm:grid-cols-2">
-                        <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                             <h4 className="font-semibold text-orange-400">Physical Risks</h4>
                             <p className="mt-2 text-sm text-slate-300">
                                 Direct impacts of climate change on operations, assets, and supply chains.
@@ -103,7 +103,7 @@ export default function IssbS2BeginnersGuide() {
                                 <li>Chronic: Sea-level rise, water stress, heat waves</li>
                             </ul>
                         </div>
-                        <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                             <h4 className="font-semibold text-blue-400">Transition Risks</h4>
                             <p className="mt-2 text-sm text-slate-300">
                                 Risks from the shift to a lower-carbon economy.
