@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 import { EmissionsTrendChart } from './chart';
 
 export const metadata: Metadata = {
@@ -6,41 +7,28 @@ export const metadata: Metadata = {
   description: 'CO2 per capita trajectories for 6 pilot countries. Includes CAGR analysis, Paris Agreement impact comparison, GDP-emissions decoupling, and energy transition speed rankings.',
 };
 
-const cagrData = [
-  { country: 'Bangladesh', iso3: 'BGD', start: 0.2005, end: 0.6939, cagr: 5.546, total: 246.09 },
-  { country: 'South Korea', iso3: 'KOR', start: 9.9218, end: 11.4163, cagr: 0.612, total: 15.06 },
-  { country: 'Brazil', iso3: 'BRA', start: 2.0079, end: 2.2745, cagr: 0.544, total: 13.28 },
-  { country: 'Nigeria', iso3: 'NGA', start: 0.7928, end: 0.5523, cagr: -1.559, total: -30.33 },
-  { country: 'Germany', iso3: 'DEU', start: 10.5993, end: 7.0798, cagr: -1.739, total: -33.20 },
-  { country: 'United States', iso3: 'USA', start: 21.0119, end: 13.7119, cagr: -1.839, total: -34.74 },
-];
+const COUNTRY_NAMES: Record<string, string> = {
+  KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
+  BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
+};
 
-const parisData = [
-  { country: 'KOR', preCagr: 1.621, postCagr: -1.245, accel: -2.849 },
-  { country: 'USA', preCagr: -1.744, postCagr: -1.872, accel: -0.061 },
-  { country: 'DEU', preCagr: -0.693, postCagr: -3.746, accel: -3.005 },
-  { country: 'BRA', preCagr: 2.221, postCagr: -1.507, accel: -3.659 },
-  { country: 'NGA', preCagr: -1.299, postCagr: -1.459, accel: -0.436 },
-  { country: 'BGD', preCagr: 6.517, postCagr: 3.279, accel: -3.164 },
-];
+const cagrData = Object.entries(emissionsTrend.cagr_2000_2023)
+  .map(([iso3, d]) => ({ country: COUNTRY_NAMES[iso3] ?? iso3, iso3, ...d }))
+  .sort((a, b) => b.cagr_pct - a.cagr_pct);
 
-const decouplingData = [
-  { country: 'United States', iso3: 'USA', score: 6.349, intensity: 0.1692 },
-  { country: 'Bangladesh', iso3: 'BGD', score: 6.079, intensity: 0.2720 },
-  { country: 'Germany', iso3: 'DEU', score: 4.779, intensity: 0.1292 },
-  { country: 'South Korea', iso3: 'KOR', score: 2.734, intensity: 0.3200 },
-  { country: 'Brazil', iso3: 'BRA', score: 1.222, intensity: 0.2192 },
-  { country: 'Nigeria', iso3: 'NGA', score: 0.077, intensity: 0.2583 },
-];
+const parisData = Object.entries(emissionsTrend.pre_paris_vs_post_paris)
+  .map(([iso3, d]) => ({ iso3, country: COUNTRY_NAMES[iso3] ?? iso3, ...d }));
 
-const transitionData = [
-  { country: 'Germany', iso3: 'DEU', speed: 19.154, current: 54.41 },
-  { country: 'Brazil', iso3: 'BRA', speed: 6.637, current: 89.00 },
-  { country: 'United States', iso3: 'USA', speed: 5.229, current: 22.68 },
-  { country: 'South Korea', iso3: 'KOR', speed: 4.877, current: 9.57 },
-  { country: 'Nigeria', iso3: 'NGA', speed: 1.723, current: 22.89 },
-  { country: 'Bangladesh', iso3: 'BGD', speed: -0.149, current: 1.62 },
-];
+const decouplingData = Object.entries(emissionsTrend.decoupling_score)
+  .map(([iso3, d]) => ({ country: COUNTRY_NAMES[iso3] ?? iso3, iso3, ...d }))
+  .sort((a, b) => a.rank - b.rank);
+
+const transitionData = emissionsTrend.energy_transition_ranking.map(d => ({
+  country: d.country_name,
+  iso3: d.country,
+  speed: d.energy_transition_value,
+  current: d.renewable_pct_latest,
+}));
 
 export default function EmissionsTrendPage() {
   return (
@@ -85,13 +73,13 @@ export default function EmissionsTrendPage() {
               {cagrData.map((row) => (
                 <tr key={row.iso3} className="border-b border-[--border-card]/50">
                   <td className="py-3 pr-4 font-medium">{row.country}</td>
-                  <td className="py-3 pr-4 text-right font-mono text-[--text-primary]">{row.start.toFixed(2)}</td>
-                  <td className="py-3 pr-4 text-right font-mono text-[--text-primary]">{row.end.toFixed(2)}</td>
-                  <td className={`py-3 pr-4 text-right font-mono font-medium ${row.cagr > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
-                    {row.cagr > 0 ? '+' : ''}{row.cagr.toFixed(2)}
+                  <td className="py-3 pr-4 text-right font-mono text-[--text-primary]">{row.value_2000.toFixed(2)}</td>
+                  <td className="py-3 pr-4 text-right font-mono text-[--text-primary]">{row.value_2023.toFixed(2)}</td>
+                  <td className={`py-3 pr-4 text-right font-mono font-medium ${row.cagr_pct > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
+                    {row.cagr_pct > 0 ? '+' : ''}{row.cagr_pct.toFixed(2)}
                   </td>
-                  <td className={`py-3 text-right font-mono ${row.total > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
-                    {row.total > 0 ? '+' : ''}{row.total.toFixed(1)}
+                  <td className={`py-3 text-right font-mono ${row.total_change_pct > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
+                    {row.total_change_pct > 0 ? '+' : ''}{row.total_change_pct.toFixed(1)}
                   </td>
                 </tr>
               ))}
@@ -118,16 +106,16 @@ export default function EmissionsTrendPage() {
             </thead>
             <tbody>
               {parisData.map((row) => (
-                <tr key={row.country} className="border-b border-[--border-card]/50">
+                <tr key={row.iso3} className="border-b border-[--border-card]/50">
                   <td className="py-3 pr-4 font-medium">{row.country}</td>
-                  <td className={`py-3 pr-4 text-right font-mono ${row.preCagr > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
-                    {row.preCagr > 0 ? '+' : ''}{row.preCagr.toFixed(3)}
+                  <td className={`py-3 pr-4 text-right font-mono ${row.pre_paris_cagr_pct > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
+                    {row.pre_paris_cagr_pct > 0 ? '+' : ''}{row.pre_paris_cagr_pct.toFixed(3)}
                   </td>
-                  <td className={`py-3 pr-4 text-right font-mono ${row.postCagr > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
-                    {row.postCagr > 0 ? '+' : ''}{row.postCagr.toFixed(3)}
+                  <td className={`py-3 pr-4 text-right font-mono ${row.post_paris_cagr_pct > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
+                    {row.post_paris_cagr_pct > 0 ? '+' : ''}{row.post_paris_cagr_pct.toFixed(3)}
                   </td>
                   <td className="py-3 text-right font-mono font-medium text-[--accent-positive]">
-                    {row.accel.toFixed(3)}
+                    {row.acceleration.toFixed(3)}
                   </td>
                 </tr>
               ))}
@@ -147,10 +135,10 @@ export default function EmissionsTrendPage() {
             <div key={row.iso3} className="rounded-xl border border-[--border-card] bg-white p-5">
               <p className="text-sm text-[--text-secondary]">{row.country}</p>
               <p className="mt-1 font-mono text-2xl font-bold text-[--accent-positive]">
-                +{row.score.toFixed(2)}
+                +{row.avg_decoupling_2015_2023.toFixed(2)}
               </p>
               <p className="mt-2 text-xs text-[--text-muted]">
-                CO2/GDP: {row.intensity.toFixed(4)} kg CO2eq/USD
+                #{row.rank} &middot; {row.interpretation}
               </p>
             </div>
           ))}
@@ -171,7 +159,7 @@ export default function EmissionsTrendPage() {
                 <p className="text-xs text-[--text-muted]">Current: {row.current}%</p>
               </div>
               <div className="flex-1">
-                <div className="h-3 overflow-hidden rounded-full bg-slate-800">
+                <div className="h-3 overflow-hidden rounded-full bg-[--bg-section]">
                   <div
                     className={`h-full rounded-full ${row.speed >= 0 ? 'bg-[--accent-positive]' : 'bg-[--accent-negative]'}`}
                     style={{ width: `${Math.max(Math.abs(row.speed) / 20 * 100, 2)}%` }}

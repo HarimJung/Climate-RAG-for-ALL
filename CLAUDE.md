@@ -100,12 +100,17 @@ Next.js 16 App Router | TypeScript strict | Tailwind (라이트 테마) | Supaba
 | NGA | Nigeria | PM2.5 WHO 11배, 아프리카 최대 경제 |
 | BGD | Bangladesh | CO₂ +246%, 1인당 미국의 1/17, 최취약국 |
 
-## 7. 현재 핵심 문제 (DIAGNOSIS.md 기반, 우선순위순)
-1. CountryClient InsightText가 KOR 하드코딩 → 6개국 동적화 필수
-2. /insights/climate-vulnerability 다크 테마 → 라이트 전환
-3. /insights/emissions-trend 차트 내부 다크 색상 → 라이트
-4. data/analysis/ JSON이 앱에서 미사용 → import 연결
-5. 홈페이지 "250 countries" → "6 pilot countries"
+## 7. 완료된 문제 (2026-02-18)
+1. ✅ CountryClient InsightText 동적화 (emissions-trend JSON import)
+2. ✅ /insights/climate-vulnerability 라이트 테마 전환
+3. ✅ /insights/emissions-trend 차트 라이트 색상
+4. ✅ data/analysis/ JSON import 연결 (CountryClient + emissions-trend/page.tsx)
+5. ✅ 홈페이지 Countries stat → "6" 고정
+
+## 다음 과제
+- Library 리포트 카드 외부 링크 연결 (현재 클릭 무반응)
+- EMBER.CARBON.INTENSITY, DERIVED.CO2_PER_GDP 활용처 추가
+- data/analysis/derived-methodology.md → Methodology 섹션 연결
 
 ## 8. 작업 규칙
 - 코드 수정 전: cat으로 관련 파일 읽기 → 키 구조 파악 → 코드 작성
