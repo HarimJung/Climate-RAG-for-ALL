@@ -4,13 +4,14 @@ import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 // D3 poster components disabled — re-enable after SSR fix
-// import dynamic from 'next/dynamic';
 // import type { EnergySource } from '@/components/charts/ClimateSankey';
 // const ClimateStripes = dynamic(() => import('@/components/charts/ClimateStripes').then(m => ({ default: m.ClimateStripes })), { ssr: false });
 // const CountryCard = dynamic(() => import('@/components/charts/CountryCard').then(m => ({ default: m.CountryCard })), { ssr: false });
-// const ClimateSankey = dynamic(() => import('@/components/charts/ClimateSankey').then(m => ({ default: m.ClimateSankey })), { ssr: false });
 // const ClimatePoster = dynamic(() => import('@/components/charts/ClimatePoster').then(m => ({ default: m.ClimatePoster })), { ssr: false });
-// const ClimateGap = dynamic(() => import('@/components/charts/ClimateGap').then(m => ({ default: m.ClimateGap })), { ssr: false });
+
+// Pure-React SVG charts — safe to import directly (no DOM manipulation)
+import { ClimateSankey } from '@/components/charts/ClimateSankey';
+import { ClimateGap } from '@/components/charts/ClimateGap';
 
 const FLAG_EMOJIS: Record<string, string> = {
   KOR: '🇰🇷', USA: '🇺🇸', DEU: '🇩🇪',
@@ -556,6 +557,14 @@ export function CountryClient({
             </InsightText>
           )}
 
+          {/* Paris Gap Slope Chart */}
+          <Card className="mt-6">
+            <h3 className="mb-1 text-sm font-semibold text-[--text-primary]">
+              Pre-Paris vs Post-Paris CAGR
+            </h3>
+            <ClimateGap highlightIso3={iso3} />
+            <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</SourceLabel>
+          </Card>
         </div>
       </section>
 
@@ -569,11 +578,24 @@ export function CountryClient({
                 <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
                   Electricity Generation Mix ({emberMix.year})
                 </h3>
-                <EnergyDonut data={[
-                  { label: 'Renewable', value: emberMix.renewable, color: '#10B981' },
-                  { label: 'Fossil', value: emberMix.fossil, color: '#78716C' },
-                  { label: 'Nuclear & Other', value: emberMix.other, color: '#8B5CF6' },
-                ]} />
+                <ClimateSankey
+                  country={countryName}
+                  fossil={emberMix.fossil}
+                  renewable={emberMix.renewable}
+                  nuclear={emberMix.other}
+                />
+                <details className="mt-3">
+                  <summary className="cursor-pointer text-xs text-[--text-muted] hover:text-[--text-secondary]">
+                    Donut view
+                  </summary>
+                  <div className="mt-2">
+                    <EnergyDonut data={[
+                      { label: 'Renewable', value: emberMix.renewable, color: '#10B981' },
+                      { label: 'Fossil', value: emberMix.fossil, color: '#78716C' },
+                      { label: 'Nuclear & Other', value: emberMix.other, color: '#8B5CF6' },
+                    ]} />
+                  </div>
+                </details>
                 <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
               </Card>
 

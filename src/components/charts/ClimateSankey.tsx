@@ -1,31 +1,16 @@
 'use client';
 
-import { useRef, useEffect, useCallback, useState } from 'react';
-import * as d3 from 'd3';
-import { sankey as d3Sankey, sankeyLinkHorizontal, SankeyNode, SankeyLink } from 'd3-sankey';
-import { exportSvgAsPng } from '@/lib/exportPng';
+import { useState } from 'react';
 
-export interface EnergySource {
-  source: string;
-  value: number;
-  type: 'fossil' | 'renewable' | 'nuclear';
-}
-
-interface ClimateSankeyProps {
+export interface ClimateSankeyProps {
   country: string;
-  iso3: string;
-  energyMix: EnergySource[];
-  totalCO2?: number;
+  fossil: number;
+  renewable: number;
+  nuclear: number;
   className?: string;
 }
 
-interface NodeDatum { name: string; type: string }
-interface LinkDatum { srcType: string }
-
-type LayoutNode = SankeyNode<NodeDatum, LinkDatum>;
-type LayoutLink = SankeyLink<NodeDatum, LinkDatum>;
-
-const NODE_COLORS: Record<string, string> = {
+const C = {
   fossil: '#78716C',
   renewable: '#10B981',
   nuclear: '#8B5CF6',
@@ -34,218 +19,165 @@ const NODE_COLORS: Record<string, string> = {
   clean: '#06B6D4',
 };
 
-const LINK_COLORS: Record<string, string> = {
-  fossil: 'rgba(120,113,108,0.25)',
-  renewable: 'rgba(16,185,129,0.25)',
-  nuclear: 'rgba(139,92,246,0.25)',
-  co2: 'rgba(239,68,68,0.20)',
-  clean: 'rgba(6,182,212,0.20)',
-};
+/** Cubic-bezier filled band from (x1, y1top..y1bot) → (x2, y2top..y2bot) */
+function band(x1: number, y1t: number, y1b: number, x2: number, y2t: number, y2b: number) {
+  const cx = (x1 + x2) / 2;
+  return `M${x1},${y1t} C${cx},${y1t} ${cx},${y2t} ${x2},${y2t} L${x2},${y2b} C${cx},${y2b} ${cx},${y1b} ${x1},${y1b} Z`;
+}
 
-export function ClimateSankey({
-  country, iso3, energyMix, totalCO2, className = '',
-}: ClimateSankeyProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [exporting, setExporting] = useState(false);
+export function ClimateSankey({ country, fossil, renewable, nuclear, className = '' }: ClimateSankeyProps) {
+  const [hovered, setHovered] = useState<string | null>(null);
 
-  const W = 1080;
-  const H = 1080;
+  // Layout
+  const LX = 200; // left column node x
+  const MX = 490; // electricity node x
+  const RX = 790; // right column node x
+  const NW = 24;  // node width
+  const S = 3;    // scale: px per %
 
-  useEffect(() => {
-    if (!svgRef.current || energyMix.length === 0) return;
+  // Left column — heights and y positions follow user formula
+  const fossilH = Math.max(fossil * S, 3);
+  const renewableH = Math.max(renewable * S, 3);
+  const nuclearH = Math.max(nuclear * S, 3);
+  const fossilY = 50;
+  const renewableY = fossil * S + 70;             // fossilY + fossilH + 20 gap
+  const nuclearY = fossil * S + renewable * S + 90; // renewableY + renewableH + 20 gap
 
-    const svg = d3.select(svgRef.current);
-    svg.selectAll('*').remove();
+  // Electricity (middle) — compact, no internal gaps
+  const elecY = 50;
+  const elecH = (fossil + renewable + nuclear) * S;
 
-    const ML = 200, MR = 180, MT = 110, MB = 90;
-    const iW = W - ML - MR;
-    const iH = H - MT - MB;
+  // Right column
+  const co2H = fossil * S;
+  const cleanY = fossil * S + 70;
+  const cleanH = (renewable + nuclear) * S;
 
-    // White background
-    svg.append('rect').attr('width', W).attr('height', H).attr('fill', '#FFFFFF');
+  // Slot boundaries in the electricity node for link alignment
+  const eFT = elecY;
+  const eFB = elecY + fossil * S;
+  const eRT = eFB;
+  const eRB = eFB + renewable * S;
+  const eNT = eRB;
+  const eNB = eNT + nuclear * S;
 
-    // Title
-    svg.append('text')
-      .attr('x', W / 2).attr('y', 55).attr('text-anchor', 'middle')
-      .attr('fill', '#1A1A2E').attr('font-size', 32).attr('font-weight', '700')
-      .attr('font-family', 'Inter, system-ui, sans-serif')
-      .text(`${country} — Energy Flow`);
-
-    svg.append('text')
-      .attr('x', W / 2).attr('y', 85).attr('text-anchor', 'middle')
-      .attr('fill', '#94A3B8').attr('font-size', 18)
-      .attr('font-family', 'Inter, system-ui, sans-serif')
-      .text('Electricity generation mix and carbon output');
-
-    const g = svg.append('g').attr('transform', `translate(${ML},${MT})`);
-
-    // Find values
-    const fossil = energyMix.find(s => s.type === 'fossil');
-    const renewable = energyMix.find(s => s.type === 'renewable');
-    const nuclear = energyMix.find(s => s.type === 'nuclear');
-
-    const fossilVal = fossil?.value ?? 0;
-    const renewableVal = renewable?.value ?? 0;
-    const nuclearVal = nuclear?.value ?? 0;
-    const totalVal = fossilVal + renewableVal + nuclearVal;
-    const cleanVal = renewableVal + nuclearVal;
-
-    // 6 nodes: Fossil(0), Renewable(1), Nuclear(2), Electricity(3), CO2(4), Clean(5)
-    const graphNodes: NodeDatum[] = [
-      { name: fossil?.source ?? 'Fossil', type: 'fossil' },
-      { name: renewable?.source ?? 'Renewable', type: 'renewable' },
-      { name: nuclear?.source ?? 'Nuclear & Other', type: 'nuclear' },
-      { name: 'Electricity', type: 'electricity' },
-      { name: 'CO\u2082 Output', type: 'co2' },
-      { name: 'Clean Output', type: 'clean' },
-    ];
-
-    const graphLinks = [
-      { source: 0, target: 3, value: Math.max(fossilVal, 0.5), srcType: 'fossil' },
-      { source: 1, target: 3, value: Math.max(renewableVal, 0.5), srcType: 'renewable' },
-      { source: 2, target: 3, value: Math.max(nuclearVal, 0.5), srcType: 'nuclear' },
-      { source: 3, target: 4, value: Math.max(fossilVal, 0.5), srcType: 'co2' },
-      { source: 3, target: 5, value: Math.max(cleanVal, 0.5), srcType: 'clean' },
-    ];
-
-    const sk = d3Sankey<NodeDatum, LinkDatum>()
-      .nodeWidth(24)
-      .nodePadding(iH * 0.06)
-      .extent([[0, 0], [iW, iH]]);
-
-    const { nodes, links } = sk({
-      nodes: graphNodes.map(n => ({ ...n })),
-      links: graphLinks.map(l => ({ ...l })),
-    });
-
-    // Gradient defs
-    const defs = svg.append('defs');
-    links.forEach((lk: LayoutLink, i: number) => {
-      const src = lk.source as LayoutNode;
-      const tgt = lk.target as LayoutNode;
-      const grad = defs.append('linearGradient')
-        .attr('id', `skg-${i}`)
-        .attr('gradientUnits', 'userSpaceOnUse')
-        .attr('x1', (src.x1 ?? 0) + ML)
-        .attr('x2', (tgt.x0 ?? 0) + ML);
-      const srcColor = LINK_COLORS[lk.srcType] ?? 'rgba(148,163,184,0.2)';
-      const tgtColor = LINK_COLORS[tgt.type] ?? 'rgba(148,163,184,0.15)';
-      grad.append('stop').attr('offset', '0%').attr('stop-color', srcColor);
-      grad.append('stop').attr('offset', '100%').attr('stop-color', tgtColor);
-    });
-
-    // Links with animation
-    const linkPaths = g.selectAll<SVGPathElement, LayoutLink>('.sk-link')
-      .data(links)
-      .join('path')
-      .attr('class', 'sk-link')
-      .attr('d', sankeyLinkHorizontal())
-      .attr('stroke', (_, i) => `url(#skg-${i})`)
-      .attr('stroke-width', (d: LayoutLink) => Math.max(d.width ?? 1, 1))
-      .attr('fill', 'none')
-      .attr('stroke-opacity', 0);
-
-    linkPaths.transition().delay((_, i) => i * 120 + 200).duration(600).attr('stroke-opacity', 1);
-
-    // Nodes
-    g.selectAll<SVGRectElement, LayoutNode>('.sk-node')
-      .data(nodes)
-      .join('rect')
-      .attr('class', 'sk-node')
-      .attr('x', (d: LayoutNode) => d.x0 ?? 0)
-      .attr('y', (d: LayoutNode) => d.y0 ?? 0)
-      .attr('width', (d: LayoutNode) => (d.x1 ?? 0) - (d.x0 ?? 0))
-      .attr('height', (d: LayoutNode) => Math.max((d.y1 ?? 0) - (d.y0 ?? 0), 1))
-      .attr('fill', (d: LayoutNode) => NODE_COLORS[d.type] ?? '#94A3B8')
-      .attr('rx', 6)
-      .attr('opacity', 0)
-      .transition().delay((_, i) => i * 50).duration(400).attr('opacity', 1);
-
-    // Node labels
-    nodes.forEach((nd: LayoutNode, idx: number) => {
-      const midY = ((nd.y0 ?? 0) + (nd.y1 ?? 0)) / 2;
-      // left column (0-2), middle (3), right column (4-5)
-      const isLeft = idx <= 2;
-      const isRight = idx >= 4;
-      const x = isLeft ? (nd.x0 ?? 0) - 14 : (nd.x1 ?? 0) + 14;
-      const anchor = isLeft ? 'end' : 'start';
-
-      g.append('text')
-        .attr('x', x).attr('y', midY - 10)
-        .attr('text-anchor', anchor).attr('dominant-baseline', 'middle')
-        .attr('fill', '#1A1A2E').attr('font-size', 22).attr('font-weight', '600')
-        .attr('font-family', 'Inter, system-ui, sans-serif')
-        .text(nd.name);
-
-      // Show percentage for source and output nodes
-      const pct = isLeft
-        ? (nd.value ?? 0)
-        : isRight && nd.type === 'co2'
-          ? fossilVal
-          : isRight && nd.type === 'clean'
-            ? cleanVal
-            : totalVal;
-
-      if (idx !== 3) { // Skip Electricity node percentage
-        g.append('text')
-          .attr('x', x).attr('y', midY + 16)
-          .attr('text-anchor', anchor).attr('dominant-baseline', 'middle')
-          .attr('fill', NODE_COLORS[nd.type] ?? '#4A4A6A').attr('font-size', 20)
-          .attr('font-family', 'monospace').attr('font-weight', '700')
-          .text(`${pct.toFixed(1)}%`);
-      }
-    });
-
-    // CO2 badge below the diagram
-    if (totalCO2 != null) {
-      const bX = W / 2;
-      const bY = H - 55;
-      svg.append('text')
-        .attr('x', bX).attr('y', bY).attr('text-anchor', 'middle')
-        .attr('fill', '#EF4444').attr('font-size', 22).attr('font-weight', '700')
-        .attr('font-family', 'monospace')
-        .text(`${totalCO2.toFixed(1)} t CO\u2082e per capita`);
-    }
-
-    // Watermark
-    svg.append('text')
-      .attr('x', W - 28).attr('y', H - 22).attr('text-anchor', 'end')
-      .attr('fill', '#C8C8D0').attr('font-size', 18)
-      .attr('font-family', 'Inter, system-ui, sans-serif')
-      .text('visualclimate.org');
-
-  }, [country, energyMix, totalCO2]);
-
-  const handleExport = useCallback(async () => {
-    if (!svgRef.current || exporting) return;
-    setExporting(true);
-    try {
-      await exportSvgAsPng(svgRef.current, `visualclimate-${iso3.toLowerCase()}-sankey.png`, W, H);
-    } finally {
-      setExporting(false);
-    }
-  }, [iso3, exporting]);
-
-  if (energyMix.length === 0) return null;
+  const lo = (id: string) => (!hovered || hovered === id) ? 0.68 : 0.18;
+  const no = (id: string) => (!hovered || hovered === id) ? 1 : 0.3;
+  const bind = (id: string) => ({
+    onMouseEnter: () => setHovered(id),
+    onMouseLeave: () => setHovered(null),
+    style: { cursor: 'pointer' } as React.CSSProperties,
+  });
 
   return (
     <div className={`relative ${className}`}>
       <svg
-        ref={svgRef}
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox="0 0 1030 500"
         preserveAspectRatio="xMidYMid meet"
         style={{ display: 'block', width: '100%', height: 'auto' }}
         role="img"
         aria-label={`${country} energy flow Sankey diagram`}
-      />
-      <button
-        onClick={handleExport}
-        disabled={exporting}
-        className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#1A1A2E] shadow transition-all hover:bg-white hover:shadow-md disabled:opacity-50"
-        title="Download as 1080x1080 PNG"
       >
-        {exporting ? '\u2026' : '\u2193 PNG'}
-      </button>
+        <defs>
+          <linearGradient id="sg-fossil" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={C.fossil} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={C.electricity} stopOpacity="0.4" />
+          </linearGradient>
+          <linearGradient id="sg-renewable" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={C.renewable} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={C.electricity} stopOpacity="0.4" />
+          </linearGradient>
+          <linearGradient id="sg-nuclear" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={C.nuclear} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={C.electricity} stopOpacity="0.4" />
+          </linearGradient>
+          <linearGradient id="sg-co2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={C.electricity} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={C.co2} stopOpacity="0.6" />
+          </linearGradient>
+          <linearGradient id="sg-clean" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={C.electricity} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={C.clean} stopOpacity="0.6" />
+          </linearGradient>
+        </defs>
+
+        {/* Titles */}
+        <text x={515} y={27} textAnchor="middle" fontSize={17} fontWeight="700"
+          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">{country} — Energy Flow</text>
+        <text x={515} y={43} textAnchor="middle" fontSize={11}
+          fontFamily="Inter, system-ui, sans-serif" fill="#94A3B8">Electricity generation mix · carbon output</text>
+
+        {/* Links */}
+        <path d={band(LX + NW, fossilY, fossilY + fossilH, MX, eFT, eFB)}
+          fill="url(#sg-fossil)" opacity={lo('lk-fossil')} {...bind('lk-fossil')} />
+
+        {renewable > 0 && (
+          <path d={band(LX + NW, renewableY, renewableY + renewableH, MX, eRT, eRB)}
+            fill="url(#sg-renewable)" opacity={lo('lk-renewable')} {...bind('lk-renewable')} />
+        )}
+
+        {nuclear > 0 && (
+          <path d={band(LX + NW, nuclearY, nuclearY + nuclearH, MX, eNT, eNB)}
+            fill="url(#sg-nuclear)" opacity={lo('lk-nuclear')} {...bind('lk-nuclear')} />
+        )}
+
+        <path d={band(MX + NW, eFT, eFB, RX, elecY, elecY + co2H)}
+          fill="url(#sg-co2)" opacity={lo('lk-co2')} {...bind('lk-co2')} />
+
+        {(renewable + nuclear) > 0 && (
+          <path d={band(MX + NW, eRT, eNB, RX, cleanY, cleanY + cleanH)}
+            fill="url(#sg-clean)" opacity={lo('lk-clean')} {...bind('lk-clean')} />
+        )}
+
+        {/* Left nodes */}
+        <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={4} fill={C.fossil}
+          opacity={no('nd-fossil')} {...bind('nd-fossil')} />
+        <text x={LX - 10} y={fossilY + fossilH / 2 - 6} textAnchor="end" fontSize={13}
+          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Fossil</text>
+        <text x={LX - 10} y={fossilY + fossilH / 2 + 10} textAnchor="end" fontSize={12}
+          fontFamily="monospace" fontWeight="700" fill={C.fossil}>{fossil.toFixed(1)}%</text>
+
+        <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={4} fill={C.renewable}
+          opacity={no('nd-renewable')} {...bind('nd-renewable')} />
+        <text x={LX - 10} y={renewableY + renewableH / 2 - 6} textAnchor="end" fontSize={13}
+          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Renewable</text>
+        <text x={LX - 10} y={renewableY + renewableH / 2 + 10} textAnchor="end" fontSize={12}
+          fontFamily="monospace" fontWeight="700" fill={C.renewable}>{renewable.toFixed(1)}%</text>
+
+        <rect x={LX} y={nuclearY} width={NW} height={nuclearH} rx={4} fill={C.nuclear}
+          opacity={no('nd-nuclear')} {...bind('nd-nuclear')} />
+        <text x={LX - 10} y={nuclearY + nuclearH / 2 - 6} textAnchor="end" fontSize={13}
+          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Nuclear &amp; Other</text>
+        <text x={LX - 10} y={nuclearY + nuclearH / 2 + 10} textAnchor="end" fontSize={12}
+          fontFamily="monospace" fontWeight="700" fill={C.nuclear}>{nuclear.toFixed(1)}%</text>
+
+        {/* Middle node */}
+        <rect x={MX} y={elecY} width={NW} height={elecH} rx={4} fill={C.electricity} />
+        <text x={MX + NW / 2} y={elecY - 8} textAnchor="middle" fontSize={12}
+          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Electricity</text>
+
+        {/* Right nodes */}
+        <rect x={RX} y={elecY} width={NW} height={co2H} rx={4} fill={C.co2}
+          opacity={no('nd-co2')} {...bind('nd-co2')} />
+        <text x={RX + NW + 10} y={elecY + co2H / 2 - 6} fontSize={13}
+          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">CO&#x2082; Output</text>
+        <text x={RX + NW + 10} y={elecY + co2H / 2 + 10} fontSize={12}
+          fontFamily="monospace" fontWeight="700" fill={C.co2}>{fossil.toFixed(1)}%</text>
+
+        {(renewable + nuclear) > 0 && (
+          <>
+            <rect x={RX} y={cleanY} width={NW} height={cleanH} rx={4} fill={C.clean}
+              opacity={no('nd-clean')} {...bind('nd-clean')} />
+            <text x={RX + NW + 10} y={cleanY + cleanH / 2 - 6} fontSize={13}
+              fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Clean Output</text>
+            <text x={RX + NW + 10} y={cleanY + cleanH / 2 + 10} fontSize={12}
+              fontFamily="monospace" fontWeight="700" fill={C.clean}>{(renewable + nuclear).toFixed(1)}%</text>
+          </>
+        )}
+
+        {/* Watermark */}
+        <text x={1010} y={490} textAnchor="end" fontSize={10}
+          fontFamily="Inter, system-ui, sans-serif" fill="#C8C8D0">visualclimate.org</text>
+      </svg>
     </div>
   );
 }
