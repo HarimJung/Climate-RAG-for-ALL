@@ -104,36 +104,36 @@ export function EmissionsTrendChart() {
       // Grid
       g.append('g')
         .call(d3.axisLeft(y).tickSize(-innerW).tickFormat(() => ''))
-        .call(sel => sel.selectAll('line').attr('stroke', '#1e293b').attr('stroke-dasharray', '2,2'))
+        .call(sel => sel.selectAll('line').attr('stroke', '#E8E8ED').attr('stroke-dasharray', '2,2'))
         .call(sel => sel.select('.domain').remove());
 
       // Paris Agreement line
       g.append('line')
         .attr('x1', x(2015)).attr('x2', x(2015))
         .attr('y1', 0).attr('y2', innerH)
-        .attr('stroke', '#475569').attr('stroke-dasharray', '4,4');
+        .attr('stroke', '#E5484D').attr('stroke-dasharray', '4,4');
 
       g.append('text')
         .attr('x', x(2015) + 4).attr('y', 12)
-        .attr('fill', '#64748b').attr('font-size', '10')
+        .attr('fill', '#4A4A6A').attr('font-size', '10')
         .text('Paris Agreement');
 
       // Axes
       g.append('g')
         .attr('transform', `translate(0,${innerH})`)
         .call(d3.axisBottom(x).tickFormat(d => String(d)).ticks(8))
-        .call(sel => sel.select('.domain').attr('stroke', '#334155'))
-        .call(sel => sel.selectAll('text').attr('fill', '#64748b').attr('font-size', '12'));
+        .call(sel => sel.select('.domain').attr('stroke', '#C8C8D0'))
+        .call(sel => sel.selectAll('text').attr('fill', '#4A4A6A').attr('font-size', '12'));
 
       g.append('g')
         .call(d3.axisLeft(y).ticks(6))
-        .call(sel => sel.select('.domain').attr('stroke', '#334155'))
-        .call(sel => sel.selectAll('text').attr('fill', '#64748b').attr('font-size', '12'));
+        .call(sel => sel.select('.domain').attr('stroke', '#C8C8D0'))
+        .call(sel => sel.selectAll('text').attr('fill', '#4A4A6A').attr('font-size', '12'));
 
       // Y-axis label
       g.append('text')
         .attr('x', -margin.left + 10).attr('y', -8)
-        .attr('fill', '#64748b').attr('font-size', '11')
+        .attr('fill', '#4A4A6A').attr('font-size', '11')
         .text('metric tons CO2eq per capita');
 
       const line = d3.line<{ year: number; value: number }>()

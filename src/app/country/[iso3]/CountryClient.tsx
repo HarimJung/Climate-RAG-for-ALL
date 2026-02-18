@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
+import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 
 // Light theme D3 color constants
 const AXIS_COLOR = '#C8C8D0';
@@ -48,6 +49,16 @@ function InsightText({ children }: { children: React.ReactNode }) {
 
 function SourceLabel({ children }: { children: React.ReactNode }) {
   return <p className="mt-3 text-xs text-[--text-muted]">{children}</p>;
+}
+
+function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function signed(n: number, decimals = 2): string {
+  return (n >= 0 ? '+' : '') + n.toFixed(decimals);
 }
 
 // ─── Section 1: Emissions Story ───────────────────────────────────────────────
@@ -416,6 +427,36 @@ export function CountryClient({
   emberMix, renewableChange, scatterData, decouplingSeries, decouplingScore,
 }: CountryClientProps) {
 
+  // ── Derived insight data from emissions-trend JSON ─────────────────────────
+  const preParisRaw = emissionsTrend.pre_paris_vs_post_paris;
+  const parisData = iso3 in preParisRaw
+    ? preParisRaw[iso3 as keyof typeof preParisRaw]
+    : null;
+
+  const cagrRaw = emissionsTrend.cagr_2000_2023;
+  const cagrData = iso3 in cagrRaw
+    ? cagrRaw[iso3 as keyof typeof cagrRaw]
+    : null;
+
+  const decouplingRaw = emissionsTrend.decoupling_score;
+  const decouplingEntry = iso3 in decouplingRaw
+    ? decouplingRaw[iso3 as keyof typeof decouplingRaw]
+    : null;
+
+  const transitionEntry = emissionsTrend.energy_transition_ranking.find(d => d.country === iso3) ?? null;
+
+  // Acceleration rank: most negative = largest deceleration = rank 1
+  const sortedAccels = Object.values(preParisRaw)
+    .map(d => d.acceleration)
+    .sort((a, b) => a - b);
+  const accelRank = parisData ? sortedAccels.indexOf(parisData.acceleration) + 1 : null;
+
+  // ── Vulnerability rank from scatterData ─────────────────────────────────────
+  const myScatter = scatterData.find(d => d.iso3 === iso3) ?? null;
+  const readinessRank = myScatter
+    ? [...scatterData].sort((a, b) => b.readiness - a.readiness).findIndex(d => d.iso3 === iso3) + 1
+    : null;
+
   const energyMixData = emberMix
     ? [
         { label: 'Fossil', value: emberMix.fossil, color: '#64748b' },
@@ -462,12 +503,23 @@ export function CountryClient({
             )}
           </div>
 
-          <InsightText>
-            <strong>{countryName}&apos;s emissions</strong> grew at +1.6%/yr pre-Paris (2000–2014), then reversed to
-            <strong className="text-[--accent-positive]"> −1.2%/yr</strong> post-Paris (2015–2023) — a <strong>−2.85pp shift</strong>.
-            This ranks 3rd largest deceleration among 6 tracked countries, behind Brazil (−3.66pp) and Bangladesh (−3.16pp).
-            Despite this progress, per capita emissions (11.4 t) remain 61% above the pilot average (5.95 t).
-          </InsightText>
+          {parisData ? (
+            <InsightText>
+              <strong>{countryName}&apos;s emissions</strong> grew at {signed(parisData.pre_paris_cagr_pct)}%/yr
+              pre-Paris (2000–2014), then{' '}
+              <strong className={parisData.post_paris_cagr_pct < 0 ? 'text-[--accent-positive]' : 'text-[--accent-negative]'}>
+                {signed(parisData.post_paris_cagr_pct)}%/yr
+              </strong>{' '}
+              post-Paris (2015–2023) — a <strong>{signed(parisData.acceleration)}pp shift</strong>.
+              {accelRank !== null && ` This ranks ${ordinal(accelRank)} largest deceleration among 6 tracked countries.`}
+              {cagrData && ` Per capita emissions reached ${parisData.value_2023.toFixed(1)} t in 2023 (${cagrData.total_change_pct > 0 ? '+' : ''}${cagrData.total_change_pct.toFixed(1)}% vs 2000).`}
+            </InsightText>
+          ) : (
+            <InsightText>
+              <strong>{countryName}&apos;s emissions trajectory</strong> reflects ongoing energy transition
+              dynamics. Data sourced from World Bank WDI (2000–2023).
+            </InsightText>
+          )}
         </div>
       </section>
 
@@ -509,12 +561,23 @@ export function CountryClient({
               </Card>
             </div>
 
-            <InsightText>
-              <strong>{countryName}&apos;s renewable share ({emberMix.renewable.toFixed(1)}%)</strong> is the lowest among
-              OECD countries tracked. Renewable capacity doubled from 4.7% (2018) to 9.6% (2023), adding +4.9pp in 5 years.
-              At the current pace (+0.98pp/yr), Korea reaches 50% renewable by ~2064 — trailing Germany (54.4% in 2023)
-              by over 40 years. The nuclear + other segment ({emberMix.other.toFixed(1)}%) provides baseload but limits flexibility.
-            </InsightText>
+            {transitionEntry ? (
+              <InsightText>
+                <strong>{countryName}&apos;s renewable share ({emberMix.renewable.toFixed(1)}%)</strong> ranks{' '}
+                {ordinal(transitionEntry.rank)} among 6 tracked countries, adding{' '}
+                <strong>{signed(transitionEntry.energy_transition_value, 1)}pp</strong> over 5 years.
+                {transitionEntry.rank === 1
+                  ? ' Leading the group in renewable transition speed.'
+                  : ` The group leader (Germany) reached ${emissionsTrend.energy_transition_ranking[0].renewable_pct_latest.toFixed(1)}% renewable by ${emissionsTrend.energy_transition_ranking[0].latest_year}.`
+                }
+                {' '}The nuclear & other segment ({emberMix.other.toFixed(1)}%) contributes non-fossil baseload generation.
+              </InsightText>
+            ) : (
+              <InsightText>
+                <strong>{countryName}&apos;s electricity mix</strong> reflects the current stage of energy transition.
+                Renewable share stands at {emberMix.renewable.toFixed(1)}%, with {emberMix.other.toFixed(1)}% from nuclear & other sources.
+              </InsightText>
+            )}
           </div>
         </section>
       )}
@@ -547,12 +610,22 @@ export function CountryClient({
               <SourceLabel>Source: World Bank WDI (GDP per capita + CO2 per capita), indexed to {gdpVsCo2[0].year} = 100</SourceLabel>
             </Card>
 
-            <InsightText>
-              <strong>{countryName} shows moderate decoupling.</strong> GDP grew faster than emissions by an average
-              of <strong>+2.73pp/yr</strong> since 2015, but this trails the US (+6.35) and Germany (+4.78).
-              The divergence between the green (GDP) and red (CO&#x2082;) lines shows that economic growth is
-              increasingly less carbon-intensive — a necessary but not yet sufficient trajectory for net-zero.
-            </InsightText>
+            {decouplingEntry ? (
+              <InsightText>
+                <strong>{countryName} shows {decouplingEntry.interpretation.toLowerCase()}.</strong>{' '}
+                GDP grew faster than emissions by an average of{' '}
+                <strong>{signed(decouplingEntry.avg_decoupling_2015_2023)}pp/yr</strong> since 2015{' '}
+                ({ordinal(decouplingEntry.rank)} among 6 tracked countries).{' '}
+                The divergence between the green (GDP) and red (CO&#x2082;) lines shows that economic growth is
+                increasingly less carbon-intensive — a necessary but not yet sufficient trajectory for net-zero.
+              </InsightText>
+            ) : (
+              <InsightText>
+                <strong>{countryName}&apos;s economic decoupling</strong> reflects the relationship between GDP growth
+                and emissions. The chart shows indexed trajectories since {gdpVsCo2[0].year}.
+                {decouplingScore != null && ` Current decoupling score: ${signed(decouplingScore)}pp/yr (2015–2023).`}
+              </InsightText>
+            )}
           </div>
         </section>
       )}
@@ -570,14 +643,25 @@ export function CountryClient({
               <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
             </Card>
 
-            <InsightText>
-              <strong>{countryName} has the highest readiness score (0.722)</strong> among all 6 pilot countries,
-              reflecting strong institutional capacity, governance, and economic resources for climate adaptation.
-              However, vulnerability (0.357) remains in the <strong>medium range</strong> — driven by high fossil
-              dependency (61.2%), elevated PM2.5 levels (25.9 µg/m³, OECD worst tier), and manufacturing sector
-              exposure. Key strengths include improving carbon intensity (518.8→427.3 gCO2/kWh) and active
-              decoupling of GDP from emissions.
-            </InsightText>
+            {myScatter ? (
+              <InsightText>
+                <strong>{countryName} ranks {ordinal(readinessRank!)} in climate readiness (score: {myScatter.readiness.toFixed(3)})</strong>{' '}
+                among the 6 pilot countries, reflecting institutional capacity, governance quality, and economic resources for adaptation.{' '}
+                Vulnerability stands at <strong>{myScatter.vulnerability.toFixed(3)}</strong> —{' '}
+                {myScatter.vulnerability < 0.35
+                  ? 'in the lower range, indicating relatively stronger resilience.'
+                  : myScatter.vulnerability < 0.45
+                    ? 'in the medium range, indicating moderate exposure to climate impacts.'
+                    : 'in the higher range, reflecting significant climate exposure.'
+                }
+                {emberMix && ` Fossil fuel dependency (${emberMix.fossil.toFixed(1)}%) remains a key driver of both emissions and vulnerability.`}
+              </InsightText>
+            ) : (
+              <InsightText>
+                <strong>{countryName}&apos;s climate vulnerability profile</strong> is shown relative to other pilot countries.
+                The target position is low vulnerability with high readiness (lower-left quadrant).
+              </InsightText>
+            )}
           </div>
         </section>
       )}

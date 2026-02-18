@@ -114,7 +114,7 @@ export default async function HomePage() {
       {/* Stats */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
         <div className="mx-auto grid max-w-[1200px] gap-6 md:grid-cols-3">
-          <StatCard title="Countries" value={stats.countries.toLocaleString()} trend={{ direction: 'up', label: '6 pilot countries live' }} />
+          <StatCard title="Countries" value="6" trend={{ direction: 'up', label: '6 pilot countries live' }} />
           <StatCard title="Indicators" value={stats.indicators.toLocaleString()} unit="metrics" trend={{ direction: 'flat', label: 'GHG, energy, land, risk, economy' }} />
           <StatCard title="Data Points" value={stats.dataPoints.toLocaleString()} unit="rows" trend={{ direction: 'up', label: '2000\u20132023 time series' }} />
         </div>
