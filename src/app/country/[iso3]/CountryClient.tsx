@@ -3,29 +3,14 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
-import dynamic from 'next/dynamic';
-import type { EnergySource } from '@/components/charts/ClimateSankey';
-
-const ClimateStripes = dynamic(
-  () => import('@/components/charts/ClimateStripes').then(m => ({ default: m.ClimateStripes })),
-  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-xl bg-[--bg-section]" /> }
-);
-const CountryCard = dynamic(
-  () => import('@/components/charts/CountryCard').then(m => ({ default: m.CountryCard })),
-  { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
-);
-const ClimateSankey = dynamic(
-  () => import('@/components/charts/ClimateSankey').then(m => ({ default: m.ClimateSankey })),
-  { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
-);
-const ClimatePoster = dynamic(
-  () => import('@/components/charts/ClimatePoster').then(m => ({ default: m.ClimatePoster })),
-  { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
-);
-const ClimateGap = dynamic(
-  () => import('@/components/charts/ClimateGap').then(m => ({ default: m.ClimateGap })),
-  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-xl bg-[--bg-section]" /> }
-);
+// D3 poster components disabled — re-enable after SSR fix
+// import dynamic from 'next/dynamic';
+// import type { EnergySource } from '@/components/charts/ClimateSankey';
+// const ClimateStripes = dynamic(() => import('@/components/charts/ClimateStripes').then(m => ({ default: m.ClimateStripes })), { ssr: false });
+// const CountryCard = dynamic(() => import('@/components/charts/CountryCard').then(m => ({ default: m.CountryCard })), { ssr: false });
+// const ClimateSankey = dynamic(() => import('@/components/charts/ClimateSankey').then(m => ({ default: m.ClimateSankey })), { ssr: false });
+// const ClimatePoster = dynamic(() => import('@/components/charts/ClimatePoster').then(m => ({ default: m.ClimatePoster })), { ssr: false });
+// const ClimateGap = dynamic(() => import('@/components/charts/ClimateGap').then(m => ({ default: m.ClimateGap })), { ssr: false });
 
 const FLAG_EMOJIS: Record<string, string> = {
   KOR: '🇰🇷', USA: '🇺🇸', DEU: '🇩🇪',
@@ -513,64 +498,10 @@ export function CountryClient({
     ? [...wbCo2Series].sort((a, b) => b.year - a.year)[0].value
     : 0;
 
-  const sankeyMix: EnergySource[] = emberMix
-    ? [
-        { source: 'Fossil', value: emberMix.fossil, type: 'fossil' },
-        { source: 'Renewable', value: emberMix.renewable, type: 'renewable' },
-        { source: 'Nuclear & Other', value: emberMix.other, type: 'nuclear' },
-      ]
-    : [];
+  // const sankeyMix: EnergySource[] = emberMix ? [fossil, renewable, nuclear] : [];
 
   return (
     <div className="space-y-0">
-      {/* LinkedIn Poster */}
-      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
-        <div className="mx-auto max-w-[600px]">
-          <ClimatePoster
-            country={countryName}
-            iso3={iso3}
-            flag={FLAG_EMOJIS[iso3] ?? '\uD83C\uDF0D'}
-            hook={COUNTRY_HOOKS[iso3] ?? ''}
-            co2={latestCo2}
-            renewable={emberMix?.renewable ?? 0}
-            pm25={pm25 ?? 0}
-            vulnerability={myScatter?.vulnerability ?? 0}
-            stripesData={wbCo2Series}
-          />
-        </div>
-      </section>
-
-      {/* Hero: CountryCard + ClimateStripes */}
-      <section className="border-b border-[--border-card] bg-white px-4 py-12">
-        <div className="mx-auto max-w-[1200px]">
-          <div className="grid gap-8 lg:grid-cols-2 items-start">
-            <CountryCard
-              country={countryName}
-              iso3={iso3}
-              flag={FLAG_EMOJIS[iso3] ?? '🌍'}
-              hook={COUNTRY_HOOKS[iso3] ?? ''}
-              co2={latestCo2}
-              renewable={emberMix?.renewable ?? 0}
-              pm25={pm25 ?? 0}
-              vulnerability={myScatter?.vulnerability ?? 0}
-              stripesData={wbCo2Series}
-              className="mx-auto w-full max-w-[480px] lg:mx-0"
-            />
-            <div>
-              <h3 className="mb-3 text-sm font-semibold text-[--text-secondary]">CO₂ per capita · 2000–2023</h3>
-              <ClimateStripes
-                mode="single"
-                country={countryName}
-                iso3={iso3}
-                data={wbCo2Series}
-                indicator={`${countryName} · CO₂ per capita · 2000–2023`}
-              />
-              <p className="mt-2 text-xs text-[--text-muted]">Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Section 1: Emissions Story */}
       <section className="border-b border-[--border-card] bg-white px-4 py-12">
         <div className="mx-auto max-w-[1200px]">
@@ -625,14 +556,6 @@ export function CountryClient({
             </InsightText>
           )}
 
-          {/* Paris Gap Slope Chart */}
-          <Card className="mt-6">
-            <h3 className="mb-1 text-sm font-semibold text-[--text-primary]">
-              Pre-Paris vs Post-Paris CAGR
-            </h3>
-            <ClimateGap highlightIso3={iso3} />
-            <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</SourceLabel>
-          </Card>
         </div>
       </section>
 
@@ -646,13 +569,11 @@ export function CountryClient({
                 <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
                   Electricity Generation Mix ({emberMix.year})
                 </h3>
-                <ClimateSankey
-                  country={countryName}
-                  iso3={iso3}
-                  energyMix={sankeyMix}
-                  totalCO2={latestCo2}
-                  className="mt-2"
-                />
+                <EnergyDonut data={[
+                  { label: 'Renewable', value: emberMix.renewable, color: '#10B981' },
+                  { label: 'Fossil', value: emberMix.fossil, color: '#78716C' },
+                  { label: 'Nuclear & Other', value: emberMix.other, color: '#8B5CF6' },
+                ]} />
                 <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
               </Card>
 

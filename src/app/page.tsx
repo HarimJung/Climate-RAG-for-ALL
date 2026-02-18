@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { createServiceClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/StatCard';
 import { createMetaTags } from '@/components/seo/MetaTags';
-import { HomeStripes } from './HomeStripes';
+// import { HomeStripes } from './HomeStripes'; // disabled — D3 SSR fix pending
 
 export const metadata = createMetaTags({
   title: 'Climate Intelligence for Sustainability Professionals',
@@ -112,7 +112,7 @@ async function getCountryMetrics() {
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [stats, metrics, stripesData] = await Promise.all([getStats(), getCountryMetrics(), getStripesData()]);
+  const [stats, metrics] = await Promise.all([getStats(), getCountryMetrics()]);
 
   return (
     <div>
@@ -170,17 +170,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Climate Stripes — 6 Countries stacked */}
-      {stripesData.some(d => d.data.length > 0) && (
-        <section className="border-t border-[--border-card] px-4 py-16">
-          <div className="mx-auto max-w-[1200px]">
-            <h2 className="mb-2 text-center text-3xl font-bold text-[--text-primary]">CO₂ per Capita · 2000–2023</h2>
-            <p className="mb-8 text-center text-sm text-[--text-secondary]">Warmer stripes = higher emissions. Blue = lower emissions.</p>
-            <HomeStripes allData={stripesData} />
-          </div>
-        </section>
-      )}
 
       {/* Pilot Countries */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
