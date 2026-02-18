@@ -18,6 +18,14 @@ const ClimateSankey = dynamic(
   () => import('@/components/charts/ClimateSankey').then(m => ({ default: m.ClimateSankey })),
   { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
 );
+const ClimatePoster = dynamic(
+  () => import('@/components/charts/ClimatePoster').then(m => ({ default: m.ClimatePoster })),
+  { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
+);
+const ClimateGap = dynamic(
+  () => import('@/components/charts/ClimateGap').then(m => ({ default: m.ClimateGap })),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-xl bg-[--bg-section]" /> }
+);
 
 const FLAG_EMOJIS: Record<string, string> = {
   KOR: '🇰🇷', USA: '🇺🇸', DEU: '🇩🇪',
@@ -515,8 +523,25 @@ export function CountryClient({
 
   return (
     <div className="space-y-0">
-      {/* Hero: CountryCard + ClimateStripes */}
+      {/* LinkedIn Poster */}
       <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
+        <div className="mx-auto max-w-[600px]">
+          <ClimatePoster
+            country={countryName}
+            iso3={iso3}
+            flag={FLAG_EMOJIS[iso3] ?? '\uD83C\uDF0D'}
+            hook={COUNTRY_HOOKS[iso3] ?? ''}
+            co2={latestCo2}
+            renewable={emberMix?.renewable ?? 0}
+            pm25={pm25 ?? 0}
+            vulnerability={myScatter?.vulnerability ?? 0}
+            stripesData={wbCo2Series}
+          />
+        </div>
+      </section>
+
+      {/* Hero: CountryCard + ClimateStripes */}
+      <section className="border-b border-[--border-card] bg-white px-4 py-12">
         <div className="mx-auto max-w-[1200px]">
           <div className="grid gap-8 lg:grid-cols-2 items-start">
             <CountryCard
@@ -599,6 +624,15 @@ export function CountryClient({
               dynamics. Data sourced from World Bank WDI (2000–2023).
             </InsightText>
           )}
+
+          {/* Paris Gap Slope Chart */}
+          <Card className="mt-6">
+            <h3 className="mb-1 text-sm font-semibold text-[--text-primary]">
+              Pre-Paris vs Post-Paris CAGR
+            </h3>
+            <ClimateGap highlightIso3={iso3} />
+            <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</SourceLabel>
+          </Card>
         </div>
       </section>
 

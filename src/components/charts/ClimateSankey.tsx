@@ -16,7 +16,6 @@ interface ClimateSankeyProps {
   iso3: string;
   energyMix: EnergySource[];
   totalCO2?: number;
-  gdpPerCapita?: number;
   className?: string;
 }
 
@@ -27,23 +26,30 @@ type LayoutNode = SankeyNode<NodeDatum, LinkDatum>;
 type LayoutLink = SankeyLink<NodeDatum, LinkDatum>;
 
 const NODE_COLORS: Record<string, string> = {
-  fossil: '#EF4444', renewable: '#3B82F6', nuclear: '#8B5CF6', output: '#1A1A2E',
+  fossil: '#78716C',
+  renewable: '#10B981',
+  nuclear: '#8B5CF6',
+  electricity: '#3B82F6',
+  co2: '#EF4444',
+  clean: '#06B6D4',
 };
-const LINK_FILL: Record<string, string> = {
-  fossil: 'rgba(239,68,68,0.22)',
-  renewable: 'rgba(59,130,246,0.22)',
-  nuclear: 'rgba(139,92,246,0.22)',
+
+const LINK_COLORS: Record<string, string> = {
+  fossil: 'rgba(120,113,108,0.25)',
+  renewable: 'rgba(16,185,129,0.25)',
+  nuclear: 'rgba(139,92,246,0.25)',
+  co2: 'rgba(239,68,68,0.20)',
+  clean: 'rgba(6,182,212,0.20)',
 };
 
 export function ClimateSankey({
-  country, iso3, energyMix, totalCO2, gdpPerCapita, className = '',
+  country, iso3, energyMix, totalCO2, className = '',
 }: ClimateSankeyProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [exporting, setExporting] = useState(false);
 
   const W = 1080;
   const H = 1080;
-  const ML = 210, MR = 200, MT = 110, MB = 100;
 
   useEffect(() => {
     if (!svgRef.current || energyMix.length === 0) return;
@@ -51,6 +57,7 @@ export function ClimateSankey({
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
 
+    const ML = 200, MR = 180, MT = 110, MB = 90;
     const iW = W - ML - MR;
     const iH = H - MT - MB;
 
@@ -59,30 +66,51 @@ export function ClimateSankey({
 
     // Title
     svg.append('text')
-      .attr('x', W / 2).attr('y', 60).attr('text-anchor', 'middle')
-      .attr('fill', '#1A1A2E').attr('font-size', 34).attr('font-weight', '700')
+      .attr('x', W / 2).attr('y', 55).attr('text-anchor', 'middle')
+      .attr('fill', '#1A1A2E').attr('font-size', 32).attr('font-weight', '700')
       .attr('font-family', 'Inter, system-ui, sans-serif')
-      .text(`${country} — Electricity Generation Mix`);
+      .text(`${country} — Energy Flow`);
+
+    svg.append('text')
+      .attr('x', W / 2).attr('y', 85).attr('text-anchor', 'middle')
+      .attr('fill', '#94A3B8').attr('font-size', 18)
+      .attr('font-family', 'Inter, system-ui, sans-serif')
+      .text('Electricity generation mix and carbon output');
 
     const g = svg.append('g').attr('transform', `translate(${ML},${MT})`);
 
-    // Build node/link arrays
-    const sourceNodes: NodeDatum[] = energyMix.map(s => ({ name: s.source, type: s.type }));
-    const outNode: NodeDatum = { name: 'Electricity', type: 'output' };
-    const graphNodes: NodeDatum[] = [...sourceNodes, outNode];
-    const outIdx = graphNodes.length - 1;
+    // Find values
+    const fossil = energyMix.find(s => s.type === 'fossil');
+    const renewable = energyMix.find(s => s.type === 'renewable');
+    const nuclear = energyMix.find(s => s.type === 'nuclear');
 
-    const graphLinks = energyMix.map((s, i) => ({
-      source: i,
-      target: outIdx,
-      value: Math.max(s.value, 0.5),
-      srcType: s.type,
-    }));
+    const fossilVal = fossil?.value ?? 0;
+    const renewableVal = renewable?.value ?? 0;
+    const nuclearVal = nuclear?.value ?? 0;
+    const totalVal = fossilVal + renewableVal + nuclearVal;
+    const cleanVal = renewableVal + nuclearVal;
+
+    // 6 nodes: Fossil(0), Renewable(1), Nuclear(2), Electricity(3), CO2(4), Clean(5)
+    const graphNodes: NodeDatum[] = [
+      { name: fossil?.source ?? 'Fossil', type: 'fossil' },
+      { name: renewable?.source ?? 'Renewable', type: 'renewable' },
+      { name: nuclear?.source ?? 'Nuclear & Other', type: 'nuclear' },
+      { name: 'Electricity', type: 'electricity' },
+      { name: 'CO\u2082 Output', type: 'co2' },
+      { name: 'Clean Output', type: 'clean' },
+    ];
+
+    const graphLinks = [
+      { source: 0, target: 3, value: Math.max(fossilVal, 0.5), srcType: 'fossil' },
+      { source: 1, target: 3, value: Math.max(renewableVal, 0.5), srcType: 'renewable' },
+      { source: 2, target: 3, value: Math.max(nuclearVal, 0.5), srcType: 'nuclear' },
+      { source: 3, target: 4, value: Math.max(fossilVal, 0.5), srcType: 'co2' },
+      { source: 3, target: 5, value: Math.max(cleanVal, 0.5), srcType: 'clean' },
+    ];
 
     const sk = d3Sankey<NodeDatum, LinkDatum>()
-      .nodeId((d: NodeDatum) => d.name)
-      .nodeWidth(28)
-      .nodePadding(iH * 0.09)
+      .nodeWidth(24)
+      .nodePadding(iH * 0.06)
       .extent([[0, 0], [iW, iH]]);
 
     const { nodes, links } = sk({
@@ -100,11 +128,13 @@ export function ClimateSankey({
         .attr('gradientUnits', 'userSpaceOnUse')
         .attr('x1', (src.x1 ?? 0) + ML)
         .attr('x2', (tgt.x0 ?? 0) + ML);
-      grad.append('stop').attr('offset', '0%').attr('stop-color', LINK_FILL[src.type] ?? 'rgba(148,163,184,0.2)');
-      grad.append('stop').attr('offset', '100%').attr('stop-color', 'rgba(26,26,46,0.08)');
+      const srcColor = LINK_COLORS[lk.srcType] ?? 'rgba(148,163,184,0.2)';
+      const tgtColor = LINK_COLORS[tgt.type] ?? 'rgba(148,163,184,0.15)';
+      grad.append('stop').attr('offset', '0%').attr('stop-color', srcColor);
+      grad.append('stop').attr('offset', '100%').attr('stop-color', tgtColor);
     });
 
-    // Links
+    // Links with animation
     const linkPaths = g.selectAll<SVGPathElement, LayoutLink>('.sk-link')
       .data(links)
       .join('path')
@@ -115,7 +145,7 @@ export function ClimateSankey({
       .attr('fill', 'none')
       .attr('stroke-opacity', 0);
 
-    linkPaths.transition().delay((_, i) => i * 150 + 300).duration(700).attr('stroke-opacity', 1);
+    linkPaths.transition().delay((_, i) => i * 120 + 200).duration(600).attr('stroke-opacity', 1);
 
     // Nodes
     g.selectAll<SVGRectElement, LayoutNode>('.sk-node')
@@ -127,65 +157,64 @@ export function ClimateSankey({
       .attr('width', (d: LayoutNode) => (d.x1 ?? 0) - (d.x0 ?? 0))
       .attr('height', (d: LayoutNode) => Math.max((d.y1 ?? 0) - (d.y0 ?? 0), 1))
       .attr('fill', (d: LayoutNode) => NODE_COLORS[d.type] ?? '#94A3B8')
-      .attr('rx', 4)
+      .attr('rx', 6)
       .attr('opacity', 0)
-      .transition().delay((_, i) => i * 60).duration(400).attr('opacity', 1);
+      .transition().delay((_, i) => i * 50).duration(400).attr('opacity', 1);
 
     // Node labels
-    nodes.forEach((nd: LayoutNode) => {
+    nodes.forEach((nd: LayoutNode, idx: number) => {
       const midY = ((nd.y0 ?? 0) + (nd.y1 ?? 0)) / 2;
-      const isSource = nd.name !== 'Electricity';
-      const x = isSource ? (nd.x0 ?? 0) - 14 : (nd.x1 ?? 0) + 14;
-      const anchor = isSource ? 'end' : 'start';
+      // left column (0-2), middle (3), right column (4-5)
+      const isLeft = idx <= 2;
+      const isRight = idx >= 4;
+      const x = isLeft ? (nd.x0 ?? 0) - 14 : (nd.x1 ?? 0) + 14;
+      const anchor = isLeft ? 'end' : 'start';
 
       g.append('text')
-        .attr('x', x).attr('y', midY - 12)
+        .attr('x', x).attr('y', midY - 10)
         .attr('text-anchor', anchor).attr('dominant-baseline', 'middle')
-        .attr('fill', '#1A1A2E').attr('font-size', 24).attr('font-weight', '600')
+        .attr('fill', '#1A1A2E').attr('font-size', 22).attr('font-weight', '600')
         .attr('font-family', 'Inter, system-ui, sans-serif')
         .text(nd.name);
 
-      if (isSource) {
+      // Show percentage for source and output nodes
+      const pct = isLeft
+        ? (nd.value ?? 0)
+        : isRight && nd.type === 'co2'
+          ? fossilVal
+          : isRight && nd.type === 'clean'
+            ? cleanVal
+            : totalVal;
+
+      if (idx !== 3) { // Skip Electricity node percentage
         g.append('text')
-          .attr('x', x).attr('y', midY + 18)
+          .attr('x', x).attr('y', midY + 16)
           .attr('text-anchor', anchor).attr('dominant-baseline', 'middle')
-          .attr('fill', '#4A4A6A').attr('font-size', 22)
-          .attr('font-family', 'monospace')
-          .text(`${(nd.value ?? 0).toFixed(1)}%`);
+          .attr('fill', NODE_COLORS[nd.type] ?? '#4A4A6A').attr('font-size', 20)
+          .attr('font-family', 'monospace').attr('font-weight', '700')
+          .text(`${pct.toFixed(1)}%`);
       }
     });
 
-    // Stat badges (right of Electricity node)
-    const badges = [
-      totalCO2 != null && { label: 'CO₂ per capita', value: totalCO2.toFixed(1), unit: 't CO₂e', color: '#EF4444' },
-      gdpPerCapita != null && { label: 'GDP per capita', value: `$${(gdpPerCapita / 1000).toFixed(0)}k`, unit: 'USD', color: '#0066FF' },
-    ].filter(Boolean) as { label: string; value: string; unit: string; color: string }[];
-
-    const bX = ML + iW + 40;
-    badges.forEach((b, i) => {
-      const bY = MT + iH * 0.25 + i * 150;
-      svg.append('rect').attr('x', bX).attr('y', bY)
-        .attr('width', 150).attr('height', 110).attr('rx', 14)
-        .attr('fill', '#F8F9FA').attr('stroke', '#E8E8ED').attr('stroke-width', 1);
-      svg.append('text').attr('x', bX + 75).attr('y', bY + 28)
-        .attr('text-anchor', 'middle').attr('fill', '#94A3B8').attr('font-size', 17)
-        .attr('font-family', 'Inter, system-ui, sans-serif').text(b.label);
-      svg.append('text').attr('x', bX + 75).attr('y', bY + 66)
-        .attr('text-anchor', 'middle').attr('fill', b.color)
-        .attr('font-size', 28).attr('font-weight', '700').attr('font-family', 'monospace').text(b.value);
-      svg.append('text').attr('x', bX + 75).attr('y', bY + 90)
-        .attr('text-anchor', 'middle').attr('fill', '#94A3B8').attr('font-size', 17)
-        .attr('font-family', 'Inter, system-ui, sans-serif').text(b.unit);
-    });
+    // CO2 badge below the diagram
+    if (totalCO2 != null) {
+      const bX = W / 2;
+      const bY = H - 55;
+      svg.append('text')
+        .attr('x', bX).attr('y', bY).attr('text-anchor', 'middle')
+        .attr('fill', '#EF4444').attr('font-size', 22).attr('font-weight', '700')
+        .attr('font-family', 'monospace')
+        .text(`${totalCO2.toFixed(1)} t CO\u2082e per capita`);
+    }
 
     // Watermark
     svg.append('text')
       .attr('x', W - 28).attr('y', H - 22).attr('text-anchor', 'end')
-      .attr('fill', '#C8C8D0').attr('font-size', 20)
+      .attr('fill', '#C8C8D0').attr('font-size', 18)
       .attr('font-family', 'Inter, system-ui, sans-serif')
       .text('visualclimate.org');
 
-  }, [country, energyMix, totalCO2, gdpPerCapita, ML, MR, MT, MB]);
+  }, [country, energyMix, totalCO2]);
 
   const handleExport = useCallback(async () => {
     if (!svgRef.current || exporting) return;
@@ -207,15 +236,15 @@ export function ClimateSankey({
         preserveAspectRatio="xMidYMid meet"
         style={{ display: 'block', width: '100%', height: 'auto' }}
         role="img"
-        aria-label={`${country} electricity generation Sankey`}
+        aria-label={`${country} energy flow Sankey diagram`}
       />
       <button
         onClick={handleExport}
         disabled={exporting}
         className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#1A1A2E] shadow transition-all hover:bg-white hover:shadow-md disabled:opacity-50"
-        title="Download as 1080×1080 PNG"
+        title="Download as 1080x1080 PNG"
       >
-        {exporting ? '…' : '↓ PNG'}
+        {exporting ? '\u2026' : '\u2193 PNG'}
       </button>
     </div>
   );
