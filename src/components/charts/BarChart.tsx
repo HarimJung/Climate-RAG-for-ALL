@@ -17,7 +17,7 @@ interface BarChartProps {
   height?: number;
 }
 
-const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#22c55e', '#a855f7', '#06b6d4'];
+const DEFAULT_COLORS = ['#0066FF', '#00A67E', '#F59E0B', '#E5484D', '#8B5CF6', '#EC4899'];
 
 export function BarChart({ data, title, unit = '', height: fixedHeight }: BarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,7 @@ export function BarChart({ data, title, unit = '', height: fixedHeight }: BarCha
         .attr('rx', 4)
         .attr('fill', (d, i) => d.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length])
         .attr('cursor', d => d.href ? 'pointer' : 'default')
-        .on('mouseenter', function (_, d) {
+        .on('mouseenter', function () {
           d3.select(this).attr('opacity', 0.8);
         })
         .on('mouseleave', function () {
@@ -84,7 +84,7 @@ export function BarChart({ data, title, unit = '', height: fixedHeight }: BarCha
         .attr('y', d => y(d.label)! + y.bandwidth() / 2)
         .attr('dy', '0.35em')
         .attr('text-anchor', 'end')
-        .attr('fill', '#94a3b8')
+        .attr('fill', '#4A4A6A')
         .attr('font-size', '13')
         .text(d => d.label);
 
@@ -95,7 +95,7 @@ export function BarChart({ data, title, unit = '', height: fixedHeight }: BarCha
         .attr('x', d => x(d.value) + 6)
         .attr('y', d => y(d.label)! + y.bandwidth() / 2)
         .attr('dy', '0.35em')
-        .attr('fill', '#cbd5e1')
+        .attr('fill', '#1A1A2E')
         .attr('font-size', '12')
         .attr('font-family', 'var(--font-jetbrains-mono), monospace')
         .text(d => d.value.toLocaleString(undefined, { maximumFractionDigits: 1 }));
@@ -110,8 +110,8 @@ export function BarChart({ data, title, unit = '', height: fixedHeight }: BarCha
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-900 p-6" style={{ height: 200 }}>
-        <p className="text-sm text-slate-500">No data available</p>
+      <div className="flex items-center justify-center rounded-xl border border-[--border-card] bg-[--bg-section] p-6" style={{ height: 200 }}>
+        <p className="text-sm text-[--text-muted]">No data available</p>
       </div>
     );
   }
@@ -119,8 +119,8 @@ export function BarChart({ data, title, unit = '', height: fixedHeight }: BarCha
   return (
     <div>
       {title && (
-        <h3 className="mb-4 text-sm font-medium text-slate-400">
-          {title}{unit && <span className="ml-1 text-slate-600">({unit})</span>}
+        <h3 className="mb-4 text-sm font-medium text-[--text-secondary]">
+          {title}{unit && <span className="ml-1 text-[--text-muted]">({unit})</span>}
         </h3>
       )}
       <div ref={containerRef} className="w-full" />

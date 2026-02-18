@@ -26,8 +26,8 @@ const insights = [
 export default function InsightsPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-20">
-      <h1 className="text-4xl font-bold tracking-tight">Climate Insights</h1>
-      <p className="mt-3 text-lg text-slate-400">
+      <h1 className="text-4xl font-bold tracking-tight text-[--text-primary]">Climate Insights</h1>
+      <p className="mt-3 text-lg text-[--text-secondary]">
         Data-driven analysis across 6 pilot countries
       </p>
 
@@ -36,20 +36,21 @@ export default function InsightsPage() {
           <Link
             key={item.slug}
             href={`/insights/${item.slug}`}
-            className="group rounded-xl border border-slate-800 bg-slate-900 p-6 transition-colors hover:border-emerald-500/40 hover:bg-slate-800/60"
+            className="group rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
+            style={{ boxShadow: 'var(--shadow-card)' }}
           >
-            <time className="text-xs text-slate-500">{item.date}</time>
-            <h2 className="mt-2 text-xl font-semibold group-hover:text-emerald-400 transition-colors">
+            <time className="text-xs text-[--text-muted]">{item.date}</time>
+            <h2 className="mt-2 text-xl font-semibold text-[--text-primary] group-hover:text-[--accent-primary] transition-colors">
               {item.title}
             </h2>
-            <p className="mt-2 text-sm text-slate-400 leading-relaxed">
+            <p className="mt-2 text-sm text-[--text-secondary] leading-relaxed">
               {item.description}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {item.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-400"
+                  className="rounded-full bg-[--bg-section] px-3 py-1 text-xs text-[--text-muted]"
                 >
                   {tag}
                 </span>

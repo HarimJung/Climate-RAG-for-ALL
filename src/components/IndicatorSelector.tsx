@@ -17,7 +17,7 @@ export function IndicatorSelector({ value, onChange }: IndicatorSelectorProps) {
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex w-full items-center justify-between rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-left text-white hover:border-slate-600 md:w-80"
+                className="flex w-full items-center justify-between rounded-lg border border-[--border-card] bg-white px-4 py-3 text-left text-[--text-primary] hover:border-[--accent-primary] md:w-80"
             >
                 <span className="truncate">{selected.name}</span>
                 <svg className={`ml-2 h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -26,7 +26,7 @@ export function IndicatorSelector({ value, onChange }: IndicatorSelectorProps) {
             </button>
 
             {isOpen && (
-                <div className="absolute z-20 mt-2 w-full rounded-lg border border-slate-700 bg-slate-800 py-1 shadow-xl md:w-96">
+                <div className="absolute z-20 mt-2 w-full rounded-lg border border-[--border-card] bg-white py-1 shadow-xl md:w-96">
                     {CLIMATE_INDICATORS.map((indicator) => (
                         <button
                             key={indicator.code}
@@ -34,7 +34,7 @@ export function IndicatorSelector({ value, onChange }: IndicatorSelectorProps) {
                                 onChange(indicator.code);
                                 setIsOpen(false);
                             }}
-                            className={`w-full px-4 py-2 text-left text-sm hover:bg-slate-700 ${indicator.code === value ? 'bg-slate-700 text-emerald-400' : 'text-slate-300'
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-[--bg-section] ${indicator.code === value ? 'bg-[--bg-section] text-[--accent-primary] font-medium' : 'text-[--text-secondary]'
                                 }`}
                         >
                             {indicator.name}

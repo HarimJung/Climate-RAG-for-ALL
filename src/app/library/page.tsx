@@ -73,50 +73,48 @@ const STATS = [
 
 export default function LibraryPage() {
     return (
-        <div className="bg-slate-950 px-4 py-20">
+        <div className="px-4 py-20">
             <div className="mx-auto max-w-6xl">
-                {/* Header */}
                 <div className="mb-12">
-                    <h1 className="text-3xl font-bold text-white sm:text-4xl">
+                    <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">
                         Climate Report Library
                     </h1>
-                    <p className="mt-4 max-w-2xl text-lg text-slate-400">
+                    <p className="mt-4 max-w-2xl text-lg text-[--text-secondary]">
                         Browse authoritative climate reports from the world&apos;s leading institutions.
                     </p>
                 </div>
 
-                {/* Stats */}
                 <div className="mb-12 grid grid-cols-3 gap-6">
                     {STATS.map((stat) => (
-                        <div key={stat.label} className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 text-center">
-                            <div className="text-3xl font-bold text-emerald-400 sm:text-4xl">
+                        <div key={stat.label} className="rounded-xl border border-[--border-card] bg-white p-6 text-center" style={{ boxShadow: 'var(--shadow-card)' }}>
+                            <div className="text-3xl font-bold text-[--accent-primary] sm:text-4xl">
                                 {stat.number}
                             </div>
-                            <div className="mt-1 text-sm text-slate-400">{stat.label}</div>
+                            <div className="mt-1 text-sm text-[--text-secondary]">{stat.label}</div>
                         </div>
                     ))}
                 </div>
 
-                {/* Reports Grid */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {REPORTS.map((report) => (
                         <div
                             key={report.title}
-                            className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-900"
+                            className="rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
+                            style={{ boxShadow: 'var(--shadow-card)' }}
                         >
                             <div className="flex items-center justify-between">
-                                <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-slate-300">
+                                <span className="rounded-full bg-[--bg-section] px-3 py-1 text-xs font-medium text-[--text-secondary]">
                                     {report.org}
                                 </span>
-                                <span className="text-sm text-slate-500">{report.year}</span>
+                                <span className="text-sm text-[--text-muted]">{report.year}</span>
                             </div>
-                            <h3 className="mt-4 text-lg font-semibold text-white">{report.title}</h3>
-                            <p className="mt-2 text-sm text-slate-400">{report.description}</p>
+                            <h3 className="mt-4 text-lg font-semibold text-[--text-primary]">{report.title}</h3>
+                            <p className="mt-2 text-sm text-[--text-secondary]">{report.description}</p>
                             <div className="mt-4 flex flex-wrap gap-2">
                                 {report.tags.map((tag) => (
                                     <span
                                         key={tag}
-                                        className="rounded-full bg-emerald-900/50 px-2.5 py-0.5 text-xs text-emerald-400"
+                                        className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs text-[--accent-primary]"
                                     >
                                         {tag}
                                     </span>

@@ -26,10 +26,10 @@ const GUIDES = [
 
 export default function GuidesPage() {
     return (
-        <div className="bg-slate-950 px-4 py-12">
+        <div className="px-4 py-12">
             <div className="mx-auto max-w-4xl">
-                <h1 className="text-3xl font-bold text-white sm:text-4xl">Climate Guides</h1>
-                <p className="mt-4 text-lg text-slate-400">
+                <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">Climate Guides</h1>
+                <p className="mt-4 text-lg text-[--text-secondary]">
                     Expert guides on climate data, sustainability reporting, and ESG frameworks for professionals.
                 </p>
 
@@ -38,17 +38,18 @@ export default function GuidesPage() {
                         <Link
                             key={guide.slug}
                             href={`/guides/${guide.slug}`}
-                            className="block rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-emerald-500/50 hover:bg-slate-900"
+                            className="group block rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
+                            style={{ boxShadow: 'var(--shadow-card)' }}
                         >
                             <div className="flex items-center gap-3">
-                                <span className="rounded-full bg-emerald-900/50 px-3 py-1 text-xs font-medium text-emerald-400">
+                                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-[--accent-primary]">
                                     {guide.category}
                                 </span>
-                                <span className="text-sm text-slate-500">{guide.readTime}</span>
+                                <span className="text-sm text-[--text-muted]">{guide.readTime}</span>
                             </div>
-                            <h2 className="mt-3 text-xl font-semibold text-white">{guide.title}</h2>
-                            <p className="mt-2 text-slate-400">{guide.description}</p>
-                            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald-400">
+                            <h2 className="mt-3 text-xl font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">{guide.title}</h2>
+                            <p className="mt-2 text-[--text-secondary]">{guide.description}</p>
+                            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-[--accent-primary]">
                                 Read guide
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />

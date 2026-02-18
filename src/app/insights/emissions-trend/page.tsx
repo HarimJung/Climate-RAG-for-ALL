@@ -46,14 +46,14 @@ export default function EmissionsTrendPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-20">
       <div className="mb-12">
-        <p className="text-sm text-emerald-400 font-medium">Climate Insights</p>
+        <p className="text-sm text-[--accent-primary] font-medium">Climate Insights</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
           Emissions Trend Analysis
         </h1>
-        <p className="mt-3 text-slate-400">
+        <p className="mt-3 text-[--text-secondary]">
           6 pilot countries &middot; 2000-2023 &middot; CO2 per capita (metric tons CO2eq)
         </p>
-        <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-500">
+        <div className="mt-4 flex flex-wrap gap-2 text-xs text-[--text-muted]">
           <span>Sources: Climate TRACE, WDI, Ember</span>
           <span>&middot;</span>
           <span>Confidence: HIGH (3-source cross-validation)</span>
@@ -61,7 +61,7 @@ export default function EmissionsTrendPage() {
       </div>
 
       {/* D3 Multi-line Chart */}
-      <section className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-xl border border-[--border-card] bg-white p-6">
         <h2 className="mb-4 text-lg font-semibold">CO2 per Capita Trajectories</h2>
         <EmissionsTrendChart />
       </section>
@@ -69,11 +69,11 @@ export default function EmissionsTrendPage() {
       {/* CAGR Table */}
       <section className="mt-10">
         <h2 className="text-xl font-semibold">Compound Annual Growth Rate (2000-2023)</h2>
-        <p className="mt-1 text-sm text-slate-400">23-year CAGR of CO2 per capita emissions</p>
+        <p className="mt-1 text-sm text-[--text-secondary]">23-year CAGR of CO2 per capita emissions</p>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-800 text-left text-slate-400">
+              <tr className="border-b border-[--border-card] text-left text-[--text-secondary]">
                 <th className="pb-3 pr-4">Country</th>
                 <th className="pb-3 pr-4 text-right">2000</th>
                 <th className="pb-3 pr-4 text-right">2023</th>
@@ -83,14 +83,14 @@ export default function EmissionsTrendPage() {
             </thead>
             <tbody>
               {cagrData.map((row) => (
-                <tr key={row.iso3} className="border-b border-slate-800/50">
+                <tr key={row.iso3} className="border-b border-[--border-card]/50">
                   <td className="py-3 pr-4 font-medium">{row.country}</td>
-                  <td className="py-3 pr-4 text-right font-mono text-slate-300">{row.start.toFixed(2)}</td>
-                  <td className="py-3 pr-4 text-right font-mono text-slate-300">{row.end.toFixed(2)}</td>
-                  <td className={`py-3 pr-4 text-right font-mono font-medium ${row.cagr > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  <td className="py-3 pr-4 text-right font-mono text-[--text-primary]">{row.start.toFixed(2)}</td>
+                  <td className="py-3 pr-4 text-right font-mono text-[--text-primary]">{row.end.toFixed(2)}</td>
+                  <td className={`py-3 pr-4 text-right font-mono font-medium ${row.cagr > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
                     {row.cagr > 0 ? '+' : ''}{row.cagr.toFixed(2)}
                   </td>
-                  <td className={`py-3 text-right font-mono ${row.total > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  <td className={`py-3 text-right font-mono ${row.total > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
                     {row.total > 0 ? '+' : ''}{row.total.toFixed(1)}
                   </td>
                 </tr>
@@ -103,13 +103,13 @@ export default function EmissionsTrendPage() {
       {/* Paris Agreement Comparison */}
       <section className="mt-10">
         <h2 className="text-xl font-semibold">Paris Agreement Impact (Pre vs Post 2015)</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-[--text-secondary]">
           Acceleration = post-Paris CAGR minus pre-Paris CAGR. Negative = faster reduction.
         </p>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-800 text-left text-slate-400">
+              <tr className="border-b border-[--border-card] text-left text-[--text-secondary]">
                 <th className="pb-3 pr-4">Country</th>
                 <th className="pb-3 pr-4 text-right">Pre-Paris CAGR (%)</th>
                 <th className="pb-3 pr-4 text-right">Post-Paris CAGR (%)</th>
@@ -118,15 +118,15 @@ export default function EmissionsTrendPage() {
             </thead>
             <tbody>
               {parisData.map((row) => (
-                <tr key={row.country} className="border-b border-slate-800/50">
+                <tr key={row.country} className="border-b border-[--border-card]/50">
                   <td className="py-3 pr-4 font-medium">{row.country}</td>
-                  <td className={`py-3 pr-4 text-right font-mono ${row.preCagr > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  <td className={`py-3 pr-4 text-right font-mono ${row.preCagr > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
                     {row.preCagr > 0 ? '+' : ''}{row.preCagr.toFixed(3)}
                   </td>
-                  <td className={`py-3 pr-4 text-right font-mono ${row.postCagr > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  <td className={`py-3 pr-4 text-right font-mono ${row.postCagr > 0 ? 'text-[--accent-negative]' : 'text-[--accent-positive]'}`}>
                     {row.postCagr > 0 ? '+' : ''}{row.postCagr.toFixed(3)}
                   </td>
-                  <td className="py-3 text-right font-mono font-medium text-emerald-400">
+                  <td className="py-3 text-right font-mono font-medium text-[--accent-positive]">
                     {row.accel.toFixed(3)}
                   </td>
                 </tr>
@@ -139,17 +139,17 @@ export default function EmissionsTrendPage() {
       {/* Decoupling */}
       <section className="mt-10">
         <h2 className="text-xl font-semibold">GDP-Emissions Decoupling (2015-2023)</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-[--text-secondary]">
           Decoupling score = GDP growth rate minus CO2 growth rate. Higher = better separation.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {decouplingData.map((row) => (
-            <div key={row.iso3} className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-sm text-slate-400">{row.country}</p>
-              <p className="mt-1 font-mono text-2xl font-bold text-emerald-400">
+            <div key={row.iso3} className="rounded-xl border border-[--border-card] bg-white p-5">
+              <p className="text-sm text-[--text-secondary]">{row.country}</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-[--accent-positive]">
                 +{row.score.toFixed(2)}
               </p>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-[--text-muted]">
                 CO2/GDP: {row.intensity.toFixed(4)} kg CO2eq/USD
               </p>
             </div>
@@ -160,25 +160,25 @@ export default function EmissionsTrendPage() {
       {/* Energy Transition */}
       <section className="mt-10">
         <h2 className="text-xl font-semibold">Energy Transition Speed</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-[--text-secondary]">
           Renewable energy share change over 5 years (percentage points)
         </p>
         <div className="mt-4 space-y-3">
           {transitionData.map((row) => (
-            <div key={row.iso3} className="flex items-center gap-4 rounded-lg border border-slate-800 bg-slate-900 p-4">
+            <div key={row.iso3} className="flex items-center gap-4 rounded-lg border border-[--border-card] bg-white p-4">
               <div className="w-36 shrink-0">
                 <p className="font-medium">{row.country}</p>
-                <p className="text-xs text-slate-500">Current: {row.current}%</p>
+                <p className="text-xs text-[--text-muted]">Current: {row.current}%</p>
               </div>
               <div className="flex-1">
                 <div className="h-3 overflow-hidden rounded-full bg-slate-800">
                   <div
-                    className={`h-full rounded-full ${row.speed >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`}
+                    className={`h-full rounded-full ${row.speed >= 0 ? 'bg-[--accent-positive]' : 'bg-[--accent-negative]'}`}
                     style={{ width: `${Math.max(Math.abs(row.speed) / 20 * 100, 2)}%` }}
                   />
                 </div>
               </div>
-              <p className={`w-20 text-right font-mono font-medium ${row.speed >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className={`w-20 text-right font-mono font-medium ${row.speed >= 0 ? 'text-[--accent-positive]' : 'text-[--accent-negative]'}`}>
                 {row.speed > 0 ? '+' : ''}{row.speed.toFixed(1)} pp
               </p>
             </div>
@@ -187,23 +187,23 @@ export default function EmissionsTrendPage() {
       </section>
 
       {/* Methodology */}
-      <section className="mt-12 rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Methodology</h2>
-        <div className="mt-4 grid gap-4 text-sm text-slate-400 md:grid-cols-2">
+      <section className="mt-12 rounded-xl border border-[--border-card] bg-[--bg-section] p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-[--text-secondary]">Methodology</h2>
+        <div className="mt-4 grid gap-4 text-sm text-[--text-secondary] md:grid-cols-2">
           <div>
-            <p className="font-medium text-slate-300">CAGR</p>
+            <p className="font-medium text-[--text-primary]">CAGR</p>
             <p className="font-mono text-xs">(V_end / V_start)^(1/n) - 1</p>
           </div>
           <div>
-            <p className="font-medium text-slate-300">Decoupling Score</p>
+            <p className="font-medium text-[--text-primary]">Decoupling Score</p>
             <p className="font-mono text-xs">GDP_growth% - CO2_growth%</p>
           </div>
           <div>
-            <p className="font-medium text-slate-300">Energy Transition Index</p>
+            <p className="font-medium text-[--text-primary]">Energy Transition Index</p>
             <p className="font-mono text-xs">5-year change in renewable share (pp)</p>
           </div>
           <div>
-            <p className="font-medium text-slate-300">Carbon Intensity</p>
+            <p className="font-medium text-[--text-primary]">Carbon Intensity</p>
             <p className="font-mono text-xs">CO2 per capita / GDP per capita</p>
           </div>
         </div>

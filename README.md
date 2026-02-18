@@ -91,3 +91,17 @@ Or use the [Vercel Dashboard](https://vercel.com) for automatic Git-based deploy
 ## License
 
 © 2026 VisualClimate. All rights reserved.
+
+
+아래 항목을 전부 조사해서 마크다운 리포트로 출력해. 파일로 저장하지 말고 터미널에 출력만 해.
+
+1. 현재 프로젝트 파일 구조 (src/, .claude/, data/, tasks/, docs/ 트리)
+2. Supabase 테이블 목록과 각 테이블 row count (SELECT COUNT(*) FROM countries; SELECT COUNT(*) FROM indicators; SELECT COUNT(*) FROM country_data;)
+3. .claude/agents/ 폴더의 에이전트 목록 (파일명 + 첫 3줄)
+4. .claude/skills/ 폴더의 스킬 목록 (파일명 + 첫 3줄)
+5. qa-report.md 전체 내용
+6. tasks/data-pipeline-log.md 전체 내용
+7. tasks/lessons.md 전체 내용
+8. git log --oneline -20 (최근 커밋 20개)
+9. package.json의 dependencies 목록
+10. data/ 폴더 내용물

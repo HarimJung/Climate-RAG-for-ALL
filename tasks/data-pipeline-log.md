@@ -15,6 +15,52 @@
 
 ---
 
+## 2026-02-16 | Phase 2 Emissions Trend Analysis (6 Countries)
+
+### 실행 정보
+- **Timestamp**: 2026-02-16
+- **Phase**: 2 (분석)
+- **대상 국가**: KOR, USA, DEU, BRA, NGA, BGD (6개 파일럿)
+- **연도 범위**: 2000-2023
+- **입력 행 수**: 828 (country_data 테이블)
+
+### 소스 지표
+| 지표 코드 | 설명 | 행 수 |
+|---|---|---|
+| EN.GHG.CO2.PC.CE.AR5 | 1인당 CO2 배출 | 144 |
+| NY.GDP.PCAP.CD | 1인당 GDP | 144 |
+| EMBER.RENEWABLE.PCT | 재생에너지 비율 | 144 |
+| DERIVED.DECOUPLING | 디커플링 (GDP성장%-CO2성장%) | 138 |
+| DERIVED.ENERGY_TRANSITION | 5년간 재생에너지 변화 | 114 |
+| DERIVED.CO2_PER_GDP | CO2/GDP 집약도 | 144 |
+
+### 파생 분석 정의
+| 분석 항목 | 수식 | 출력 |
+|---|---|---|
+| CAGR 2000-2023 | (V_2023/V_2000)^(1/23) - 1 | cagr_2000_2023 |
+| 파리협정 전후 비교 | mean of annual change rates, pre(2001-2014) vs post(2016-2023) | pre_paris_vs_post_paris |
+| 디커플링 점수 | mean(DERIVED.DECOUPLING, 2015-2023) | decoupling_score |
+| 에너지 전환 순위 | latest DERIVED.ENERGY_TRANSITION | energy_transition_ranking |
+
+### 출력 파일
+| 파일 | 형식 | 상태 |
+|---|---|---|
+| data/analysis/emissions-trend-6countries.json | 구조화 JSON | SUCCESS |
+| data/analysis/emissions-trend-6countries.md | 마크다운 리포트 (한국어) | SUCCESS |
+
+### 주요 결과
+- CAGR 기준 최대 감소: USA (-1.84%), 최대 증가: BGD (+5.55%)
+- 파리협정 후 가장 큰 추세 반전: BRA (가속도 -3.66pp), DEU (-3.01pp)
+- 디커플링 1위: USA (+6.35), 최하위: NGA (+0.08)
+- 에너지 전환 속도 1위: DEU (+19.2pp/5yr), 최하위: BGD (-0.15pp/5yr)
+- 배출 집약도 최저: DEU (0.129), 최고: KOR (0.320)
+
+### 신뢰도
+- HIGH (Climate TRACE + WDI + Ember 3개 소스 교차 검증)
+- quality_score >= 0.70 기준 충족
+
+---
+
 ## 2026-02-11 | Phase 2 Derived Indicators & Trend Analysis
 
 ### 실행 정보

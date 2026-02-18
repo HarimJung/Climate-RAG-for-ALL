@@ -2,26 +2,28 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createServiceClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/StatCard';
-import { HomeCharts } from './HomeCharts';
 import { createMetaTags } from '@/components/seo/MetaTags';
 
 export const metadata = createMetaTags({
   title: 'Climate Intelligence for Sustainability Professionals',
-  description: 'Open climate data platform. 200 countries. Real-time indicators for ESG analysts, consultants, and sustainability managers.',
+  description: 'Open climate data platform. 6 pilot countries. Real-time indicators for ESG analysts, consultants, and sustainability managers.',
   path: '/',
 });
 
-const PILOT_COLORS: Record<string, string> = {
-  KOR: '#3b82f6', USA: '#ef4444', DEU: '#f59e0b', BRA: '#22c55e', NGA: '#a855f7', BGD: '#06b6d4',
-};
-
 const PILOT_COUNTRIES = [
-  { iso3: 'KOR', name: 'South Korea', flag: 'kr', color: 'border-blue-500/40' },
-  { iso3: 'USA', name: 'United States', flag: 'us', color: 'border-red-500/40' },
-  { iso3: 'DEU', name: 'Germany', flag: 'de', color: 'border-amber-500/40' },
-  { iso3: 'BRA', name: 'Brazil', flag: 'br', color: 'border-green-500/40' },
-  { iso3: 'NGA', name: 'Nigeria', flag: 'ng', color: 'border-purple-500/40' },
-  { iso3: 'BGD', name: 'Bangladesh', flag: 'bd', color: 'border-cyan-500/40' },
+  { iso3: 'KOR', name: 'South Korea', flag: 'kr', context: 'High-income Asia, energy transition' },
+  { iso3: 'USA', name: 'United States', flag: 'us', context: 'Largest historical emitter' },
+  { iso3: 'DEU', name: 'Germany', flag: 'de', context: 'EU leader, Energiewende' },
+  { iso3: 'BRA', name: 'Brazil', flag: 'br', context: 'Tropical forests, LULUCF' },
+  { iso3: 'NGA', name: 'Nigeria', flag: 'ng', context: "Africa's largest economy" },
+  { iso3: 'BGD', name: 'Bangladesh', flag: 'bd', context: 'Extreme climate vulnerability' },
+];
+
+const KEY_FINDINGS = [
+  { title: 'CO2 Divergence', stat: '3x', desc: 'Korea emits 3x the global average per capita while Bangladesh stays below 1 tCO2e.' },
+  { title: 'Paris Effect', stat: '-1.2%', desc: 'Post-2015 CAGR shows deceleration in high-income emitters vs. pre-Paris trends.' },
+  { title: 'Vulnerability Gap', stat: '2.4x', desc: "Bangladesh's ND-GAIN vulnerability score is 2.4x higher than Germany's." },
+  { title: 'Energy Transition', stat: '46%', desc: "Brazil leads with 46% renewable electricity; Nigeria trails at under 20%." },
 ];
 
 async function getStats() {
@@ -42,75 +44,57 @@ async function getStats() {
   }
 }
 
-async function getChartData() {
+async function getCountryMetrics() {
   try {
     const supabase = createServiceClient();
     const isos = PILOT_COUNTRIES.map(c => c.iso3);
 
-    // CO2 time series for all pilots — compute yearly average
-    const { data: co2Rows } = await supabase
+    const { data: rows } = await supabase
       .from('country_data')
-      .select('country_iso3, year, value')
-      .eq('indicator_code', 'EN.ATM.CO2E.PC')
+      .select('country_iso3, indicator_code, year, value')
       .in('country_iso3', isos)
-      .order('year', { ascending: true });
+      .in('indicator_code', ['EN.GHG.CO2.PC.CE.AR5', 'EMBER.RENEWABLE.PCT'])
+      .order('year', { ascending: false });
 
-    const yearMap = new Map<number, { sum: number; cnt: number }>();
-    for (const r of co2Rows || []) {
+    const metrics: Record<string, { co2?: string; renewable?: string }> = {};
+    for (const r of rows || []) {
       if (r.value == null) continue;
-      const e = yearMap.get(r.year) || { sum: 0, cnt: 0 };
-      e.sum += Number(r.value);
-      e.cnt += 1;
-      yearMap.set(r.year, e);
+      if (!metrics[r.country_iso3]) metrics[r.country_iso3] = {};
+      const m = metrics[r.country_iso3];
+      if (r.indicator_code === 'EN.GHG.CO2.PC.CE.AR5' && !m.co2) {
+        m.co2 = Number(r.value).toFixed(1) + ' tCO2e';
+      }
+      if (r.indicator_code === 'EMBER.RENEWABLE.PCT' && !m.renewable) {
+        m.renewable = Number(r.value).toFixed(0) + '%';
+      }
     }
-    const co2Avg = Array.from(yearMap.entries())
-      .map(([year, { sum, cnt }]) => ({ year, value: sum / cnt }))
-      .sort((a, b) => a.year - b.year);
-
-    // Latest CO2 per capita per country
-    const latestByCountry: { label: string; value: number; color: string; href: string }[] = [];
-    for (const c of PILOT_COUNTRIES) {
-      const rows = (co2Rows || []).filter(r => r.country_iso3 === c.iso3 && r.value != null);
-      if (rows.length === 0) continue;
-      const latest = rows.reduce((a, b) => (a.year > b.year ? a : b));
-      latestByCountry.push({
-        label: c.name,
-        value: Number(latest.value),
-        color: PILOT_COLORS[c.iso3] || '#64748b',
-        href: `/country/${c.iso3}`,
-      });
-    }
-
-    return { co2Avg, countryBar: latestByCountry };
+    return metrics;
   } catch {
-    return { co2Avg: [], countryBar: [] };
+    return {};
   }
 }
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [stats, charts] = await Promise.all([getStats(), getChartData()]);
+  const [stats, metrics] = await Promise.all([getStats(), getCountryMetrics()]);
 
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 py-24 sm:py-36">
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-transparent to-transparent" />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+      <section className="px-4 py-24 sm:py-32">
+        <div className="mx-auto max-w-5xl text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-[--text-primary] sm:text-5xl lg:text-6xl">
             Climate Intelligence for{' '}
-            <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-              Sustainability Professionals
-            </span>
+            <span className="text-[--accent-primary]">Sustainability Professionals</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400 sm:text-xl">
-            Open climate data platform. {stats.countries} countries. Real-time indicators.
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-[--text-secondary] sm:text-xl">
+            Open climate data platform. 6 pilot countries. Real-time indicators for ESG analysts, consultants, and sustainability managers.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-8 py-4 text-lg font-semibold text-slate-950 transition-all hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-500/25"
+              className="inline-flex items-center gap-2 rounded-full bg-[--accent-primary] px-8 py-4 text-lg font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
             >
               Explore Dashboard
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -118,8 +102,8 @@ export default async function HomePage() {
               </svg>
             </Link>
             <Link
-              href="/compare"
-              className="inline-flex items-center gap-2 rounded-full border border-slate-700 px-8 py-4 text-lg font-semibold text-white transition-colors hover:border-emerald-500/50 hover:bg-slate-800"
+              href="/compare?countries=KOR,USA"
+              className="inline-flex items-center gap-2 rounded-full border border-[--border-card] px-8 py-4 text-lg font-semibold text-[--text-primary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
             >
               Compare Countries
             </Link>
@@ -128,7 +112,7 @@ export default async function HomePage() {
       </section>
 
       {/* Stats */}
-      <section className="border-t border-slate-800 px-4 py-16">
+      <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
         <div className="mx-auto grid max-w-[1200px] gap-6 md:grid-cols-3">
           <StatCard title="Countries" value={stats.countries.toLocaleString()} trend={{ direction: 'up', label: '6 pilot countries live' }} />
           <StatCard title="Indicators" value={stats.indicators.toLocaleString()} unit="metrics" trend={{ direction: 'flat', label: 'GHG, energy, land, risk, economy' }} />
@@ -136,42 +120,60 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Charts */}
-      <section className="border-t border-slate-800 px-4 py-16">
+      {/* Key Findings */}
+      <section className="border-t border-[--border-card] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="mb-8 text-center text-3xl font-bold text-white">At a Glance</h2>
-          <HomeCharts co2Data={charts.co2Avg} countryBar={charts.countryBar} />
+          <h2 className="mb-8 text-center text-3xl font-bold text-[--text-primary]">Key Findings</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {KEY_FINDINGS.map((f) => (
+              <div key={f.title} className="rounded-xl border border-[--border-card] bg-white p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <p className="text-sm font-medium text-[--text-secondary]">{f.title}</p>
+                <p className="mt-2 font-mono text-3xl font-bold text-[--accent-primary]">{f.stat}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Pilot Countries */}
-      <section className="border-t border-slate-800 px-4 py-16">
+      <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="mb-8 text-center text-3xl font-bold text-white">Pilot Countries</h2>
+          <h2 className="mb-8 text-center text-3xl font-bold text-[--text-primary]">6 Pilot Countries</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PILOT_COUNTRIES.map((c) => (
-              <Link
-                key={c.iso3}
-                href={`/country/${c.iso3}`}
-                className={`flex items-center gap-4 rounded-xl border ${c.color} bg-slate-900 p-5 transition-all hover:bg-slate-800 hover:shadow-lg`}
-              >
-                <Image
-                  src={`https://flagcdn.com/${c.flag}.svg`}
-                  alt={`${c.name} flag`}
-                  width={48}
-                  height={36}
-                  className="rounded shadow"
-                  unoptimized
-                />
-                <div>
-                  <p className="text-lg font-semibold text-white">{c.name}</p>
-                  <p className="text-sm text-slate-500">{c.iso3}</p>
-                </div>
-                <svg className="ml-auto h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </Link>
-            ))}
+            {PILOT_COUNTRIES.map((c) => {
+              const m = metrics[c.iso3];
+              return (
+                <Link
+                  key={c.iso3}
+                  href={`/country/${c.iso3}`}
+                  className="group flex items-start gap-4 rounded-xl border border-[--border-card] bg-white p-5 transition-all hover:border-[--accent-primary] hover:shadow-md"
+                  style={{ boxShadow: 'var(--shadow-card)' }}
+                >
+                  <Image
+                    src={`https://flagcdn.com/${c.flag}.svg`}
+                    alt={`${c.name} flag`}
+                    width={48}
+                    height={36}
+                    className="mt-0.5 rounded shadow"
+                    unoptimized
+                  />
+                  <div className="flex-1">
+                    <p className="text-lg font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">{c.name}</p>
+                    <p className="text-sm text-[--text-muted]">{c.context}</p>
+                    {m && (
+                      <div className="mt-2 flex gap-4 text-xs font-medium text-[--text-secondary]">
+                        {m.co2 && <span>CO2: {m.co2}</span>}
+                        {m.renewable && <span>Renewable: {m.renewable}</span>}
+                      </div>
+                    )}
+                  </div>
+                  <svg className="mt-1 h-5 w-5 text-[--text-muted] group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

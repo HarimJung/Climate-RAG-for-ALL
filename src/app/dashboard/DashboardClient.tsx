@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { WorldMap } from '@/components/charts/WorldMap';
 import { BarChart } from '@/components/charts/BarChart';
 import { IndicatorSelector } from '@/components/IndicatorSelector';
-import { CLIMATE_INDICATORS } from '@/lib/constants';
+import { CLIMATE_INDICATORS, CHART_COLORS } from '@/lib/constants';
+
+const COUNTRY_NAMES: Record<string, string> = {
+    KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
+    BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
+};
 
 interface DashboardClientProps {
     indicatorData: Record<string, { iso3: string; name: string; value: number; year: number }[]>;
@@ -15,45 +19,63 @@ export function DashboardClient({ indicatorData, lastUpdated }: DashboardClientP
     const [selectedIndicator, setSelectedIndicator] = useState<string>(CLIMATE_INDICATORS[0].code);
 
     const currentIndicator = CLIMATE_INDICATORS.find(i => i.code === selectedIndicator) || CLIMATE_INDICATORS[0];
-    const currentData = indicatorData[selectedIndicator] || [];
-
-    // Get GHG data for bar chart (TOTAL_GHG or CO2)
-    const ghgData = indicatorData['TOTAL_GHG'] || indicatorData['EN.ATM.CO2E.PC'] || [];
+    const currentData = (indicatorData[selectedIndicator] || []).map((d, i) => ({
+        label: COUNTRY_NAMES[d.iso3] || d.iso3,
+        value: d.value,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+        href: `/country/${d.iso3}`,
+    }));
 
     return (
         <div className="space-y-12">
             {/* Indicator Selector */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 className="text-xl font-semibold text-white">Global Climate Indicators</h2>
-                    <p className="mt-1 text-sm text-slate-400">
-                        Select an indicator to visualize data across 200+ countries
+                    <h2 className="text-xl font-semibold text-[--text-primary]">Climate Indicators</h2>
+                    <p className="mt-1 text-sm text-[--text-secondary]">
+                        Select an indicator to compare across 6 pilot countries
                     </p>
                 </div>
                 <IndicatorSelector value={selectedIndicator} onChange={setSelectedIndicator} />
             </div>
 
-            {/* World Map */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-                <WorldMap
-                    data={currentData.map(d => ({ iso3: d.iso3, name: d.name, value: d.value }))}
-                    indicatorName={currentIndicator.name}
+            {/* Bar Chart */}
+            <div className="rounded-xl border border-[--border-card] bg-white p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <BarChart
+                    data={currentData}
                     unit={currentIndicator.unit}
+                    title={`${currentIndicator.name} by Country`}
                 />
             </div>
 
-            {/* Bar Chart */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
-                <BarChart
-                    data={ghgData.map(d => ({ label: d.name, value: d.value, href: `/country/${d.iso3}` }))}
-                    unit={selectedIndicator === 'TOTAL_GHG' ? 'MtCO2e' : currentIndicator.unit}
-                    title="Top 20 Countries by GHG Emissions"
-                />
+            {/* All Indicators Overview */}
+            <div>
+                <h2 className="mb-6 text-xl font-semibold text-[--text-primary]">All Indicators at a Glance</h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {CLIMATE_INDICATORS.map((ind) => {
+                        const rows = (indicatorData[ind.code] || []).map((d, i) => ({
+                            label: COUNTRY_NAMES[d.iso3] || d.iso3,
+                            value: d.value,
+                            color: CHART_COLORS[i % CHART_COLORS.length],
+                            href: `/country/${d.iso3}`,
+                        }));
+                        return (
+                            <div key={ind.code} className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
+                                <h3 className="mb-3 text-sm font-medium text-[--text-secondary]">{ind.name}</h3>
+                                {rows.length > 0 ? (
+                                    <BarChart data={rows} unit={ind.unit} height={240} />
+                                ) : (
+                                    <p className="py-8 text-center text-sm text-[--text-muted]">No data available</p>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Source Attribution */}
-            <div className="text-center text-sm text-slate-500">
-                Source: World Bank, Climate Watch. Last updated: {lastUpdated}
+            <div className="text-center text-sm text-[--text-muted]">
+                Source: World Bank, Climate Watch, Ember, ND-GAIN. Last updated: {lastUpdated}
             </div>
         </div>
     );

@@ -11,11 +11,6 @@ interface Props {
     selectedIso3: string[];
 }
 
-const INDICATOR_META = [
-    ...CLIMATE_INDICATORS,
-    { code: 'TOTAL_GHG', name: 'Total GHG Emissions', unit: 'MtCO2e', category: 'emissions', source: 'climatewatch' as const },
-];
-
 function formatValue(value: number, unit: string): string {
     if (unit === 'US$') {
         if (value >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;
@@ -60,24 +55,23 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
 
     // Find max value per indicator for bar widths
     const maxValues: Record<string, number> = {};
-    for (const ind of INDICATOR_META) {
+    for (const ind of CLIMATE_INDICATORS) {
         maxValues[ind.code] = Math.max(...data.map(c => c.indicators[ind.code]?.value ?? 0), 1);
     }
 
     return (
         <div className="space-y-8">
             {/* Country Selector */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="rounded-xl border border-[--border-card] bg-white p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
                 <div className="flex flex-wrap gap-2 mb-4">
                     {data.map(c => (
-                        <span key={c.iso3} className="inline-flex items-center gap-2 rounded-full bg-emerald-900/40 border border-emerald-700/50 px-4 py-2 text-sm text-emerald-300">
-                            {c.flag_url && <img src={c.flag_url} alt="" className="h-4 w-6 rounded-sm object-cover" />}
+                        <span key={c.iso3} className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-4 py-2 text-sm text-[--accent-primary]">
                             {c.name}
-                            <button onClick={() => removeCountry(c.iso3)} className="ml-1 text-emerald-500 hover:text-white">&times;</button>
+                            <button onClick={() => removeCountry(c.iso3)} className="ml-1 text-blue-400 hover:text-[--accent-negative]">&times;</button>
                         </span>
                     ))}
                     {selected.length === 0 && (
-                        <span className="text-slate-500 text-sm py-2">Select up to 5 countries to compare</span>
+                        <span className="text-[--text-muted] text-sm py-2">Select up to 5 countries to compare</span>
                     )}
                 </div>
                 <div className="relative">
@@ -86,19 +80,19 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="Search countries... (e.g. Vietnam, Brazil, KOR)"
-                        className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg border border-[--border-card] bg-white px-4 py-3 text-sm text-[--text-primary] placeholder-[--text-muted] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]"
                     />
                     {search && filtered.length > 0 && (
-                        <div className="absolute z-20 mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 shadow-xl">
+                        <div className="absolute z-20 mt-1 w-full rounded-lg border border-[--border-card] bg-white shadow-xl">
                             {filtered.map(c => (
                                 <button
                                     key={c.iso3}
                                     onClick={() => { addCountry(c.iso3); setSearch(''); }}
-                                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-slate-300 hover:bg-slate-700"
+                                    className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[--text-secondary] hover:bg-[--bg-section]"
                                 >
-                                    <span className="text-xs text-slate-500 w-8">{c.iso3}</span>
+                                    <span className="text-xs text-[--text-muted] w-8">{c.iso3}</span>
                                     <span>{c.name}</span>
-                                    <span className="ml-auto text-xs text-slate-600">{c.region}</span>
+                                    <span className="ml-auto text-xs text-[--text-muted]">{c.region}</span>
                                 </button>
                             ))}
                         </div>
@@ -109,30 +103,30 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
             {data.length > 0 && (
                 <>
                     {/* Comparison Table */}
-                    <div className="rounded-xl border border-slate-800 bg-slate-900/50 overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-800">
-                            <h2 className="text-lg font-semibold text-white">Indicator Comparison</h2>
+                    <div className="rounded-xl border border-[--border-card] bg-white overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                        <div className="px-6 py-4 border-b border-[--border-card]">
+                            <h2 className="text-lg font-semibold text-[--text-primary]">Indicator Comparison</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-slate-800">
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Indicator</th>
+                                    <tr className="border-b border-[--border-card]">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-[--text-muted] uppercase tracking-wider">Indicator</th>
                                         {data.map(c => (
-                                            <th key={c.iso3} className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                                            <th key={c.iso3} className="px-6 py-3 text-left text-xs font-medium text-[--text-secondary] uppercase tracking-wider">
                                                 {c.name}
                                             </th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {INDICATOR_META.map(ind => {
+                                    {CLIMATE_INDICATORS.map(ind => {
                                         const ranks = getRank(data, ind.code);
                                         return (
-                                            <tr key={ind.code} className="border-b border-slate-800/50">
+                                            <tr key={ind.code} className="border-b border-[--border-card]/50">
                                                 <td className="px-6 py-4">
-                                                    <div className="text-slate-300 font-medium">{ind.name.split('(')[0].trim()}</div>
-                                                    <div className="text-xs text-slate-600">{ind.unit}</div>
+                                                    <div className="text-[--text-primary] font-medium">{ind.name.split('(')[0].trim()}</div>
+                                                    <div className="text-xs text-[--text-muted]">{ind.unit}</div>
                                                 </td>
                                                 {data.map(c => {
                                                     const val = c.indicators[ind.code];
@@ -144,20 +138,20 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
                                                             {val ? (
                                                                 <div>
                                                                     <div className="flex items-center gap-2">
-                                                                        <span className={`text-lg font-bold ${isHighest ? 'text-emerald-400' : 'text-white'}`}>
+                                                                        <span className={`text-lg font-bold ${isHighest ? 'text-[--accent-primary]' : 'text-[--text-primary]'}`}>
                                                                             {formatValue(val.value, ind.unit)}
                                                                         </span>
                                                                         {isHighest && (
-                                                                            <span className="text-xs bg-emerald-900/50 text-emerald-400 px-1.5 py-0.5 rounded">#1</span>
+                                                                            <span className="text-xs bg-blue-50 text-[--accent-primary] px-1.5 py-0.5 rounded">#1</span>
                                                                         )}
                                                                     </div>
-                                                                    <div className="mt-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                                                                        <div className="h-full rounded-full bg-emerald-600" style={{ width: `${barWidth}%` }} />
+                                                                    <div className="mt-1 h-1.5 rounded-full bg-[--bg-section] overflow-hidden">
+                                                                        <div className="h-full rounded-full bg-[--accent-primary]" style={{ width: `${barWidth}%` }} />
                                                                     </div>
-                                                                    <div className="text-xs text-slate-600 mt-1">{val.year}</div>
+                                                                    <div className="text-xs text-[--text-muted] mt-1">{val.year}</div>
                                                                 </div>
                                                             ) : (
-                                                                <span className="text-slate-600">N/A</span>
+                                                                <span className="text-[--text-muted]">N/A</span>
                                                             )}
                                                         </td>
                                                     );
@@ -165,41 +159,26 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
                                             </tr>
                                         );
                                     })}
-                                    {/* Population row */}
-                                    <tr className="border-b border-slate-800/50">
-                                        <td className="px-6 py-4">
-                                            <div className="text-slate-300 font-medium">Population</div>
-                                        </td>
-                                        {data.map(c => (
-                                            <td key={c.iso3} className="px-6 py-4">
-                                                <span className="text-lg font-bold text-white">
-                                                    {c.population ? (c.population / 1e6).toFixed(1) + 'M' : 'N/A'}
-                                                </span>
-                                            </td>
-                                        ))}
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div className="px-6 py-3 text-xs text-slate-600 border-t border-slate-800">
-                            Source: World Bank, Climate Watch · Data may lag 1–3 years
+                        <div className="px-6 py-3 text-xs text-[--text-muted] border-t border-[--border-card]">
+                            Source: World Bank, Climate Watch, Ember, ND-GAIN
                         </div>
                     </div>
-
                 </>
             )}
 
             {data.length === 0 && (
                 <div className="text-center py-20">
                     <div className="text-5xl mb-4">&#127758;</div>
-                    <h2 className="text-xl font-semibold text-white mb-2">Select countries to compare</h2>
-                    <p className="text-slate-400 mb-8">Search and add up to 5 countries for side-by-side climate risk analysis</p>
+                    <h2 className="text-xl font-semibold text-[--text-primary] mb-2">Select countries to compare</h2>
+                    <p className="text-[--text-secondary] mb-8">Search and add up to 5 countries for side-by-side climate indicator comparison</p>
                     <div className="flex flex-wrap gap-2 justify-center">
                         {[
-                            { label: 'ASEAN', countries: 'VNM,IDN,PHL,THA,MYS' },
-                            { label: 'BRICS', countries: 'BRA,RUS,IND,CHN,ZAF' },
-                            { label: 'EU Big 4', countries: 'DEU,FRA,ITA,ESP' },
-                            { label: 'East Asia', countries: 'KOR,JPN,CHN,TWN' },
+                            { label: '6 Pilots', countries: 'KOR,USA,DEU,BRA,NGA,BGD' },
+                            { label: 'High Emitters', countries: 'USA,DEU,KOR' },
+                            { label: 'Vulnerable', countries: 'BGD,NGA,BRA' },
                         ].map(preset => (
                             <button
                                 key={preset.label}
@@ -208,7 +187,7 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
                                     setSelected(list);
                                     router.push(`/compare?countries=${preset.countries}`);
                                 }}
-                                className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-emerald-600 hover:text-emerald-400"
+                                className="rounded-lg border border-[--border-card] px-4 py-2 text-sm text-[--text-secondary] hover:border-[--accent-primary] hover:text-[--accent-primary]"
                             >
                                 {preset.label}
                             </button>

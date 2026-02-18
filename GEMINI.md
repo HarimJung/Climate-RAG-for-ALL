@@ -69,3 +69,5 @@ KOR, USA, DEU, BRA, NGA, BGD — 이 6개국만 다룬다.
 ---
 
 _Last updated: 2026-02-11 | Version: 1.0.0_
+## Requests from Claude
+Check tasks/requests-to-antigravity.md regularly. Fulfill and save to docs/drafts/.
