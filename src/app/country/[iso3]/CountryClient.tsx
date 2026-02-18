@@ -3,6 +3,23 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
+import { ClimateStripes } from '@/components/charts/ClimateStripes';
+import { CountryCard } from '@/components/charts/CountryCard';
+import { ClimateSankey, type EnergySource } from '@/components/charts/ClimateSankey';
+
+const FLAG_EMOJIS: Record<string, string> = {
+  KOR: '🇰🇷', USA: '🇺🇸', DEU: '🇩🇪',
+  BRA: '🇧🇷', NGA: '🇳🇬', BGD: '🇧🇩',
+};
+
+const COUNTRY_HOOKS: Record<string, string> = {
+  KOR: 'Post-Paris deceleration -2.85pp. Renewables at OECD low 9.6%.',
+  USA: 'Largest historical emitter. Decoupling leader at +6.35pp/yr.',
+  DEU: '54.4% renewable electricity. Energiewende in action.',
+  BRA: '89% renewable power. Forest cover loss remains major risk.',
+  NGA: 'PM2.5 at 11× WHO limit. Africa\'s largest economy.',
+  BGD: 'CO₂ +246% since 2000. 1/17 of US per capita.',
+};
 import riskProfileKOR from '../../../../data/analysis/risk-profile-KOR.json';
 import riskProfileUSA from '../../../../data/analysis/risk-profile-USA.json';
 import riskProfileDEU from '../../../../data/analysis/risk-profile-DEU.json';
@@ -33,6 +50,7 @@ interface CountryClientProps {
   scatterData: { iso3: string; name: string; vulnerability: number; readiness: number }[];
   decouplingSeries: { year: number; value: number }[];
   decouplingScore: number | null;
+  pm25?: number | null;
 }
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -435,7 +453,7 @@ function VulnerabilityScatter({ data, highlightIso3 }: { data: { iso3: string; n
 // ─── Main Component ──────────────────────────────────────────────────────────
 export function CountryClient({
   countryName, iso3, wbCo2Series, co2Comparison, gdpVsCo2,
-  emberMix, renewableChange, scatterData, decouplingSeries, decouplingScore,
+  emberMix, renewableChange, scatterData, decouplingSeries, decouplingScore, pm25 = null,
 }: CountryClientProps) {
 
   // ── Derived insight data from emissions-trend JSON ─────────────────────────
@@ -471,16 +489,51 @@ export function CountryClient({
     ? [...scatterData].sort((a, b) => b.readiness - a.readiness).findIndex(d => d.iso3 === iso3) + 1
     : null;
 
-  const energyMixData = emberMix
+  const latestCo2 = wbCo2Series.length > 0
+    ? [...wbCo2Series].sort((a, b) => b.year - a.year)[0].value
+    : 0;
+
+  const sankeyMix: EnergySource[] = emberMix
     ? [
-        { label: 'Fossil', value: emberMix.fossil, color: '#64748b' },
-        { label: 'Renewable', value: emberMix.renewable, color: '#00A67E' },
-        { label: 'Nuclear & Other', value: emberMix.other, color: '#0066FF' },
+        { source: 'Fossil', value: emberMix.fossil, type: 'fossil' },
+        { source: 'Renewable', value: emberMix.renewable, type: 'renewable' },
+        { source: 'Nuclear & Other', value: emberMix.other, type: 'nuclear' },
       ]
     : [];
 
   return (
     <div className="space-y-0">
+      {/* Hero: CountryCard + ClimateStripes */}
+      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="grid gap-8 lg:grid-cols-2 items-start">
+            <CountryCard
+              country={countryName}
+              iso3={iso3}
+              flag={FLAG_EMOJIS[iso3] ?? '🌍'}
+              hook={COUNTRY_HOOKS[iso3] ?? ''}
+              co2={latestCo2}
+              renewable={emberMix?.renewable ?? 0}
+              pm25={pm25 ?? 0}
+              vulnerability={myScatter?.vulnerability ?? 0}
+              stripesData={wbCo2Series}
+              className="mx-auto w-full max-w-[480px] lg:mx-0"
+            />
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-[--text-secondary]">CO₂ per capita · 2000–2023</h3>
+              <ClimateStripes
+                mode="single"
+                country={countryName}
+                iso3={iso3}
+                data={wbCo2Series}
+                indicator={`${countryName} · CO₂ per capita · 2000–2023`}
+              />
+              <p className="mt-2 text-xs text-[--text-muted]">Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Section 1: Emissions Story */}
       <section className="border-b border-[--border-card] bg-white px-4 py-12">
         <div className="mx-auto max-w-[1200px]">
@@ -547,7 +600,13 @@ export function CountryClient({
                 <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
                   Electricity Generation Mix ({emberMix.year})
                 </h3>
-                <EnergyDonut data={energyMixData} />
+                <ClimateSankey
+                  country={countryName}
+                  iso3={iso3}
+                  energyMix={sankeyMix}
+                  totalCO2={latestCo2}
+                  className="mt-2"
+                />
                 <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
               </Card>
 

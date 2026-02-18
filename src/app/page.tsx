@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { createServiceClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/StatCard';
 import { createMetaTags } from '@/components/seo/MetaTags';
+import { ClimateStripes } from '@/components/charts/ClimateStripes';
 
 export const metadata = createMetaTags({
   title: 'Climate Intelligence for Sustainability Professionals',
@@ -25,6 +26,40 @@ const KEY_FINDINGS = [
   { title: 'Vulnerability Gap', stat: '2.4x', desc: "Bangladesh's ND-GAIN vulnerability score is 2.4x higher than Germany's." },
   { title: 'Energy Transition', stat: '46%', desc: "Brazil leads with 46% renewable electricity; Nigeria trails at under 20%." },
 ];
+
+const COUNTRY_NAMES_MAP: Record<string, string> = {
+  KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
+  BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
+};
+
+async function getStripesData() {
+  try {
+    const supabase = createServiceClient();
+    const isos = PILOT_COUNTRIES.map(c => c.iso3);
+    const { data: rows } = await supabase
+      .from('country_data')
+      .select('country_iso3, year, value')
+      .in('country_iso3', isos)
+      .eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5')
+      .gte('year', 2000)
+      .lte('year', 2023)
+      .order('year', { ascending: true });
+
+    const byCountry: Record<string, { year: number; value: number }[]> = {};
+    for (const r of rows || []) {
+      if (r.value == null) continue;
+      if (!byCountry[r.country_iso3]) byCountry[r.country_iso3] = [];
+      byCountry[r.country_iso3].push({ year: r.year, value: Number(r.value) });
+    }
+    return isos.map(iso3 => ({
+      country: COUNTRY_NAMES_MAP[iso3] || iso3,
+      iso3,
+      data: byCountry[iso3] || [],
+    }));
+  } catch {
+    return [];
+  }
+}
 
 async function getStats() {
   try {
@@ -77,7 +112,7 @@ async function getCountryMetrics() {
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [stats, metrics] = await Promise.all([getStats(), getCountryMetrics()]);
+  const [stats, metrics, stripesData] = await Promise.all([getStats(), getCountryMetrics(), getStripesData()]);
 
   return (
     <div>
@@ -135,6 +170,21 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Climate Stripes — 6 Countries stacked */}
+      {stripesData.some(d => d.data.length > 0) && (
+        <section className="border-t border-[--border-card] px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <h2 className="mb-2 text-center text-3xl font-bold text-[--text-primary]">CO₂ per Capita · 2000–2023</h2>
+            <p className="mb-8 text-center text-sm text-[--text-secondary]">Warmer stripes = higher emissions. Blue = lower emissions.</p>
+            <ClimateStripes
+              mode="stacked"
+              allData={stripesData}
+              indicator="CO₂ per capita · 2000–2023 · Source: World Bank WDI"
+            />
+          </div>
+        </section>
+      )}
 
       {/* Pilot Countries */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">

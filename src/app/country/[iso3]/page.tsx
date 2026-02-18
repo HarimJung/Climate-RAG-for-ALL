@@ -242,6 +242,7 @@ export default async function CountryPage({ params }: Props) {
   const renewable = latestByCode['EMBER.RENEWABLE.PCT'];
   const ndVuln = latestByCode['NDGAIN.VULNERABILITY'];
   const decoupling = latestByCode['DERIVED.DECOUPLING'];
+  const pm25 = latestByCode['EN.ATM.PM25.MC.M3'];
 
   const formatGdpTotal = (pcap: number, pop: number) => {
     const total = pcap * pop;
@@ -340,6 +341,7 @@ export default async function CountryPage({ params }: Props) {
         scatterData={scatterData}
         decouplingSeries={decouplingSeries}
         decouplingScore={decoupling?.value ?? null}
+        pm25={pm25?.value ?? null}
       />
 
       {/* Data Sources */}
