@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { createServiceClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/StatCard';
 import { createMetaTags } from '@/components/seo/MetaTags';
-import { ClimateStripes } from '@/components/charts/ClimateStripes';
+import { HomeStripes } from './HomeStripes';
 
 export const metadata = createMetaTags({
   title: 'Climate Intelligence for Sustainability Professionals',
@@ -177,11 +177,7 @@ export default async function HomePage() {
           <div className="mx-auto max-w-[1200px]">
             <h2 className="mb-2 text-center text-3xl font-bold text-[--text-primary]">CO₂ per Capita · 2000–2023</h2>
             <p className="mb-8 text-center text-sm text-[--text-secondary]">Warmer stripes = higher emissions. Blue = lower emissions.</p>
-            <ClimateStripes
-              mode="stacked"
-              allData={stripesData}
-              indicator="CO₂ per capita · 2000–2023 · Source: World Bank WDI"
-            />
+            <HomeStripes allData={stripesData} />
           </div>
         </section>
       )}

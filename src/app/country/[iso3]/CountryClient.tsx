@@ -3,9 +3,21 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
-import { ClimateStripes } from '@/components/charts/ClimateStripes';
-import { CountryCard } from '@/components/charts/CountryCard';
-import { ClimateSankey, type EnergySource } from '@/components/charts/ClimateSankey';
+import dynamic from 'next/dynamic';
+import type { EnergySource } from '@/components/charts/ClimateSankey';
+
+const ClimateStripes = dynamic(
+  () => import('@/components/charts/ClimateStripes').then(m => ({ default: m.ClimateStripes })),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-xl bg-[--bg-section]" /> }
+);
+const CountryCard = dynamic(
+  () => import('@/components/charts/CountryCard').then(m => ({ default: m.CountryCard })),
+  { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
+);
+const ClimateSankey = dynamic(
+  () => import('@/components/charts/ClimateSankey').then(m => ({ default: m.ClimateSankey })),
+  { ssr: false, loading: () => <div className="aspect-square animate-pulse rounded-xl bg-[--bg-section]" /> }
+);
 
 const FLAG_EMOJIS: Record<string, string> = {
   KOR: '🇰🇷', USA: '🇺🇸', DEU: '🇩🇪',
