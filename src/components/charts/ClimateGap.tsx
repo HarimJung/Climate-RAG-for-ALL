@@ -88,7 +88,7 @@ export function ClimateGap({ highlightIso3, className = '' }: ClimateGapProps) {
         const isHL = c.iso3 === highlightIso3;
         const isDecel = c.post < c.pre;
         const lineColor = isHL ? c.color : isDecel ? '#10B981' : '#EF4444';
-        const opacity = isHL ? 1 : 0.65;
+        const opacity = isHL ? 1 : highlightIso3 ? 0.15 : 0.65;
         const sw = isHL ? 3.5 : 2;
         const fs = isHL ? 13 : 11;
         const fw = isHL ? '700' : '500';
