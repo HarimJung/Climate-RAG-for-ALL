@@ -13,6 +13,7 @@ const REPORTS = [
         year: 2023,
         description: 'Comprehensive assessment of climate change science, impacts, and mitigation strategies.',
         tags: ['Assessment', 'Global'],
+        url: 'https://www.ipcc.ch/report/ar6/syr/',
     },
     {
         title: 'Emissions Gap Report 2023',
@@ -20,6 +21,7 @@ const REPORTS = [
         year: 2023,
         description: 'Analysis of the gap between current commitments and Paris Agreement targets.',
         tags: ['Emissions', 'Policy'],
+        url: 'https://www.unep.org/resources/emissions-gap-report-2023',
     },
     {
         title: 'State of the Global Climate 2023',
@@ -27,6 +29,7 @@ const REPORTS = [
         year: 2023,
         description: 'Annual overview of global climate indicators, extreme events, and socioeconomic impacts.',
         tags: ['Annual', 'Indicators'],
+        url: 'https://wmo.int/publication/state-of-global-climate-2023',
     },
     {
         title: 'Global Stocktake Report',
@@ -34,6 +37,7 @@ const REPORTS = [
         year: 2023,
         description: 'First global assessment of progress under the Paris Agreement.',
         tags: ['Paris Agreement', 'Progress'],
+        url: 'https://unfccc.int/topics/global-stocktake',
     },
     {
         title: 'Adaptation Gap Report 2023',
@@ -41,6 +45,7 @@ const REPORTS = [
         year: 2023,
         description: 'Assessment of global progress on adaptation planning, finance, and implementation.',
         tags: ['Adaptation', 'Finance'],
+        url: 'https://www.unep.org/resources/adaptation-gap-report-2023',
     },
     {
         title: 'Net Zero Roadmap 2023',
@@ -48,6 +53,7 @@ const REPORTS = [
         year: 2023,
         description: 'Updated pathway for the global energy sector to reach net zero by 2050.',
         tags: ['Energy', 'Net Zero'],
+        url: 'https://www.iea.org/reports/net-zero-roadmap-a-global-pathway-to-keep-the-15-0c-goal-in-reach',
     },
     {
         title: 'Global Carbon Budget 2023',
@@ -55,6 +61,7 @@ const REPORTS = [
         year: 2023,
         description: 'Annual update of global CO2 emissions from fossil fuels, land use, and cement.',
         tags: ['Carbon', 'Data'],
+        url: 'https://globalcarbonbudget.org/',
     },
     {
         title: 'Climate Change and Land',
@@ -62,6 +69,7 @@ const REPORTS = [
         year: 2022,
         description: 'Special report on climate change, desertification, food security, and land management.',
         tags: ['Land', 'Food Security'],
+        url: 'https://www.ipcc.ch/srccl/',
     },
 ];
 
@@ -97,18 +105,31 @@ export default function LibraryPage() {
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {REPORTS.map((report) => (
-                        <div
+                        <a
                             key={report.title}
-                            className="rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
+                            href={report.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group block rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
                             style={{ boxShadow: 'var(--shadow-card)' }}
                         >
                             <div className="flex items-center justify-between">
                                 <span className="rounded-full bg-[--bg-section] px-3 py-1 text-xs font-medium text-[--text-secondary]">
                                     {report.org}
                                 </span>
-                                <span className="text-sm text-[--text-muted]">{report.year}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-[--text-muted]">{report.year}</span>
+                                    {/* External link icon */}
+                                    <svg className="h-3.5 w-3.5 text-[--text-muted] opacity-0 transition-opacity group-hover:opacity-100"
+                                        fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                            d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                    </svg>
+                                </div>
                             </div>
-                            <h3 className="mt-4 text-lg font-semibold text-[--text-primary]">{report.title}</h3>
+                            <h3 className="mt-4 text-lg font-semibold text-[--text-primary] group-hover:text-[--accent-primary] transition-colors">
+                                {report.title}
+                            </h3>
                             <p className="mt-2 text-sm text-[--text-secondary]">{report.description}</p>
                             <div className="mt-4 flex flex-wrap gap-2">
                                 {report.tags.map((tag) => (
@@ -120,7 +141,7 @@ export default function LibraryPage() {
                                     </span>
                                 ))}
                             </div>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>
