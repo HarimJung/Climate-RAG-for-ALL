@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { createServiceClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/StatCard';
 import { createMetaTags } from '@/components/seo/MetaTags';
+import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldScoreboard';
 // import { HomeStripes } from './HomeStripes'; // disabled — D3 SSR fix pending
 
 export const metadata = createMetaTags({
@@ -79,6 +80,34 @@ async function getStats() {
   }
 }
 
+const CLASS_NAME: Record<number, CountryClass['cls']> = { 1: 'Changer', 2: 'Starter', 3: 'Talker' };
+
+async function getScoreboardPreview(): Promise<CountryClass[]> {
+  try {
+    const supabase = createServiceClient();
+    const [{ data: clsRows }, { data: metricRows }, { data: cntRows }] = await Promise.all([
+      supabase.from('country_data').select('country_iso3, value').eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023),
+      supabase.from('country_data').select('country_iso3, indicator_code, year, value')
+        .in('indicator_code', ['EN.GHG.CO2.PC.CE.AR5', 'EMBER.RENEWABLE.PCT']).gte('year', 2018).order('year', { ascending: false }),
+      supabase.from('countries').select('iso3, name'),
+    ]);
+    const nameMap = new Map<string, string>((cntRows ?? []).map((c: { iso3: string; name: string }) => [c.iso3, c.name]));
+    const co2Map  = new Map<string, number>();
+    const renMap  = new Map<string, number>();
+    for (const r of (metricRows ?? []) as { country_iso3: string; indicator_code: string; value: number }[]) {
+      if (r.indicator_code === 'EN.GHG.CO2.PC.CE.AR5' && !co2Map.has(r.country_iso3)) co2Map.set(r.country_iso3, Number(r.value));
+      if (r.indicator_code === 'EMBER.RENEWABLE.PCT'   && !renMap.has(r.country_iso3)) renMap.set(r.country_iso3, Number(r.value));
+    }
+    return (clsRows ?? []).map((r: { country_iso3: string; value: number }) => ({
+      iso3:      r.country_iso3,
+      name:      nameMap.get(r.country_iso3) ?? r.country_iso3,
+      cls:       CLASS_NAME[r.value] ?? 'Talker',
+      co2:       co2Map.get(r.country_iso3),
+      renewable: renMap.get(r.country_iso3),
+    }));
+  } catch { return []; }
+}
+
 async function getCountryMetrics() {
   try {
     const supabase = createServiceClient();
@@ -112,7 +141,7 @@ async function getCountryMetrics() {
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [stats, metrics] = await Promise.all([getStats(), getCountryMetrics()]);
+  const [stats, metrics, scoreboardData] = await Promise.all([getStats(), getCountryMetrics(), getScoreboardPreview()]);
 
   return (
     <div>
@@ -168,6 +197,30 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* World Scoreboard mini */}
+      <section className="border-t border-[--border-card] px-4 py-16">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h2 className="text-3xl font-bold text-[--text-primary]">Who is actually reducing emissions?</h2>
+              <p className="mt-2 text-[--text-secondary]">Climate action classification · 212 countries · CO₂ CAGR 2015–2023 + Renewable growth</p>
+            </div>
+            <Link href="/posters" className="shrink-0 text-sm font-medium text-[--accent-primary] hover:underline">
+              Open Posters →
+            </Link>
+          </div>
+          {scoreboardData.length > 0 ? (
+            <Link href="/posters" className="block rounded-xl border border-[--border-card] overflow-hidden hover:shadow-md transition-shadow" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <WorldScoreboard countries={scoreboardData} width={1200} height={580} />
+            </Link>
+          ) : (
+            <div className="flex h-48 items-center justify-center rounded-xl border border-[--border-card] bg-[--bg-section] text-sm text-[--text-muted]">
+              Loading world map…
+            </div>
+          )}
         </div>
       </section>
 

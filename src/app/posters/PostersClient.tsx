@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ClimateGap } from '@/components/charts/ClimateGap';
+import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldScoreboard';
 
 // ── Country registry ──────────────────────────────────────────────────────────
 const COUNTRIES = [
@@ -424,15 +425,111 @@ function TransitionRacePoster({ raceData, highlightIso3 }: { raceData: RaceEntry
   );
 }
 
+// ── 6. World Scoreboard ───────────────────────────────────────────────────────
+
+const CLASS_NAME: Record<number, CountryClass['cls']> = { 1: 'Changer', 2: 'Starter', 3: 'Talker' };
+
+async function fetchScoreboardData(): Promise<CountryClass[]> {
+  const supabase = createClient();
+  // Load classification values
+  const { data: clsRows } = await supabase
+    .from('country_data')
+    .select('country_iso3, value')
+    .eq('indicator_code', 'DERIVED.CLIMATE_CLASS')
+    .eq('year', 2023);
+
+  // Load latest CO2 and renewable (year >= 2018)
+  const { data: metricRows } = await supabase
+    .from('country_data')
+    .select('country_iso3, indicator_code, year, value')
+    .in('indicator_code', ['EN.GHG.CO2.PC.CE.AR5', 'EMBER.RENEWABLE.PCT'])
+    .gte('year', 2018)
+    .order('year', { ascending: false });
+
+  // Load country names
+  const { data: cntRows } = await supabase
+    .from('countries')
+    .select('iso3, name');
+
+  const nameMap = new Map<string, string>((cntRows ?? []).map((c: { iso3: string; name: string }) => [c.iso3, c.name]));
+  const clsMap  = new Map<string, number>((clsRows ?? []).map((r: { country_iso3: string; value: number }) => [r.country_iso3, r.value]));
+
+  // Latest metric per country per indicator
+  const co2Map = new Map<string, number>();
+  const renMap = new Map<string, number>();
+  for (const r of (metricRows ?? []) as { country_iso3: string; indicator_code: string; year: number; value: number }[]) {
+    if (r.indicator_code === 'EN.GHG.CO2.PC.CE.AR5' && !co2Map.has(r.country_iso3)) co2Map.set(r.country_iso3, Number(r.value));
+    if (r.indicator_code === 'EMBER.RENEWABLE.PCT'   && !renMap.has(r.country_iso3)) renMap.set(r.country_iso3, Number(r.value));
+  }
+
+  const results: CountryClass[] = [];
+  // Countries with classification
+  for (const [iso3, clsVal] of clsMap) {
+    results.push({
+      iso3,
+      name:      nameMap.get(iso3) ?? iso3,
+      cls:       CLASS_NAME[clsVal] ?? 'Talker',
+      co2:       co2Map.get(iso3),
+      renewable: renMap.get(iso3),
+    });
+  }
+  // Countries with no classification → NoData
+  for (const [iso3, name] of nameMap) {
+    if (!clsMap.has(iso3)) results.push({ iso3, name, cls: 'NoData' });
+  }
+  return results;
+}
+
+function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClass[] }) {
+  const counts = { Changer: 0, Starter: 0, Talker: 0 };
+  for (const c of scoreboardData) if (c.cls !== 'NoData') counts[c.cls as keyof typeof counts]++;
+
+  return (
+    <div style={{
+      background: '#FAFAF9', border: '1px solid #E2E8F0', borderRadius: '16px',
+      boxShadow: '0 4px 32px rgba(0,0,0,0.07)', padding: '32px',
+      maxWidth: '900px', margin: '0 auto',
+    }}>
+      <div style={{ fontSize: '11px', color: '#94A3B8', fontFamily: 'Inter, system-ui, sans-serif', letterSpacing: '0.05em', marginBottom: '12px' }}>
+        visualclimate.org
+      </div>
+      <div style={{ fontSize: '26px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif', marginBottom: '6px' }}>
+        Who is actually reducing emissions?
+      </div>
+      <div style={{ fontSize: '13px', color: '#64748B', fontFamily: 'Inter, system-ui, sans-serif', marginBottom: '16px' }}>
+        Climate action classification · CO₂ CAGR 2015–2023 + Renewable growth 2018–2023
+      </div>
+      <WorldScoreboard countries={scoreboardData} width={836} height={428} />
+      <div style={{ display: 'flex', gap: '32px', marginTop: '16px' }}>
+        {[
+          { label: 'Changers', val: counts.Changer, color: '#10B981', desc: '↓CO₂ + ↑Renewable' },
+          { label: 'Starters', val: counts.Starter, color: '#F59E0B', desc: 'One condition met'  },
+          { label: 'Talkers',  val: counts.Talker,  color: '#EF4444', desc: 'Neither condition'  },
+        ].map(s => (
+          <div key={s.label}>
+            <div style={{ fontSize: '36px', fontWeight: 800, color: s.color, lineHeight: 1, fontFamily: 'Inter, system-ui, sans-serif' }}>{s.val}</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A2E', fontFamily: 'Inter, system-ui, sans-serif' }}>{s.label}</div>
+            <div style={{ fontSize: '11px', color: '#94A3B8', fontFamily: 'Inter, system-ui, sans-serif' }}>{s.desc}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: '11px', color: '#CBD5E1', fontFamily: 'Inter, system-ui, sans-serif', marginTop: '16px' }}>
+        Source: World Bank WDI CO₂ / Ember Climate Renewable % · VisualClimate classification · visualclimate.org
+      </div>
+    </div>
+  );
+}
+
 // ── Main PostersClient ────────────────────────────────────────────────────────
 
-type PosterType = 'energy' | 'inequality' | 'gap' | 'air' | 'race';
+type PosterType = 'energy' | 'inequality' | 'gap' | 'air' | 'race' | 'scoreboard';
 const TABS: { id: PosterType; label: string; noCountry?: boolean }[] = [
-  { id: 'energy',     label: 'Energy Flow'      },
-  { id: 'inequality', label: 'Carbon Inequality' },
-  { id: 'gap',        label: 'Paris Gap'         },
-  { id: 'air',        label: 'Air Quality'       },
-  { id: 'race',       label: 'Transition Race', noCountry: true },
+  { id: 'energy',      label: 'Energy Flow'       },
+  { id: 'inequality',  label: 'Carbon Inequality'  },
+  { id: 'gap',         label: 'Paris Gap'          },
+  { id: 'air',         label: 'Air Quality'        },
+  { id: 'race',        label: 'Transition Race',   noCountry: true },
+  { id: 'scoreboard',  label: 'World Scoreboard',  noCountry: true },
 ];
 
 export function PostersClient() {
@@ -442,7 +539,8 @@ export function PostersClient() {
   const [loading,  setLoading]  = useState(false);
   const [metrics,  setMetrics]  = useState<Metrics>(PILOT_DATA.KOR);
   const [compMet,  setCompMet]  = useState<Metrics>(PILOT_DATA.BGD);
-  const [raceData, setRaceData] = useState<RaceEntry[]>([]);
+  const [raceData,      setRaceData]      = useState<RaceEntry[]>([]);
+  const [scoreboardData, setScoreboardData] = useState<CountryClass[]>([]);
   const [downloading, setDownloading] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -459,6 +557,7 @@ export function PostersClient() {
 
   useEffect(() => {
     fetchAllRenewable().then(setRaceData);
+    fetchScoreboardData().then(setScoreboardData);
   }, []);
 
   const country     = COUNTRIES.find(c => c.iso3 === iso3)     ?? COUNTRIES[0];
@@ -527,6 +626,7 @@ export function PostersClient() {
             {poster === 'gap'        && <ParisGapPoster country={country} />}
             {poster === 'air'        && <AirQualityPoster country={country} metrics={metrics} />}
             {poster === 'race'       && <TransitionRacePoster raceData={raceData} highlightIso3={iso3} />}
+            {poster === 'scoreboard' && <WorldScoreboardPoster scoreboardData={scoreboardData} />}
           </>
         )}
       </div>
@@ -555,6 +655,8 @@ export function PostersClient() {
         <span className="text-xs text-[--text-muted]">
           {poster === 'race'
             ? 'Transition Race \u2014 20 countries'
+            : poster === 'scoreboard'
+            ? 'World Scoreboard \u2014 212 countries'
             : poster === 'inequality'
             ? `${country.flag} ${country.name} vs ${compCountry.flag} ${compCountry.name}`
             : `${country.flag} ${country.name} \u2014 ${activeTab.label}`}

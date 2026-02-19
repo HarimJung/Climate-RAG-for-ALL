@@ -1,6 +1,6 @@
 /**
  * scripts/fetch-worldbank.ts
- * Fetches climate indicators from World Bank API and inserts into Supabase
+ * Fetches 6 WB indicators for ALL countries → country_data table
  * Run: npx tsx --env-file=.env.local scripts/fetch-worldbank.ts
  */
 
@@ -8,168 +8,107 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables');
-    process.exit(1);
+  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
 }
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const INDICATORS = [
-    { code: 'EN.ATM.CO2E.PC', name: 'CO2 emissions (metric tons per capita)', unit: 'metric tons', category: 'emissions' },
-    { code: 'EG.FEC.RNEW.ZS', name: 'Renewable energy consumption (% of total)', unit: '%', category: 'energy' },
-    { code: 'EN.CLC.MDAT.ZS', name: 'Population affected by droughts/floods/extreme temps (%)', unit: '%', category: 'risk' },
-    { code: 'NY.GDP.MKTP.CD', name: 'GDP (current US$)', unit: 'US$', category: 'economy' },
-    { code: 'AG.LND.FRST.ZS', name: 'Forest area (% of land area)', unit: '%', category: 'land' },
+  { code: 'EN.GHG.CO2.PC.CE.AR5', source: 'World Bank WDI' },
+  { code: 'NY.GDP.PCAP.CD',        source: 'World Bank WDI' },
+  { code: 'EN.ATM.PM25.MC.M3',     source: 'World Bank WDI' },
+  { code: 'AG.LND.FRST.ZS',        source: 'World Bank WDI' },
+  { code: 'EG.USE.PCAP.KG.OE',     source: 'World Bank WDI' },
+  { code: 'SP.POP.TOTL',           source: 'World Bank WDI' },
 ];
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-interface WBDataPoint {
-    indicator: { id: string; value: string };
-    country: { id: string; value: string };
-    countryiso3code: string;
-    date: string;
-    value: number | null;
+interface WBPoint {
+  countryiso3code: string;
+  date: string;
+  value: number | null;
 }
 
-async function fetchIndicatorData(code: string): Promise<WBDataPoint[]> {
-    const baseUrl = `https://api.worldbank.org/v2/country/all/indicator/${code}?format=json&per_page=1000&date=2000:2023`;
-    const allData: WBDataPoint[] = [];
-    let page = 1;
-    let totalPages = 1;
-
-    do {
-        const url = `${baseUrl}&page=${page}`;
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch ${code} page ${page}: ${response.status}`);
-        }
-
-        const json = await response.json();
-
-        if (!json || !Array.isArray(json) || json.length < 2) {
-            console.warn(`No data returned for ${code} page ${page}`);
-            break;
-        }
-
-        const meta = json[0];
-        const data: WBDataPoint[] = json[1] || [];
-
-        totalPages = meta.pages;
-        allData.push(...data);
-
-        console.log(`  ${code}: Page ${page}/${totalPages} - ${data.length} records`);
-        page++;
-
-        if (page <= totalPages) await delay(300);
-    } while (page <= totalPages);
-
-    return allData;
+async function fetchPage(url: string, retries = 4): Promise<Response> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const res = await fetch(url);
+    if (res.ok) return res;
+    const backoff = 2000 * Math.pow(2, attempt);
+    console.warn(`  HTTP ${res.status} — retry ${attempt + 1}/${retries} in ${backoff}ms`);
+    await delay(backoff);
+  }
+  throw new Error(`Failed after ${retries} retries: ${url}`);
 }
 
-async function getOrCreateIndicator(ind: typeof INDICATORS[0]): Promise<number | null> {
-    // Try to find existing
-    const { data: existing } = await supabase
-        .from('indicators')
-        .select('id')
-        .eq('source', 'worldbank')
-        .eq('code', ind.code)
-        .single();
-
-    if (existing) return existing.id;
-
-    // Insert new
-    const { data: inserted, error } = await supabase
-        .from('indicators')
-        .insert({ source: 'worldbank', code: ind.code, name: ind.name, unit: ind.unit, category: ind.category })
-        .select('id')
-        .single();
-
-    if (error) {
-        console.error(`Error inserting indicator ${ind.code}:`, error.message);
-        return null;
+async function fetchAllPages(code: string): Promise<WBPoint[]> {
+  const base = `https://api.worldbank.org/v2/country/all/indicator/${code}?format=json&per_page=500&date=2000:2023`;
+  const all: WBPoint[] = [];
+  let page = 1, totalPages = 1;
+  do {
+    try {
+      const res = await fetchPage(`${base}&page=${page}`);
+      const json = await res.json();
+      if (!Array.isArray(json) || json.length < 2) break;
+      totalPages = json[0].pages;
+      all.push(...(json[1] ?? []));
+      console.log(`  ${code}: page ${page}/${totalPages} — ${json[1]?.length ?? 0} rows`);
+      page++;
+      if (page <= totalPages) await delay(600);
+    } catch (e) {
+      console.warn(`  Failed page ${page} for ${code}: ${(e as Error).message}`);
+      break;
     }
-    return inserted.id;
-}
-
-// Build iso3 -> country id lookup
-async function getCountryMap(): Promise<Map<string, number>> {
-    const { data, error } = await supabase.from('countries').select('id, iso3');
-    if (error || !data) {
-        console.error('Failed to fetch countries:', error?.message);
-        return new Map();
-    }
-    return new Map(data.map((c: { id: number; iso3: string }) => [c.iso3.trim(), c.id]));
-}
-
-async function processIndicator(ind: typeof INDICATORS[0], countryMap: Map<string, number>): Promise<number> {
-    const indicatorId = await getOrCreateIndicator(ind);
-    if (!indicatorId) return 0;
-
-    const data = await fetchIndicatorData(ind.code);
-
-    const rows = data
-        .filter(d => d.value !== null && d.countryiso3code && countryMap.has(d.countryiso3code))
-        .map(d => ({
-            indicator_id: indicatorId,
-            country_id: countryMap.get(d.countryiso3code)!,
-            year: parseInt(d.date, 10),
-            value: d.value,
-        }));
-
-    if (rows.length === 0) {
-        console.log(`  No valid data for ${ind.code}`);
-        return 0;
-    }
-
-    const batchSize = 500;
-    let inserted = 0;
-
-    for (let i = 0; i < rows.length; i += batchSize) {
-        const batch = rows.slice(i, i + batchSize);
-
-        const { error } = await supabase
-            .from('indicator_values')
-            .upsert(batch, { onConflict: 'indicator_id,country_id,year' });
-
-        if (error) {
-            console.error(`  Error upserting batch:`, error.message);
-        } else {
-            inserted += batch.length;
-        }
-    }
-
-    return inserted;
+  } while (page <= totalPages);
+  return all;
 }
 
 async function main() {
-    try {
-        console.log('Starting World Bank data fetch...\n');
+  // Load valid iso3 set from countries table
+  const { data: countries, error: cErr } = await supabase.from('countries').select('iso3');
+  if (cErr || !countries) { console.error('Cannot load countries:', cErr?.message); process.exit(1); }
+  const validIso3 = new Set(countries.map((c: { iso3: string }) => c.iso3.trim().toUpperCase()));
+  console.log(`Loaded ${validIso3.size} valid iso3 codes\n`);
 
-        const countryMap = await getCountryMap();
-        console.log(`Loaded ${countryMap.size} countries from DB\n`);
+  let grandTotal = 0;
 
-        let totalInserted = 0;
+  for (let i = 0; i < INDICATORS.length; i++) {
+    const ind = INDICATORS[i];
+    console.log(`[${i+1}/${INDICATORS.length}] ${ind.code}`);
 
-        for (let i = 0; i < INDICATORS.length; i++) {
-            const ind = INDICATORS[i];
-            console.log(`[${i + 1}/${INDICATORS.length}] Processing ${ind.code}...`);
+    const points = await fetchAllPages(ind.code);
 
-            const count = await processIndicator(ind, countryMap);
-            totalInserted += count;
-            console.log(`  ✓ Inserted ${count} values\n`);
+    const rows = points
+      .filter(p => p.value !== null && p.countryiso3code && validIso3.has(p.countryiso3code.toUpperCase()))
+      .map(p => ({
+        country_iso3:   p.countryiso3code.toUpperCase(),
+        indicator_code: ind.code,
+        year:           parseInt(p.date, 10),
+        value:          p.value,
+        source:         ind.source,
+      }));
 
-            if (i < INDICATORS.length - 1) await delay(300);
-        }
+    console.log(`  → ${rows.length} valid rows`);
 
-        console.log(`\n✅ Complete! Total inserted: ${totalInserted} indicator values.`);
-    } catch (error) {
-        console.error('Error:', error instanceof Error ? error.message : error);
-        process.exit(1);
+    // Upsert in batches of 500
+    const BATCH = 500;
+    let inserted = 0;
+    for (let j = 0; j < rows.length; j += BATCH) {
+      const batch = rows.slice(j, j + BATCH);
+      const { error } = await supabase
+        .from('country_data')
+        .upsert(batch, { onConflict: 'country_iso3,indicator_code,year' });
+      if (error) console.warn(`  Batch error: ${error.message}`);
+      else inserted += batch.length;
     }
+    console.log(`  ✓ Upserted ${inserted} rows\n`);
+    grandTotal += inserted;
+
+    if (i < INDICATORS.length - 1) await delay(3000);
+  }
+
+  console.log(`\n✅ Done. Total upserted: ${grandTotal}`);
 }
 
-main();
+main().catch(err => { console.error(err); process.exit(1); });
