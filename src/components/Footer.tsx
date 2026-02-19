@@ -30,7 +30,7 @@ export function Footer() {
               <span className="text-[--accent-primary]">Climate</span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-[--text-secondary]">
-              Open climate intelligence platform. 6 pilot countries, expanding to 250.
+              Open climate intelligence platform. Tracking 200+ countries.
             </p>
           </div>
 

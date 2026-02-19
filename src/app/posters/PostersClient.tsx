@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { iso3ToFlag } from '@/lib/iso3ToFlag';
 import { ClimateGap } from '@/components/charts/ClimateGap';
 import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldScoreboard';
 
@@ -59,9 +60,8 @@ const ENERGY_HEADLINES: Record<string, string> = {
   AUS: 'Australia: 32% renewable. From coal country to solar frontier.',
 };
 
-function energyHeadline(iso3: string, fossil: number, renewable: number): string {
+function energyHeadline(iso3: string, fossil: number, renewable: number, name: string): string {
   if (ENERGY_HEADLINES[iso3]) return ENERGY_HEADLINES[iso3];
-  const name = COUNTRIES.find(c => c.iso3 === iso3)?.name ?? iso3;
   return `${name}: ${fossil.toFixed(0)}% fossil, ${renewable.toFixed(0)}% renewable.`;
 }
 
@@ -91,21 +91,47 @@ async function fetchMetrics(iso3: string): Promise<Metrics | null> {
 
 async function fetchAllRenewable(): Promise<{ iso3: string; name: string; flag: string; renewable: number }[]> {
   const supabase = createClient();
-  const isos = COUNTRIES.map(c => c.iso3);
-  const { data } = await supabase
-    .from('country_data')
-    .select('country_iso3, year, value')
-    .eq('indicator_code', 'EMBER.RENEWABLE.PCT')
-    .in('country_iso3', isos)
-    .order('year', { ascending: false });
+  const [{ data: renData }, { data: cntData }] = await Promise.all([
+    supabase
+      .from('country_data')
+      .select('country_iso3, year, value')
+      .eq('indicator_code', 'EMBER.RENEWABLE.PCT')
+      .order('year', { ascending: false }),
+    supabase.from('countries').select('iso3, name'),
+  ]);
+  const nameMap = new Map<string, string>((cntData ?? []).map((c: { iso3: string; name: string }) => [c.iso3, c.name]));
   const seen = new Map<string, number>();
-  for (const row of (data ?? [])) {
+  for (const row of (renData ?? [])) {
     if (!seen.has(row.country_iso3) && row.value != null) seen.set(row.country_iso3, Number(row.value));
   }
-  return COUNTRIES.map(c => ({
-    iso3: c.iso3, name: c.name, flag: c.flag,
-    renewable: seen.get(c.iso3) ?? (PILOT_DATA[c.iso3]?.renewable ?? 0),
-  })).sort((a, b) => b.renewable - a.renewable);
+  return Array.from(seen.entries()).map(([iso3, renewable]) => {
+    const seed = COUNTRIES.find(c => c.iso3 === iso3);
+    return {
+      iso3,
+      name: seed?.name ?? nameMap.get(iso3) ?? iso3,
+      flag: seed?.flag ?? iso3ToFlag(iso3),
+      renewable,
+    };
+  }).sort((a, b) => b.renewable - a.renewable);
+}
+
+async function fetchCountriesFromDB(): Promise<CountryMeta[]> {
+  const supabase = createClient();
+  const [{ data: renData }, { data: cntData }] = await Promise.all([
+    supabase
+      .from('country_data')
+      .select('country_iso3')
+      .eq('indicator_code', 'EMBER.RENEWABLE.PCT'),
+    supabase.from('countries').select('iso3, name'),
+  ]);
+  const nameMap = new Map<string, string>((cntData ?? []).map((c: { iso3: string; name: string }) => [c.iso3, c.name]));
+  const isos = [...new Set((renData ?? []).map((r: { country_iso3: string }) => r.country_iso3))];
+  return isos
+    .map(iso3 => {
+      const seed = COUNTRIES.find(c => c.iso3 === iso3);
+      return seed ?? { iso3, name: nameMap.get(iso3) ?? iso3, adj: nameMap.get(iso3) ?? iso3, flag: iso3ToFlag(iso3) };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // ── Poster shell: 1:1 square ──────────────────────────────────────────────────
@@ -183,7 +209,7 @@ function MiniSankey({ fossil, renewable, nuclear }: { fossil: number; renewable:
 }
 
 function EnergyFlowPoster({ country, metrics }: { country: CountryMeta; metrics: Metrics }) {
-  const headline = energyHeadline(country.iso3, metrics.fossil, metrics.renewable);
+  const headline = energyHeadline(country.iso3, metrics.fossil, metrics.renewable, country.name);
   const fs = headline.length > 65 ? '22px' : '26px';
   return (
     <PosterShell source="Source: Ember Climate 2023 · visualclimate.org">
@@ -539,8 +565,9 @@ export function PostersClient() {
   const [loading,  setLoading]  = useState(false);
   const [metrics,  setMetrics]  = useState<Metrics>(PILOT_DATA.KOR);
   const [compMet,  setCompMet]  = useState<Metrics>(PILOT_DATA.BGD);
-  const [raceData,      setRaceData]      = useState<RaceEntry[]>([]);
+  const [raceData,       setRaceData]       = useState<RaceEntry[]>([]);
   const [scoreboardData, setScoreboardData] = useState<CountryClass[]>([]);
+  const [countriesList,  setCountriesList]  = useState<CountryMeta[]>(COUNTRIES);
   const [downloading, setDownloading] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -558,10 +585,11 @@ export function PostersClient() {
   useEffect(() => {
     fetchAllRenewable().then(setRaceData);
     fetchScoreboardData().then(setScoreboardData);
+    fetchCountriesFromDB().then(list => { if (list.length > 0) setCountriesList(list); });
   }, []);
 
-  const country     = COUNTRIES.find(c => c.iso3 === iso3)     ?? COUNTRIES[0];
-  const compCountry = COUNTRIES.find(c => c.iso3 === compIso3) ?? COUNTRIES[5];
+  const country     = countriesList.find(c => c.iso3 === iso3)     ?? countriesList[0];
+  const compCountry = countriesList.find(c => c.iso3 === compIso3) ?? countriesList[Math.min(5, countriesList.length - 1)];
   const activeTab   = TABS.find(t => t.id === poster)!;
 
   async function handleDownload() {
@@ -587,7 +615,7 @@ export function PostersClient() {
         {!activeTab.noCountry && (
           <select value={iso3} onChange={e => setIso3(e.target.value)}
             className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            {COUNTRIES.map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
+            {countriesList.map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
           </select>
         )}
 
@@ -596,7 +624,7 @@ export function PostersClient() {
             <span className="text-sm text-[--text-muted]">vs</span>
             <select value={compIso3} onChange={e => setCompIso3(e.target.value)}
               className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {COUNTRIES.filter(c => c.iso3 !== iso3).map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
+              {countriesList.filter(c => c.iso3 !== iso3).map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
             </select>
           </>
         )}
