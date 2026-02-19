@@ -9,4 +9,14 @@ export const CLIMATE_INDICATORS = [
 
 export const PILOT_ISO3 = ['KOR', 'USA', 'DEU', 'BRA', 'NGA', 'BGD'] as const;
 
+export const ALL_ISO3 = [
+  // Original 6 pilot countries
+  'KOR', 'USA', 'DEU', 'BRA', 'NGA', 'BGD',
+  // Expanded 14 countries
+  'CHN', 'IND', 'JPN', 'GBR', 'FRA', 'CAN',
+  'AUS', 'IDN', 'SAU', 'ZAF', 'MEX', 'RUS', 'TUR', 'EGY',
+] as const;
+
+export type Iso3 = typeof ALL_ISO3[number];
+
 export const CHART_COLORS = ['#0066FF', '#00A67E', '#F59E0B', '#E5484D', '#8B5CF6', '#EC4899'];

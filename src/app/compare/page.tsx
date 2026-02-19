@@ -32,6 +32,10 @@ async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]>
     const COUNTRY_NAMES: Record<string, string> = {
         KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
         BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
+        CHN: 'China', IND: 'India', JPN: 'Japan', GBR: 'United Kingdom',
+        FRA: 'France', CAN: 'Canada', AUS: 'Australia', IDN: 'Indonesia',
+        SAU: 'Saudi Arabia', ZAF: 'South Africa', MEX: 'Mexico',
+        RUS: 'Russia', TUR: 'Turkey', EGY: 'Egypt',
     };
 
     return iso3List.map(iso3 => {

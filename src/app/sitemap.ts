@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
+import { ALL_ISO3 } from '@/lib/constants';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://visualclimate.com';
-
-const PILOT_COUNTRIES = ['KOR', 'USA', 'DEU', 'BRA', 'NGA', 'BGD'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const staticRoutes = [
@@ -22,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: route === '' ? 1.0 : route === '/dashboard' ? 0.9 : 0.7,
     }));
 
-    for (const iso3 of PILOT_COUNTRIES) {
+    for (const iso3 of ALL_ISO3) {
         entries.push({
             url: `${BASE_URL}/country/${iso3}`,
             lastModified: new Date(),

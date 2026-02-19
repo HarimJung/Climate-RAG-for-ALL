@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { createClient } from '@/lib/supabase/client';
 
 const ClimateSankey = dynamic(
   () => import('@/components/charts/ClimateSankey').then(m => ({ default: m.ClimateSankey })),
@@ -23,7 +24,7 @@ const ClimateDivide = dynamic(
   { ssr: false, loading: () => <div className="aspect-[9/5] animate-pulse rounded-xl bg-gray-100" /> },
 );
 
-// ── Pilot countries ──────────────────────────────────────────────────────────
+// ── All 20 countries ──────────────────────────────────────────────────────────
 const COUNTRIES = [
   { iso3: 'KOR', name: 'South Korea',   flag: '\uD83C\uDDF0\uD83C\uDDF7' },
   { iso3: 'USA', name: 'United States', flag: '\uD83C\uDDFA\uD83C\uDDF8' },
@@ -31,12 +32,29 @@ const COUNTRIES = [
   { iso3: 'BRA', name: 'Brazil',        flag: '\uD83C\uDDE7\uD83C\uDDF7' },
   { iso3: 'NGA', name: 'Nigeria',       flag: '\uD83C\uDDF3\uD83C\uDDEC' },
   { iso3: 'BGD', name: 'Bangladesh',    flag: '\uD83C\uDDE7\uD83C\uDDE9' },
-] as const;
+  { iso3: 'CHN', name: 'China',         flag: '\uD83C\uDDE8\uD83C\uDDF3' },
+  { iso3: 'IND', name: 'India',         flag: '\uD83C\uDDEE\uD83C\uDDF3' },
+  { iso3: 'JPN', name: 'Japan',         flag: '\uD83C\uDDEF\uD83C\uDDF5' },
+  { iso3: 'GBR', name: 'United Kingdom',flag: '\uD83C\uDDEC\uD83C\uDDE7' },
+  { iso3: 'FRA', name: 'France',        flag: '\uD83C\uDDEB\uD83C\uDDF7' },
+  { iso3: 'CAN', name: 'Canada',        flag: '\uD83C\uDDE8\uD83C\uDDE6' },
+  { iso3: 'AUS', name: 'Australia',     flag: '\uD83C\uDDE6\uD83C\uDDFA' },
+  { iso3: 'IDN', name: 'Indonesia',     flag: '\uD83C\uDDEE\uD83C\uDDE9' },
+  { iso3: 'SAU', name: 'Saudi Arabia',  flag: '\uD83C\uDDF8\uD83C\uDDE6' },
+  { iso3: 'ZAF', name: 'South Africa',  flag: '\uD83C\uDDFF\uD83C\uDDE6' },
+  { iso3: 'MEX', name: 'Mexico',        flag: '\uD83C\uDDF2\uD83C\uDDFD' },
+  { iso3: 'RUS', name: 'Russia',        flag: '\uD83C\uDDF7\uD83C\uDDFA' },
+  { iso3: 'TUR', name: 'Turkey',        flag: '\uD83C\uDDF9\uD83C\uDDF7' },
+  { iso3: 'EGY', name: 'Egypt',         flag: '\uD83C\uDDEA\uD83C\uDDEC' },
+];
 
-type Iso3 = typeof COUNTRIES[number]['iso3'];
+// ── Hardcoded data for 6 pilot countries (Ember 2023, WB WDI, ND-GAIN) ────────
+interface CountryMetrics {
+  fossil: number; renewable: number; nuclear: number;
+  co2: number; pm25: number; vulnerability: number;
+}
 
-// ── Hardcoded current data (Ember 2023, WB WDI, ND-GAIN) ─────────────────────
-const DATA: Record<Iso3, { fossil: number; renewable: number; nuclear: number; co2: number; pm25: number; vulnerability: number }> = {
+const PILOT_DATA: Record<string, CountryMetrics> = {
   KOR: { fossil: 61.2, renewable:  9.6, nuclear: 29.2, co2: 11.4, pm25: 25.9, vulnerability: 0.357 },
   USA: { fossil: 59.1, renewable: 22.7, nuclear: 18.2, co2: 13.7, pm25:  7.8, vulnerability: 0.312 },
   DEU: { fossil: 44.2, renewable: 54.4, nuclear:  1.4, co2:  7.1, pm25: 10.3, vulnerability: 0.301 },
@@ -45,8 +63,8 @@ const DATA: Record<Iso3, { fossil: number; renewable: number; nuclear: number; c
   BGD: { fossil: 98.4, renewable:  1.6, nuclear:  0.0, co2:  0.7, pm25: 42.4, vulnerability: 0.568 },
 };
 
-// ── CO2 per capita time series 2000-2023 (World Bank WDI, approximate) ───────
-const SPIRAL_DATA: Record<Iso3, { year: number; value: number }[]> = {
+// ── CO2 per capita time series for 6 pilot countries ─────────────────────────
+const PILOT_SPIRAL: Record<string, { year: number; value: number }[]> = {
   KOR: [
     { year: 2000, value: 8.2 },  { year: 2001, value: 8.4 },  { year: 2002, value: 9.1 },
     { year: 2003, value: 9.6 },  { year: 2004, value: 9.9 },  { year: 2005, value: 9.7 },
@@ -119,20 +137,69 @@ const TABS: { id: ChartType; label: string; allCountries?: boolean }[] = [
   { id: 'divide',  label: 'CO\u2082 Divide', allCountries: true },
 ];
 
-// ── Dark poster card ─────────────────────────────────────────────────────────
+// ── Fetch from Supabase for non-pilot countries ───────────────────────────────
+async function fetchCountryMetrics(iso3: string): Promise<CountryMetrics | null> {
+  const supabase = createClient();
+  const CODES = [
+    'EMBER.FOSSIL.PCT', 'EMBER.RENEWABLE.PCT',
+    'EN.GHG.CO2.PC.CE.AR5', 'EN.ATM.PM25.MC.M3', 'NDGAIN.VULNERABILITY',
+  ];
+  const { data } = await supabase
+    .from('country_data')
+    .select('indicator_code, year, value')
+    .eq('country_iso3', iso3)
+    .in('indicator_code', CODES)
+    .order('year', { ascending: false });
+
+  if (!data || data.length === 0) return null;
+
+  const latest = (code: string) => {
+    const row = data.find(r => r.indicator_code === code && r.value != null);
+    return row ? Number(row.value) : 0;
+  };
+
+  const fossil    = latest('EMBER.FOSSIL.PCT');
+  const renewable = latest('EMBER.RENEWABLE.PCT');
+  const nuclear   = Math.max(0, Math.round((100 - fossil - renewable) * 10) / 10);
+
+  return {
+    fossil,
+    renewable,
+    nuclear,
+    co2:           latest('EN.GHG.CO2.PC.CE.AR5'),
+    pm25:          latest('EN.ATM.PM25.MC.M3'),
+    vulnerability: latest('NDGAIN.VULNERABILITY'),
+  };
+}
+
+async function fetchSpiralData(iso3: string): Promise<{ year: number; value: number }[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from('country_data')
+    .select('year, value')
+    .eq('country_iso3', iso3)
+    .eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5')
+    .gte('year', 2000)
+    .lte('year', 2023)
+    .order('year', { ascending: true });
+
+  if (!data) return [];
+  return data
+    .filter(r => r.value != null)
+    .map(r => ({ year: r.year, value: Number(r.value) }));
+}
+
+// ── Dark poster card ──────────────────────────────────────────────────────────
 function CountryCardView({ iso3, name, flag, data }: {
-  iso3: string;
-  name: string;
-  flag: string;
-  data: typeof DATA.KOR;
+  iso3: string; name: string; flag: string; data: CountryMetrics;
 }) {
   const MAX: Record<string, number> = { co2: 20, renewable: 100, fossil: 100, pm25: 70, vulnerability: 1 };
   const metrics = [
-    { label: 'CO\u2082 per capita',      value: `${data.co2.toFixed(1)} t`,        raw: data.co2,           max: MAX.co2,           color: '#EF4444' },
-    { label: 'Renewable %',              value: `${data.renewable.toFixed(1)}%`,    raw: data.renewable,     max: MAX.renewable,     color: '#10B981' },
-    { label: 'Fossil %',                 value: `${data.fossil.toFixed(1)}%`,       raw: data.fossil,        max: MAX.fossil,        color: '#78716C' },
-    { label: 'PM2.5 \u00b5g/m\u00b3',   value: data.pm25.toFixed(1),               raw: data.pm25,          max: MAX.pm25,          color: '#F59E0B' },
-    { label: 'Vulnerability',            value: data.vulnerability.toFixed(3),     raw: data.vulnerability, max: MAX.vulnerability, color: '#8B5CF6' },
+    { label: 'CO\u2082 per capita', value: `${data.co2.toFixed(1)} t`,      raw: data.co2,           max: MAX.co2,           color: '#EF4444' },
+    { label: 'Renewable %',         value: `${data.renewable.toFixed(1)}%`,  raw: data.renewable,     max: MAX.renewable,     color: '#10B981' },
+    { label: 'Fossil %',            value: `${data.fossil.toFixed(1)}%`,     raw: data.fossil,        max: MAX.fossil,        color: '#78716C' },
+    { label: 'PM2.5 \u00b5g/m\u00b3', value: data.pm25.toFixed(1),          raw: data.pm25,          max: MAX.pm25,          color: '#F59E0B' },
+    { label: 'Vulnerability',       value: data.vulnerability > 0 ? data.vulnerability.toFixed(3) : 'N/A', raw: data.vulnerability, max: MAX.vulnerability, color: '#8B5CF6' },
   ];
 
   return (
@@ -170,15 +237,34 @@ function CountryCardView({ iso3, name, flag, data }: {
   );
 }
 
-// ── Main export ──────────────────────────────────────────────────────────────
+// ── Main export ───────────────────────────────────────────────────────────────
 export function PostersClient() {
-  const [iso3, setIso3]               = useState<Iso3>('KOR');
+  const [iso3, setIso3]               = useState('KOR');
   const [chartType, setChartType]     = useState<ChartType>('sankey');
   const [downloading, setDownloading] = useState(false);
+  const [loading, setLoading]         = useState(false);
+  const [metrics, setMetrics]         = useState<CountryMetrics>(PILOT_DATA.KOR);
+  const [spiralData, setSpiralData]   = useState<{ year: number; value: number }[]>(PILOT_SPIRAL.KOR);
   const chartRef = useRef<HTMLDivElement>(null);
 
-  const country   = COUNTRIES.find(c => c.iso3 === iso3)!;
-  const data      = DATA[iso3];
+  // Load data when country changes
+  useEffect(() => {
+    if (PILOT_DATA[iso3]) {
+      setMetrics(PILOT_DATA[iso3]);
+      setSpiralData(PILOT_SPIRAL[iso3] ?? []);
+      return;
+    }
+
+    setLoading(true);
+    Promise.all([fetchCountryMetrics(iso3), fetchSpiralData(iso3)])
+      .then(([m, s]) => {
+        if (m) setMetrics(m);
+        setSpiralData(s);
+      })
+      .finally(() => setLoading(false));
+  }, [iso3]);
+
+  const country   = COUNTRIES.find(c => c.iso3 === iso3) ?? COUNTRIES[0];
   const activeTab = TABS.find(t => t.id === chartType)!;
 
   async function handleDownload() {
@@ -198,11 +284,11 @@ export function PostersClient() {
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
 
-        {/* Country dropdown — hidden for 'divide' (all-country chart) */}
+        {/* Country dropdown — hidden for 'divide' */}
         {!activeTab.allCountries && (
           <select
             value={iso3}
-            onChange={e => setIso3(e.target.value as Iso3)}
+            onChange={e => setIso3(e.target.value)}
             className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {COUNTRIES.map(c => (
@@ -241,34 +327,42 @@ export function PostersClient() {
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
         <div ref={chartRef} className="p-6">
-          {chartType === 'sankey' && (
-            <ClimateSankey
-              country={country.name}
-              fossil={data.fossil}
-              renewable={data.renewable}
-              nuclear={data.nuclear}
-            />
-          )}
-          {chartType === 'gap' && (
-            <ClimateGap highlightIso3={iso3} />
-          )}
-          {chartType === 'card' && (
-            <CountryCardView
-              iso3={iso3}
-              name={country.name}
-              flag={country.flag}
-              data={data}
-            />
-          )}
-          {chartType === 'spiral' && (
-            <ClimateSpiral
-              country={country.name}
-              iso3={iso3}
-              data={SPIRAL_DATA[iso3]}
-            />
-          )}
-          {chartType === 'divide' && (
-            <ClimateDivide />
+          {loading ? (
+            <div className="flex aspect-[9/5] items-center justify-center text-sm text-[--text-muted]">
+              Loading data&hellip;
+            </div>
+          ) : (
+            <>
+              {chartType === 'sankey' && (
+                <ClimateSankey
+                  country={country.name}
+                  fossil={metrics.fossil}
+                  renewable={metrics.renewable}
+                  nuclear={metrics.nuclear}
+                />
+              )}
+              {chartType === 'gap' && (
+                <ClimateGap highlightIso3={iso3} />
+              )}
+              {chartType === 'card' && (
+                <CountryCardView
+                  iso3={iso3}
+                  name={country.name}
+                  flag={country.flag}
+                  data={metrics}
+                />
+              )}
+              {chartType === 'spiral' && (
+                <ClimateSpiral
+                  country={country.name}
+                  iso3={iso3}
+                  data={spiralData}
+                />
+              )}
+              {chartType === 'divide' && (
+                <ClimateDivide />
+              )}
+            </>
           )}
         </div>
       </div>
@@ -277,7 +371,7 @@ export function PostersClient() {
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={handleDownload}
-          disabled={downloading}
+          disabled={downloading || loading}
           className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {downloading ? (
