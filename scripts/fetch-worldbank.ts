@@ -42,8 +42,8 @@ async function fetchPage(url: string, retries = 4): Promise<Response> {
   throw new Error(`Failed after ${retries} retries: ${url}`);
 }
 
-async function fetchAllPages(code: string): Promise<WBPoint[]> {
-  const base = `https://api.worldbank.org/v2/country/all/indicator/${code}?format=json&per_page=500&date=2000:2023`;
+async function fetchYearRange(code: string, dateFrom: number, dateTo: number): Promise<WBPoint[]> {
+  const base = `https://api.worldbank.org/v2/country/all/indicator/${code}?format=json&per_page=500&date=${dateFrom}:${dateTo}`;
   const all: WBPoint[] = [];
   let page = 1, totalPages = 1;
   do {
@@ -53,14 +53,26 @@ async function fetchAllPages(code: string): Promise<WBPoint[]> {
       if (!Array.isArray(json) || json.length < 2) break;
       totalPages = json[0].pages;
       all.push(...(json[1] ?? []));
-      console.log(`  ${code}: page ${page}/${totalPages} — ${json[1]?.length ?? 0} rows`);
+      console.log(`  ${code} ${dateFrom}-${dateTo}: page ${page}/${totalPages} — ${json[1]?.length ?? 0} rows`);
       page++;
-      if (page <= totalPages) await delay(600);
+      if (page <= totalPages) await delay(800);
     } catch (e) {
-      console.warn(`  Failed page ${page} for ${code}: ${(e as Error).message}`);
+      console.warn(`  Failed ${code} ${dateFrom}-${dateTo} page ${page}: ${(e as Error).message}`);
       break;
     }
   } while (page <= totalPages);
+  return all;
+}
+
+// Split full range into 3 chunks to stay under rate-limit (≤4 pages each)
+async function fetchAllPages(code: string): Promise<WBPoint[]> {
+  const ranges = [[2000, 2007], [2008, 2015], [2016, 2023]] as const;
+  const all: WBPoint[] = [];
+  for (const [from, to] of ranges) {
+    const rows = await fetchYearRange(code, from, to);
+    all.push(...rows);
+    await delay(2500); // cool-down between ranges
+  }
   return all;
 }
 
