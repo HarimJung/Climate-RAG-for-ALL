@@ -203,16 +203,49 @@ export function ReportCardClient({ data }: { data: ReportCardData }) {
         </div>
       </div>
 
-      {/* Footer links */}
-      <div className="flex flex-wrap items-center gap-4 text-sm text-[--text-muted]">
-        <Link href={`/country/${data.iso3}`} className="hover:text-[--accent-primary]">
-          View full country profile →
-        </Link>
-        <Link href="/methodology" className="hover:text-[--accent-primary]">
-          Methodology
-        </Link>
-        <Link href="/report" className="hover:text-[--accent-primary]">
-          ← All countries
+      {/* CTA cards */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-2">
+        {/* Full country profile */}
+        <div className="rounded-xl p-6" style={{ backgroundColor: '#F0FDF4' }}>
+          <div className="mb-3 flex items-center gap-3">
+            <span className="text-3xl leading-none">{iso3ToFlag(data.iso3)}</span>
+            <span className="font-semibold text-[--text-primary]">{data.name}</span>
+          </div>
+          <p className="mb-4 text-sm text-[--text-secondary]">
+            Explore the full data profile with 9 sections, 44+ indicators, and 23 years of trends.
+          </p>
+          <Link
+            href={`/country/${data.iso3}`}
+            className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#10B981' }}
+          >
+            View Full Country Profile →
+          </Link>
+        </div>
+
+        {/* Methodology */}
+        <div className="rounded-xl p-6" style={{ backgroundColor: '#F0F9FF' }}>
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            <span className="font-semibold text-[--text-primary]">How We Score</span>
+          </div>
+          <p className="mb-4 text-sm text-[--text-secondary]">
+            Our methodology uses 5 domains, 11 indicators, and min-max normalization across 200+ countries.
+          </p>
+          <Link
+            href="/methodology"
+            className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#3B82F6' }}
+          >
+            Read Methodology →
+          </Link>
+        </div>
+      </div>
+
+      {/* Back link */}
+      <div className="text-center">
+        <Link href="/report" className="text-sm text-[--text-muted] hover:text-[--text-primary]">
+          ← Back to All Report Cards
         </Link>
       </div>
     </div>

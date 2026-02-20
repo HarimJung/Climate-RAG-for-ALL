@@ -4,7 +4,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { DashboardClient } from '@/app/dashboard/DashboardClient';
 import { CompareClient } from '@/app/compare/CompareClient';
-import { PostersClient } from '@/app/posters/PostersClient';
 import type { CountryCard } from '@/app/dashboard/page';
 import type { CountryCompareData } from '@/app/compare/page';
 import { CLIMATE_INDICATORS } from '@/lib/constants';
@@ -15,10 +14,10 @@ const CLASS_NAME_MAP: Record<number, CountryCard['climateClass']> = { 1: 'Change
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ tab?: string }> }): Promise<Metadata> {
   const { tab = 'dashboard' } = await searchParams;
-  const tabLabel = tab === 'compare' ? 'Compare' : tab === 'posters' ? 'Posters' : 'Dashboard';
+  const tabLabel = tab === 'compare' ? 'Compare' : 'Dashboard';
   return createMetaTags({
     title: `Explore — ${tabLabel} · VisualClimate`,
-    description: 'Explore climate data: country explorer, side-by-side comparison, and downloadable climate posters.',
+    description: 'Explore climate data: country dashboard and side-by-side comparison.',
     path: `/explore?tab=${tab}`,
   });
 }
@@ -101,7 +100,6 @@ function TabBar({ active }: { active: string }) {
   const tabs = [
     { key: 'dashboard', label: 'Dashboard' },
     { key: 'compare',   label: 'Compare' },
-    { key: 'posters',   label: 'Posters' },
   ];
   return (
     <div className="mb-8 flex gap-1 rounded-xl border border-[--border-card] bg-[--bg-section] p-1 w-fit">
@@ -125,7 +123,8 @@ function TabBar({ active }: { active: string }) {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ tab?: string; countries?: string }> }) {
-  const { tab = 'dashboard', countries: countriesParam } = await searchParams;
+  const { tab: rawTab = 'dashboard', countries: countriesParam } = await searchParams;
+  const tab = rawTab === 'compare' ? 'compare' : 'dashboard';
 
   let dashboardCountries: CountryCard[] = [];
   let compareData: { initialData: CountryCompareData[]; allCountries: { iso3: string; name: string; region: string }[] } = { initialData: [], allCountries: [] };
@@ -144,7 +143,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
       <div className="mx-auto max-w-7xl">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-[--text-primary]">Explore</h1>
-          <p className="mt-1 text-[--text-secondary]">Country data, comparisons, and downloadable climate posters.</p>
+          <p className="mt-1 text-[--text-secondary]">Country data explorer and side-by-side comparison.</p>
         </div>
 
         <TabBar active={tab} />
@@ -166,9 +165,6 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
           />
         )}
 
-        {tab === 'posters' && (
-          <PostersClient />
-        )}
       </div>
     </div>
   );
