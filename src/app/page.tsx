@@ -29,6 +29,14 @@ const CLASS_COLOR: Record<string, string> = {
   Talker:  '#EF4444',
 };
 
+const GRADE_LABELS: Record<number, string> = {
+  7: 'A+', 6: 'A', 5: 'B+', 4: 'B', 3: 'C+', 2: 'C', 1: 'D', 0: 'F',
+};
+const GRADE_COLOR_FG: Record<string, string> = {
+  'A+': '#00A67E', 'A': '#00A67E', 'B+': '#0066FF', 'B': '#0066FF',
+  'C+': '#F59E0B', 'C': '#F59E0B', 'D': '#E5484D',  'F': '#E5484D',
+};
+
 // ── Data functions ──────────────────────────────────────────────────────────
 
 async function getStats() {
@@ -160,13 +168,17 @@ async function getFeaturedCountries() {
   try {
     const supabase = createServiceClient();
     const isos = PILOT_COUNTRIES.map(c => c.iso3);
-    const [{ data: classRows }, { data: metricRows }] = await Promise.all([
+    const [{ data: classRows }, { data: metricRows }, { data: scoreRows }] = await Promise.all([
       supabase.from('country_data').select('country_iso3, value')
         .eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023).in('country_iso3', isos),
       supabase.from('country_data').select('country_iso3, indicator_code, year, value')
         .in('country_iso3', isos)
         .in('indicator_code', ['EN.GHG.CO2.PC.CE.AR5', 'EMBER.RENEWABLE.PCT'])
         .order('year', { ascending: false }),
+      supabase.from('country_data').select('country_iso3, indicator_code, value')
+        .in('country_iso3', isos)
+        .in('indicator_code', ['REPORT.TOTAL_SCORE', 'REPORT.GRADE'])
+        .eq('year', 2024),
     ]);
     const clsMap: Record<string, number> = {};
     for (const r of (classRows ?? [])) clsMap[r.country_iso3] = Number(r.value);
@@ -177,9 +189,13 @@ async function getFeaturedCountries() {
       if (r.indicator_code === 'EN.GHG.CO2.PC.CE.AR5' && !co2Map[r.country_iso3]) co2Map[r.country_iso3] = Number(r.value).toFixed(1) + 't';
       if (r.indicator_code === 'EMBER.RENEWABLE.PCT'   && !renMap[r.country_iso3]) renMap[r.country_iso3] = Number(r.value).toFixed(0) + '%';
     }
-    return { clsMap, co2Map, renMap };
+    const gradeNumMap: Record<string, number> = {};
+    for (const r of (scoreRows ?? [])) {
+      if (r.indicator_code === 'REPORT.GRADE') gradeNumMap[r.country_iso3] = Math.round(Number(r.value));
+    }
+    return { clsMap, co2Map, renMap, gradeNumMap };
   } catch {
-    return { clsMap: {}, co2Map: {}, renMap: {} };
+    return { clsMap: {}, co2Map: {}, renMap: {}, gradeNumMap: {} };
   }
 }
 
@@ -220,21 +236,21 @@ export default async function HomePage() {
             {' '}Data-driven accountability for the Paris Agreement era.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="#world-map"
+            <Link
+              href="/report"
               className="inline-flex items-center gap-2 rounded-full bg-[--accent-primary] px-8 py-4 text-lg font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
             >
-              Explore the Map
+              Get Report Cards
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
-            </a>
-            <Link
-              href="/compare"
+            </Link>
+            <a
+              href="#world-map"
               className="inline-flex items-center gap-2 rounded-full border border-[--border-card] px-8 py-4 text-lg font-semibold text-[--text-primary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
             >
-              Compare Countries
-            </Link>
+              Explore the Map
+            </a>
           </div>
         </div>
       </section>
@@ -386,6 +402,16 @@ export default async function HomePage() {
             </Link>
 
           </div>
+
+          {/* Report Card CTA */}
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/report"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-6 py-3 text-sm font-semibold text-[--accent-primary] transition-colors hover:bg-blue-100"
+            >
+              Get Your Country&apos;s Report Card →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -395,12 +421,14 @@ export default async function HomePage() {
           <h2 className="mb-8 text-3xl font-bold text-[--text-primary]">Featured Countries</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {PILOT_COUNTRIES.map(c => {
-              const clsNum = featured.clsMap[c.iso3];
-              const cls    = clsNum ? CLASS_NAME_MAP[clsNum] : undefined;
+              const clsNum    = featured.clsMap[c.iso3];
+              const cls       = clsNum ? CLASS_NAME_MAP[clsNum] : undefined;
+              const gradeNum  = featured.gradeNumMap[c.iso3];
+              const grade     = gradeNum !== undefined ? GRADE_LABELS[gradeNum] : undefined;
               return (
                 <Link
                   key={c.iso3}
-                  href={`/country/${c.iso3}`}
+                  href={`/report/${c.iso3}`}
                   className="group flex items-start gap-4 rounded-xl border border-[--border-card] bg-white p-5 transition-all hover:border-[--accent-primary] hover:shadow-md"
                   style={{ boxShadow: 'var(--shadow-card)' }}
                 >
@@ -418,6 +446,11 @@ export default async function HomePage() {
                       {cls && (
                         <span className="rounded-full px-2 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: CLASS_COLOR[cls] }}>
                           {cls}
+                        </span>
+                      )}
+                      {grade && (
+                        <span className="rounded-full border px-2 py-0.5 text-xs font-bold" style={{ color: GRADE_COLOR_FG[grade], borderColor: GRADE_COLOR_FG[grade] }}>
+                          {grade}
                         </span>
                       )}
                     </div>

@@ -6,6 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://visualclimate.com'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticRoutes = [
         '',
+        '/report',
         '/dashboard',
         '/compare',
         '/posters',
@@ -13,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/guides',
         '/guides/climate-data-sources',
         '/guides/issb-s2-beginners',
+        '/methodology',
     ];
 
     const entries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
@@ -22,10 +24,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route === '' ? 1.0 : route === '/dashboard' ? 0.9 : 0.7,
     }));
 
-    // Dynamic country pages from DB
+    // Dynamic country + report card pages from DB
     try {
         const supabase = createServiceClient();
-        // Only countries that have data in country_data (have at least 1 row)
         const { data } = await supabase
             .from('country_data')
             .select('country_iso3')
@@ -37,6 +38,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 lastModified: new Date(),
                 changeFrequency: 'weekly',
                 priority: 0.8,
+            });
+        }
+
+        // Report card pages for scored countries
+        const { data: scored } = await supabase
+            .from('country_data')
+            .select('country_iso3')
+            .eq('indicator_code', 'REPORT.TOTAL_SCORE')
+            .eq('year', 2024);
+        for (const row of (scored ?? []) as { country_iso3: string }[]) {
+            entries.push({
+                url: `${BASE_URL}/report/${row.country_iso3}`,
+                lastModified: new Date(),
+                changeFrequency: 'monthly',
+                priority: 0.85,
             });
         }
     } catch {

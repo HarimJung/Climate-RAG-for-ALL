@@ -16,20 +16,20 @@ const REPORTS = [
         url: 'https://www.ipcc.ch/report/ar6/syr/',
     },
     {
-        title: 'Emissions Gap Report 2023',
+        title: 'Emissions Gap Report 2024',
         org: 'UNEP',
-        year: 2023,
+        year: 2024,
         description: 'Analysis of the gap between current commitments and Paris Agreement targets.',
         tags: ['Emissions', 'Policy'],
-        url: 'https://www.unep.org/resources/emissions-gap-report-2023',
+        url: 'https://www.unep.org/resources/emissions-gap-report-2024',
     },
     {
-        title: 'State of the Global Climate 2023',
+        title: 'State of the Global Climate',
         org: 'WMO',
-        year: 2023,
+        year: 2024,
         description: 'Annual overview of global climate indicators, extreme events, and socioeconomic impacts.',
         tags: ['Annual', 'Indicators'],
-        url: 'https://wmo.int/publication/state-of-global-climate-2023',
+        url: 'https://wmo.int/publication-series/state-of-global-climate',
     },
     {
         title: 'Global Stocktake Report',
@@ -75,8 +75,8 @@ const REPORTS = [
 
 const STATS = [
     { number: '8+', label: 'Reports Indexed' },
-    { number: '1000+', label: 'Pages Searchable' },
-    { number: '6', label: 'Organizations' },
+    { number: '200+', label: 'Countries Tracked' },
+    { number: '6+', label: 'Organizations' },
 ];
 
 export default function LibraryPage() {
