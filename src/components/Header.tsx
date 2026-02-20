@@ -4,13 +4,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const NAV_LINKS = [
-    { href: '/report', label: 'Report Card' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/compare', label: 'Compare' },
-    { href: '/posters', label: 'Posters' },
-    { href: '/insights', label: 'Insights' },
-    { href: '/library', label: 'Library' },
-    { href: '/guides', label: 'Guides' },
+    { href: '/report',  label: 'Report Card' },
+    { href: '/explore', label: 'Explore' },
+    { href: '/learn',   label: 'Learn' },
+    { href: '/about',   label: 'About' },
 ];
 
 export function Header() {

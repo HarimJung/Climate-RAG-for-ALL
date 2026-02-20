@@ -546,30 +546,62 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
   );
 }
 
+// ── Hover overlay for each card ────────────────────────────────────────────────
+
+function PosterOverlay({ title, downloading, onDownload, onViewFull }: {
+  title: string;
+  downloading: boolean;
+  onDownload: () => void;
+  onViewFull?: () => void;
+}) {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+      <p className="text-sm font-semibold text-white">{title}</p>
+      <div className="flex gap-2">
+        <button
+          onClick={e => { e.stopPropagation(); onDownload(); }}
+          disabled={downloading}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-xs font-semibold text-gray-900 transition-colors hover:bg-gray-100 disabled:opacity-60"
+        >
+          {downloading ? 'Preparing…' : (
+            <>
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Download PNG
+            </>
+          )}
+        </button>
+        {onViewFull && (
+          <button
+            onClick={e => { e.stopPropagation(); onViewFull(); }}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/60 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+          >
+            View Full →
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Main PostersClient ────────────────────────────────────────────────────────
 
 type PosterType = 'energy' | 'inequality' | 'gap' | 'air' | 'race' | 'scoreboard';
-const TABS: { id: PosterType; label: string; noCountry?: boolean }[] = [
-  { id: 'energy',      label: 'Energy Flow'       },
-  { id: 'inequality',  label: 'Carbon Inequality'  },
-  { id: 'gap',         label: 'Paris Gap'          },
-  { id: 'air',         label: 'Air Quality'        },
-  { id: 'race',        label: 'Transition Race',   noCountry: true },
-  { id: 'scoreboard',  label: 'World Scoreboard',  noCountry: true },
-];
 
 export function PostersClient() {
   const [iso3,     setIso3]     = useState('KOR');
   const [compIso3, setCompIso3] = useState('BGD');
-  const [poster,   setPoster]   = useState<PosterType>('energy');
   const [loading,  setLoading]  = useState(false);
   const [metrics,  setMetrics]  = useState<Metrics>(PILOT_DATA.KOR);
   const [compMet,  setCompMet]  = useState<Metrics>(PILOT_DATA.BGD);
   const [raceData,       setRaceData]       = useState<RaceEntry[]>([]);
   const [scoreboardData, setScoreboardData] = useState<CountryClass[]>([]);
   const [countriesList,  setCountriesList]  = useState<CountryMeta[]>(COUNTRIES);
-  const [downloading, setDownloading] = useState(false);
-  const chartRef = useRef<HTMLDivElement>(null);
+  const [downloading,    setDownloading]    = useState<PosterType | null>(null);
+  const [expanded,       setExpanded]       = useState<PosterType | null>(null);
+
+  const refs = useRef<Partial<Record<PosterType, HTMLDivElement | null>>>({});
 
   useEffect(() => {
     if (PILOT_DATA[iso3]) { setMetrics(PILOT_DATA[iso3]); return; }
@@ -590,106 +622,201 @@ export function PostersClient() {
 
   const country     = countriesList.find(c => c.iso3 === iso3)     ?? countriesList[0];
   const compCountry = countriesList.find(c => c.iso3 === compIso3) ?? countriesList[Math.min(5, countriesList.length - 1)];
-  const activeTab   = TABS.find(t => t.id === poster)!;
 
-  async function handleDownload() {
-    if (!chartRef.current) return;
-    setDownloading(true);
+  async function handleDownload(type: PosterType) {
+    const el = refs.current[type];
+    if (!el) return;
+    setDownloading(type);
     try {
       const { exportHtmlAsPng } = await import('@/lib/exportPng');
-      const filename = poster === 'inequality'
-        ? `visualclimate-${poster}-${iso3}-vs-${compIso3}.png`
-        : `visualclimate-${poster}-${iso3}.png`;
-      await exportHtmlAsPng(chartRef.current, filename);
+      const filename = type === 'inequality'
+        ? `visualclimate-${type}-${iso3}-vs-${compIso3}.png`
+        : `visualclimate-${type}-${iso3}.png`;
+      await exportHtmlAsPng(el, filename);
     } finally {
-      setDownloading(false);
+      setDownloading(null);
+    }
+  }
+
+  const POSTER_META: { id: PosterType; title: string; size: 'featured' | 'medium' | 'small' }[] = [
+    { id: 'scoreboard',  title: 'World Scoreboard',   size: 'featured' },
+    { id: 'energy',      title: 'Energy Flow',        size: 'medium' },
+    { id: 'gap',         title: 'Paris Gap',          size: 'medium' },
+    { id: 'inequality',  title: 'Carbon Inequality',  size: 'small' },
+    { id: 'air',         title: 'Air Quality',        size: 'small' },
+    { id: 'race',        title: 'Transition Race',    size: 'medium' },
+  ];
+
+  function renderPoster(type: PosterType) {
+    if (loading && type !== 'scoreboard' && type !== 'race') {
+      return <div className="flex aspect-square items-center justify-center text-sm text-[--text-muted]">Loading…</div>;
+    }
+    switch (type) {
+      case 'energy':     return <EnergyFlowPoster country={country} metrics={metrics} />;
+      case 'inequality': return <CarbonInequalityPoster country={country} compCountry={compCountry} metrics={metrics} compMetrics={compMet} />;
+      case 'gap':        return <ParisGapPoster country={country} />;
+      case 'air':        return <AirQualityPoster country={country} metrics={metrics} />;
+      case 'race':       return <TransitionRacePoster raceData={raceData} highlightIso3={iso3} />;
+      case 'scoreboard': return <WorldScoreboardPoster scoreboardData={scoreboardData} />;
     }
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-8">
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
-
-        {!activeTab.noCountry && (
-          <select value={iso3} onChange={e => setIso3(e.target.value)}
-            className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-[--text-secondary]">Country:</label>
+          <select
+            value={iso3}
+            onChange={e => setIso3(e.target.value)}
+            className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
             {countriesList.map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
           </select>
-        )}
-
-        {poster === 'inequality' && (
-          <>
-            <span className="text-sm text-[--text-muted]">vs</span>
-            <select value={compIso3} onChange={e => setCompIso3(e.target.value)}
-              className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {countriesList.filter(c => c.iso3 !== iso3).map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
-            </select>
-          </>
-        )}
-
-        <div className="flex flex-wrap overflow-hidden rounded-lg border border-[--border-card] bg-white shadow-sm">
-          {TABS.map(tab => (
-            <button key={tab.id} onClick={() => setPoster(tab.id)}
-              className={['px-4 py-2.5 text-sm font-medium transition-colors',
-                poster === tab.id ? 'bg-blue-600 text-white' : 'text-[--text-secondary] hover:bg-gray-50',
-              ].join(' ')}>
-              {tab.label}
-            </button>
-          ))}
         </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-[--text-secondary]">Compare with:</label>
+          <select
+            value={compIso3}
+            onChange={e => setCompIso3(e.target.value)}
+            className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {countriesList.filter(c => c.iso3 !== iso3).map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
+          </select>
+        </div>
+        <p className="text-xs text-[--text-muted]">Hover over any poster to download as PNG</p>
       </div>
 
-      {/* Poster canvas */}
-      <div ref={chartRef}>
-        {loading ? (
-          <div className="flex aspect-square max-w-[560px] mx-auto items-center justify-center rounded-2xl border bg-[#FAFAF9] text-sm text-[--text-muted]">
-            Loading data&hellip;
+      {/* ── Featured: World Scoreboard (full-width banner) ────────────────── */}
+      <div
+        className="group relative overflow-hidden rounded-2xl border border-[--border-card] cursor-default"
+        style={{ boxShadow: 'var(--shadow-card)' }}
+      >
+        <div ref={el => { refs.current.scoreboard = el; }}>
+          <WorldScoreboardPoster scoreboardData={scoreboardData} />
+        </div>
+        <PosterOverlay
+          title="World Scoreboard — 200+ countries"
+          downloading={downloading === 'scoreboard'}
+          onDownload={() => handleDownload('scoreboard')}
+        />
+      </div>
+
+      {/* ── Masonry grid ────────────────────────────────────────────────── */}
+      <div className="grid gap-6 md:grid-cols-2">
+
+        {/* Energy Flow — medium (spans 1 col) */}
+        <div
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          <div ref={el => { refs.current.energy = el; }}>
+            {renderPoster('energy')}
           </div>
-        ) : (
-          <>
-            {poster === 'energy'     && <EnergyFlowPoster country={country} metrics={metrics} />}
-            {poster === 'inequality' && <CarbonInequalityPoster country={country} compCountry={compCountry} metrics={metrics} compMetrics={compMet} />}
-            {poster === 'gap'        && <ParisGapPoster country={country} />}
-            {poster === 'air'        && <AirQualityPoster country={country} metrics={metrics} />}
-            {poster === 'race'       && <TransitionRacePoster raceData={raceData} highlightIso3={iso3} />}
-            {poster === 'scoreboard' && <WorldScoreboardPoster scoreboardData={scoreboardData} />}
-          </>
-        )}
+          <PosterOverlay
+            title={`Energy Flow — ${country.flag} ${country.name}`}
+            downloading={downloading === 'energy'}
+            onDownload={() => handleDownload('energy')}
+            onViewFull={() => setExpanded(expanded === 'energy' ? null : 'energy')}
+          />
+        </div>
+
+        {/* Paris Gap — medium (spans 1 col) */}
+        <div
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          <div ref={el => { refs.current.gap = el; }}>
+            {renderPoster('gap')}
+          </div>
+          <PosterOverlay
+            title={`Paris Gap — ${country.flag} ${country.name}`}
+            downloading={downloading === 'gap'}
+            onDownload={() => handleDownload('gap')}
+            onViewFull={() => setExpanded(expanded === 'gap' ? null : 'gap')}
+          />
+        </div>
+
+        {/* Carbon Inequality — small */}
+        <div
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          <div ref={el => { refs.current.inequality = el; }}>
+            {renderPoster('inequality')}
+          </div>
+          <PosterOverlay
+            title={`Carbon Inequality — ${country.flag} vs ${compCountry.flag}`}
+            downloading={downloading === 'inequality'}
+            onDownload={() => handleDownload('inequality')}
+            onViewFull={() => setExpanded(expanded === 'inequality' ? null : 'inequality')}
+          />
+        </div>
+
+        {/* Air Quality — small */}
+        <div
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          <div ref={el => { refs.current.air = el; }}>
+            {renderPoster('air')}
+          </div>
+          <PosterOverlay
+            title={`Air Quality — ${country.flag} ${country.name}`}
+            downloading={downloading === 'air'}
+            onDownload={() => handleDownload('air')}
+            onViewFull={() => setExpanded(expanded === 'air' ? null : 'air')}
+          />
+        </div>
+
+        {/* Transition Race — medium (full width) */}
+        <div
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default md:col-span-2"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
+          <div ref={el => { refs.current.race = el; }}>
+            {renderPoster('race')}
+          </div>
+          <PosterOverlay
+            title="Transition Race — 20+ countries"
+            downloading={downloading === 'race'}
+            onDownload={() => handleDownload('race')}
+            onViewFull={() => setExpanded(expanded === 'race' ? null : 'race')}
+          />
+        </div>
+
       </div>
 
-      {/* Download */}
-      <div className="flex items-center justify-center gap-3">
-        <button onClick={handleDownload} disabled={downloading || loading}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50">
-          {downloading ? (
-            <>
-              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
-              Preparing&hellip;
-            </>
-          ) : (
-            <>
-              Download PNG
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-            </>
-          )}
-        </button>
-        <span className="text-xs text-[--text-muted]">
-          {poster === 'race'
-            ? 'Transition Race \u2014 20 countries'
-            : poster === 'scoreboard'
-            ? 'World Scoreboard \u2014 212 countries'
-            : poster === 'inequality'
-            ? `${country.flag} ${country.name} vs ${compCountry.flag} ${compCountry.name}`
-            : `${country.flag} ${country.name} \u2014 ${activeTab.label}`}
-        </span>
-      </div>
+      {/* Expanded view (when "View Full" clicked) */}
+      {expanded && expanded !== 'scoreboard' && (
+        <div className="rounded-2xl border-2 border-[--accent-primary] bg-white p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="mb-4 flex items-center justify-between">
+            <p className="font-semibold text-[--text-primary]">
+              {POSTER_META.find(m => m.id === expanded)?.title} — Full View
+            </p>
+            <button
+              onClick={() => setExpanded(null)}
+              className="text-sm text-[--text-muted] hover:text-[--text-primary]"
+            >
+              ✕ Close
+            </button>
+          </div>
+          <div className="mx-auto max-w-[560px]">
+            {renderPoster(expanded)}
+          </div>
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={() => handleDownload(expanded)}
+              disabled={downloading === expanded}
+              className="inline-flex items-center gap-2 rounded-lg bg-[--accent-primary] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-60"
+            >
+              {downloading === expanded ? 'Preparing…' : 'Download PNG'}
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

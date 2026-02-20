@@ -41,6 +41,16 @@ function getVulnerabilityBadge(score: number) {
   return { label: 'Low Risk', dotColor: '#00A67E', textColor: 'text-[--accent-positive]', bgColor: 'bg-emerald-50 border-emerald-200' };
 }
 
+const GRADE_LABELS_COUNTRY: Record<number, string> = { 7: 'A+', 6: 'A', 5: 'B+', 4: 'B', 3: 'C+', 2: 'C', 1: 'D', 0: 'F' };
+const GRADE_COLOR_COUNTRY: Record<string, string> = {
+  'A+': '#10B981', 'A': '#10B981', 'B+': '#3B82F6', 'B': '#3B82F6',
+  'C+': '#F59E0B', 'C': '#F59E0B', 'D': '#EF4444', 'F': '#991B1B',
+};
+const GRADE_BG_COUNTRY: Record<string, string> = {
+  'A+': '#ECFDF5', 'A': '#ECFDF5', 'B+': '#EFF6FF', 'B': '#EFF6FF',
+  'C+': '#FFFBEB', 'C': '#FFFBEB', 'D': '#FEF2F2', 'F': '#FFF1F2',
+};
+
 const PILOT_NAMES: Record<string, string> = {
   KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
   BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
@@ -276,8 +286,28 @@ export default async function CountryPage({ params }: Props) {
               />
             )}
             <div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-3xl font-semibold text-[--text-primary] sm:text-4xl">{country.name}</h1>
+                {(() => {
+                  const gradeRaw = latestByCode['REPORT.GRADE'];
+                  if (!gradeRaw) return null;
+                  const grade = GRADE_LABELS_COUNTRY[Math.round(gradeRaw.value)];
+                  if (!grade) return null;
+                  return (
+                    <Link
+                      href={`/report/${country.iso3}`}
+                      className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-sm font-bold transition-opacity hover:opacity-80"
+                      style={{
+                        borderColor: GRADE_COLOR_COUNTRY[grade],
+                        backgroundColor: GRADE_BG_COUNTRY[grade],
+                        color: GRADE_COLOR_COUNTRY[grade],
+                      }}
+                      title="View full Report Card"
+                    >
+                      Grade {grade}
+                    </Link>
+                  );
+                })()}
                 {vulnerability && (
                   <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${vulnerability.bgColor} ${vulnerability.textColor}`}>
                     <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: vulnerability.dotColor }} />
@@ -344,30 +374,79 @@ export default async function CountryPage({ params }: Props) {
         pm25={pm25?.value ?? null}
       />
 
-      {/* Data Sources */}
+      {/* Data Sources (accordion by category) */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-12">
         <div className="mx-auto max-w-[1200px]">
           <h2 className="mb-6 text-xl font-semibold text-[--text-primary]">Data Sources</h2>
-          <div className="overflow-x-auto rounded-xl border border-[--border-card] bg-white" style={{ boxShadow: 'var(--shadow-card)' }}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[--border-card]">
-                  <th className="px-4 py-3 text-left font-medium text-[--text-secondary]">Indicator</th>
-                  <th className="px-4 py-3 text-left font-medium text-[--text-secondary]">Source</th>
-                  <th className="px-4 py-3 text-left font-medium text-[--text-secondary]">Year Range</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sourcesUsed.map((s, i) => (
-                  <tr key={i} className="border-b border-[--border-card] last:border-b-0">
-                    <td className="px-4 py-2.5 text-[--text-primary]">{s.indicator}</td>
-                    <td className="px-4 py-2.5 text-[--text-secondary]">{s.source}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-[--text-muted]">{s.yearRange}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {(() => {
+            const CATEGORY_CODES: Record<string, string[]> = {
+              'Emissions':    ['EN.GHG.CO2.PC.CE.AR5', 'CT.GHG.TOTAL', 'DERIVED.DECOUPLING', 'DERIVED.CO2_PER_GDP', 'DERIVED.EMISSIONS_INTENSITY'],
+              'Energy':       ['EMBER.RENEWABLE.PCT', 'EMBER.FOSSIL.PCT', 'EMBER.CARBON.INTENSITY', 'EG.USE.PCAP.KG.OE', 'DERIVED.ENERGY_TRANSITION'],
+              'Economy':      ['NY.GDP.PCAP.CD'],
+              'Climate Risk': ['NDGAIN.VULNERABILITY', 'NDGAIN.READINESS', 'EN.ATM.PM25.MC.M3', 'AG.LND.FRST.ZS'],
+              'Derived':      [],
+            };
+            const assigned = new Set(Object.values(CATEGORY_CODES).flat());
+            // Group sourcesUsed by category
+            const categorized: Record<string, typeof sourcesUsed> = {};
+            for (const cat of Object.keys(CATEGORY_CODES)) categorized[cat] = [];
+            for (const s of sourcesUsed) {
+              let found = false;
+              for (const [cat, codes] of Object.entries(CATEGORY_CODES)) {
+                if (codes.some(c => s.indicator === (({
+                  'EN.GHG.CO2.PC.CE.AR5': 'CO2 per capita', 'CT.GHG.TOTAL': 'Total GHG (absolute)',
+                  'NY.GDP.PCAP.CD': 'GDP per capita', 'EMBER.RENEWABLE.PCT': 'Renewable electricity %',
+                  'EMBER.FOSSIL.PCT': 'Fossil electricity %', 'EMBER.CARBON.INTENSITY': 'Carbon intensity',
+                  'EG.USE.PCAP.KG.OE': 'Energy use per capita', 'EN.ATM.PM25.MC.M3': 'PM2.5 air pollution',
+                  'AG.LND.FRST.ZS': 'Forest area', 'NDGAIN.VULNERABILITY': 'ND-GAIN Vulnerability',
+                  'NDGAIN.READINESS': 'ND-GAIN Readiness', 'DERIVED.DECOUPLING': 'Decoupling index',
+                  'DERIVED.CO2_PER_GDP': 'Carbon intensity of GDP', 'DERIVED.ENERGY_TRANSITION': 'Energy transition momentum',
+                  'DERIVED.EMISSIONS_INTENSITY': 'Emissions intensity',
+                } as Record<string, string>)[c]))) {
+                  categorized[cat].push(s);
+                  found = true;
+                  break;
+                }
+              }
+              if (!found) categorized['Derived'].push(s);
+            }
+            return (
+              <div className="space-y-2">
+                {Object.entries(categorized)
+                  .filter(([, rows]) => rows.length > 0)
+                  .map(([cat, rows]) => (
+                    <details key={cat} className="group rounded-xl border border-[--border-card] bg-white overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                      <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-[--text-primary] hover:bg-gray-50">
+                        <span>{cat} <span className="ml-1.5 text-xs font-normal text-[--text-muted]">({rows.length})</span></span>
+                        <svg className="h-4 w-4 text-[--text-muted] transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
+                        </svg>
+                      </summary>
+                      <div className="border-t border-[--border-card]">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-[--border-card] bg-gray-50">
+                              <th className="px-5 py-2 text-left text-xs font-medium text-[--text-muted]">Indicator</th>
+                              <th className="px-5 py-2 text-left text-xs font-medium text-[--text-muted]">Source</th>
+                              <th className="px-5 py-2 text-left text-xs font-medium text-[--text-muted]">Years</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {rows.map((s, i) => (
+                              <tr key={i} className="border-b border-[--border-card] last:border-b-0">
+                                <td className="px-5 py-2.5 text-[--text-primary]">{s.indicator}</td>
+                                <td className="px-5 py-2.5 text-[--text-secondary]">{s.source}</td>
+                                <td className="px-5 py-2.5 font-mono text-xs text-[--text-muted]">{s.yearRange}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </details>
+                  ))}
+              </div>
+            );
+          })()}
         </div>
       </section>
 

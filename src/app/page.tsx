@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { createServiceClient } from '@/lib/supabase/server';
 import { createMetaTags } from '@/components/seo/MetaTags';
 import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldScoreboard';
+import { HeroSearch } from '@/components/HeroSearch';
+import { iso3ToFlag } from '@/lib/iso3ToFlag';
 
 export const metadata = createMetaTags({
   title: 'VisualClimate — Climate Accountability Through Data',
@@ -13,28 +14,24 @@ export const metadata = createMetaTags({
 
 export const dynamic = 'force-dynamic';
 
-const PILOT_COUNTRIES = [
-  { iso3: 'KOR', name: 'South Korea', flag: 'kr', context: 'High-income Asia, energy transition' },
-  { iso3: 'USA', name: 'United States', flag: 'us', context: 'Largest historical emitter' },
-  { iso3: 'DEU', name: 'Germany',       flag: 'de', context: 'EU leader, Energiewende' },
-  { iso3: 'BRA', name: 'Brazil',        flag: 'br', context: 'Tropical forests, LULUCF' },
-  { iso3: 'NGA', name: 'Nigeria',       flag: 'ng', context: "Africa's largest economy" },
-  { iso3: 'BGD', name: 'Bangladesh',    flag: 'bd', context: 'Extreme climate vulnerability' },
-];
-
 const CLASS_NAME_MAP: Record<number, CountryClass['cls']> = { 1: 'Changer', 2: 'Starter', 3: 'Talker' };
-const CLASS_COLOR: Record<string, string> = {
-  Changer: '#10B981',
-  Starter: '#F59E0B',
-  Talker:  '#EF4444',
-};
+const CLASS_COLOR: Record<string, string> = { Changer: '#10B981', Starter: '#F59E0B', Talker: '#EF4444' };
+const CLASS_BG: Record<string, string>    = { Changer: '#ECFDF5', Starter: '#FFFBEB', Talker: '#FEF2F2' };
 
-const GRADE_LABELS: Record<number, string> = {
-  7: 'A+', 6: 'A', 5: 'B+', 4: 'B', 3: 'C+', 2: 'C', 1: 'D', 0: 'F',
+const GRADE_LABELS: Record<number, string> = { 7: 'A+', 6: 'A', 5: 'B+', 4: 'B', 3: 'C+', 2: 'C', 1: 'D', 0: 'F' };
+const GRADE_COLOR: Record<string, string> = {
+  'A+': '#10B981', 'A': '#10B981',
+  'B+': '#3B82F6', 'B': '#3B82F6',
+  'C+': '#F59E0B', 'C': '#F59E0B',
+  'D':  '#EF4444',
+  'F':  '#991B1B',
 };
-const GRADE_COLOR_FG: Record<string, string> = {
-  'A+': '#00A67E', 'A': '#00A67E', 'B+': '#0066FF', 'B': '#0066FF',
-  'C+': '#F59E0B', 'C': '#F59E0B', 'D': '#E5484D',  'F': '#E5484D',
+const GRADE_BG: Record<string, string> = {
+  'A+': '#ECFDF5', 'A': '#ECFDF5',
+  'B+': '#EFF6FF', 'B': '#EFF6FF',
+  'C+': '#FFFBEB', 'C': '#FFFBEB',
+  'D':  '#FEF2F2',
+  'F':  '#FFF1F2',
 };
 
 // ── Data functions ──────────────────────────────────────────────────────────
@@ -43,12 +40,12 @@ async function getStats() {
   try {
     const supabase = createServiceClient();
     const [countriesRes, indicatorsRes, dataPointsRes] = await Promise.all([
-      supabase.from('country_data').select('country_iso3').eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5').eq('year', 2022),
+      supabase.from('countries').select('iso3', { count: 'exact', head: true }),
       supabase.from('indicators').select('*', { count: 'exact', head: true }),
       supabase.from('country_data').select('*', { count: 'exact', head: true }),
     ]);
     return {
-      countries:  countriesRes.data?.length ?? 0,
+      countries:  countriesRes.count ?? 0,
       indicators: indicatorsRes.count ?? 0,
       dataPoints: dataPointsRes.count ?? 0,
     };
@@ -61,10 +58,8 @@ async function getClassCounts() {
   try {
     const supabase = createServiceClient();
     const { data } = await supabase
-      .from('country_data')
-      .select('value')
-      .eq('indicator_code', 'DERIVED.CLIMATE_CLASS')
-      .eq('year', 2023);
+      .from('country_data').select('value')
+      .eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023);
     const counts = { Changer: 0, Starter: 0, Talker: 0 };
     for (const r of data ?? []) {
       if (r.value === 1)      counts.Changer++;
@@ -72,67 +67,46 @@ async function getClassCounts() {
       else if (r.value === 3) counts.Talker++;
     }
     return counts;
-  } catch {
-    return { Changer: 0, Starter: 0, Talker: 0 };
-  }
+  } catch { return { Changer: 0, Starter: 0, Talker: 0 }; }
 }
 
 async function getCO2Insight() {
   try {
     const supabase = createServiceClient();
-    // Large countries (pop > 10M) to avoid small-island outliers
     const { data: popRows } = await supabase
-      .from('country_data')
-      .select('country_iso3')
-      .eq('indicator_code', 'SP.POP.TOTL')
-      .eq('year', 2022)
-      .gt('value', 10_000_000);
+      .from('country_data').select('country_iso3')
+      .eq('indicator_code', 'SP.POP.TOTL').eq('year', 2022).gt('value', 10_000_000);
     const largeCodes = new Set((popRows ?? []).map(r => r.country_iso3));
-
     const { data: co2Rows } = await supabase
-      .from('country_data')
-      .select('country_iso3, value')
-      .eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5')
-      .eq('year', 2022)
-      .gt('value', 0);
-
+      .from('country_data').select('country_iso3, value')
+      .eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5').eq('year', 2022).gt('value', 0);
     const relevant = (co2Rows ?? []).filter(r => largeCodes.has(r.country_iso3));
     if (relevant.length === 0) return null;
-
     relevant.sort((a, b) => Number(b.value) - Number(a.value));
     const max = relevant[0];
     const min = relevant[relevant.length - 1];
     return {
-      maxISO3: max.country_iso3,
-      maxVal:  Math.round(Number(max.value) * 10) / 10,
-      minISO3: min.country_iso3,
-      minVal:  Math.round(Number(min.value) * 10) / 10,
-      ratio:   Math.round(Number(max.value) / Number(min.value)),
+      maxVal: Math.round(Number(max.value) * 10) / 10,
+      minVal: Math.round(Number(min.value) * 10) / 10,
+      ratio:  Math.round(Number(max.value) / Number(min.value)),
     };
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 async function getRenewableInsight() {
   try {
     const supabase = createServiceClient();
     const { data } = await supabase
-      .from('country_data')
-      .select('country_iso3, value, year')
-      .eq('indicator_code', 'EMBER.RENEWABLE.PCT')
-      .in('country_iso3', ['DEU', 'KOR'])
-      .order('year', { ascending: false })
-      .limit(10);
+      .from('country_data').select('country_iso3, value, year')
+      .eq('indicator_code', 'EMBER.RENEWABLE.PCT').in('country_iso3', ['DEU', 'KOR'])
+      .order('year', { ascending: false }).limit(10);
     const deu = (data ?? []).find(r => r.country_iso3 === 'DEU');
     const kor = (data ?? []).find(r => r.country_iso3 === 'KOR');
     return {
       deuVal: deu ? Math.round(Number(deu.value) * 10) / 10 : null,
       korVal: kor ? Math.round(Number(kor.value) * 10) / 10 : null,
     };
-  } catch {
-    return { deuVal: null, korVal: null };
-  }
+  } catch { return { deuVal: null, korVal: null }; }
 }
 
 async function getScoreboardData(): Promise<CountryClass[]> {
@@ -140,11 +114,9 @@ async function getScoreboardData(): Promise<CountryClass[]> {
     const supabase = createServiceClient();
     const [{ data: clsRows }, { data: metricRows }, { data: cntRows }] = await Promise.all([
       supabase.from('country_data').select('country_iso3, value').eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023),
-      supabase.from('country_data')
-        .select('country_iso3, indicator_code, year, value')
+      supabase.from('country_data').select('country_iso3, indicator_code, year, value')
         .in('indicator_code', ['EN.GHG.CO2.PC.CE.AR5', 'EMBER.RENEWABLE.PCT'])
-        .gte('year', 2018)
-        .order('year', { ascending: false }),
+        .gte('year', 2018).order('year', { ascending: false }),
       supabase.from('countries').select('iso3, name'),
     ]);
     const nameMap = new Map<string, string>((cntRows ?? []).map((c: { iso3: string; name: string }) => [c.iso3, c.name]));
@@ -164,116 +136,164 @@ async function getScoreboardData(): Promise<CountryClass[]> {
   } catch { return []; }
 }
 
-async function getFeaturedCountries() {
+async function getCountryList(): Promise<{ iso3: string; name: string }[]> {
   try {
     const supabase = createServiceClient();
-    const isos = PILOT_COUNTRIES.map(c => c.iso3);
-    const [{ data: classRows }, { data: metricRows }, { data: scoreRows }] = await Promise.all([
-      supabase.from('country_data').select('country_iso3, value')
-        .eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023).in('country_iso3', isos),
-      supabase.from('country_data').select('country_iso3, indicator_code, year, value')
-        .in('country_iso3', isos)
-        .in('indicator_code', ['EN.GHG.CO2.PC.CE.AR5', 'EMBER.RENEWABLE.PCT'])
-        .order('year', { ascending: false }),
-      supabase.from('country_data').select('country_iso3, indicator_code, value')
-        .in('country_iso3', isos)
-        .in('indicator_code', ['REPORT.TOTAL_SCORE', 'REPORT.GRADE'])
-        .eq('year', 2024),
-    ]);
-    const clsMap: Record<string, number> = {};
-    for (const r of (classRows ?? [])) clsMap[r.country_iso3] = Number(r.value);
-    const co2Map: Record<string, string> = {};
-    const renMap: Record<string, string> = {};
-    for (const r of (metricRows ?? [])) {
-      if (r.value == null) continue;
-      if (r.indicator_code === 'EN.GHG.CO2.PC.CE.AR5' && !co2Map[r.country_iso3]) co2Map[r.country_iso3] = Number(r.value).toFixed(1) + 't';
-      if (r.indicator_code === 'EMBER.RENEWABLE.PCT'   && !renMap[r.country_iso3]) renMap[r.country_iso3] = Number(r.value).toFixed(0) + '%';
-    }
-    const gradeNumMap: Record<string, number> = {};
-    for (const r of (scoreRows ?? [])) {
-      if (r.indicator_code === 'REPORT.GRADE') gradeNumMap[r.country_iso3] = Math.round(Number(r.value));
-    }
-    return { clsMap, co2Map, renMap, gradeNumMap };
-  } catch {
-    return { clsMap: {}, co2Map: {}, renMap: {}, gradeNumMap: {} };
-  }
+    const { data } = await supabase.from('countries').select('iso3, name').order('name');
+    return (data ?? []) as { iso3: string; name: string }[];
+  } catch { return []; }
+}
+
+interface HomepageCountry {
+  iso3: string;
+  name: string;
+  region: string;
+  grade: string;
+  cls: 'Changer' | 'Talker';
+}
+
+async function getTopChangers(): Promise<HomepageCountry[]> {
+  try {
+    const supabase = createServiceClient();
+    const { data: changerRows } = await supabase
+      .from('country_data').select('country_iso3')
+      .eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023).eq('value', 1);
+    const changerISOs = (changerRows ?? []).map(r => r.country_iso3);
+    if (changerISOs.length === 0) return [];
+
+    const { data: gradeRows } = await supabase
+      .from('country_data').select('country_iso3, value')
+      .eq('indicator_code', 'REPORT.GRADE').eq('year', 2024)
+      .in('country_iso3', changerISOs)
+      .order('value', { ascending: false }).limit(5);
+
+    const topISOs = (gradeRows ?? []).map(r => r.country_iso3);
+    const { data: countries } = await supabase.from('countries').select('iso3, name, region').in('iso3', topISOs);
+    const nameMap = new Map((countries ?? []).map((c: { iso3: string; name: string; region?: string }) => [c.iso3, c]));
+
+    return (gradeRows ?? []).map(r => {
+      const c = nameMap.get(r.country_iso3) as { iso3: string; name: string; region?: string } | undefined;
+      return {
+        iso3:   r.country_iso3,
+        name:   c?.name ?? r.country_iso3,
+        region: c?.region ?? '',
+        grade:  GRADE_LABELS[Math.round(Number(r.value))] ?? 'F',
+        cls:    'Changer' as const,
+      };
+    });
+  } catch { return []; }
+}
+
+async function getBiggestTalkers(): Promise<HomepageCountry[]> {
+  try {
+    const supabase = createServiceClient();
+    const { data: talkerRows } = await supabase
+      .from('country_data').select('country_iso3')
+      .eq('indicator_code', 'DERIVED.CLIMATE_CLASS').eq('year', 2023).eq('value', 3);
+    const talkerISOs = (talkerRows ?? []).map(r => r.country_iso3);
+    if (talkerISOs.length === 0) return [];
+
+    const { data: scoreRows } = await supabase
+      .from('country_data').select('country_iso3, value')
+      .eq('indicator_code', 'REPORT.TOTAL_SCORE').eq('year', 2024)
+      .in('country_iso3', talkerISOs)
+      .order('value', { ascending: true }).limit(5);
+
+    const topISOs = (scoreRows ?? []).map(r => r.country_iso3);
+    const { data: gradeData } = await supabase
+      .from('country_data').select('country_iso3, value')
+      .eq('indicator_code', 'REPORT.GRADE').eq('year', 2024).in('country_iso3', topISOs);
+    const gradeMap = new Map((gradeData ?? []).map((r: { country_iso3: string; value: number }) => [r.country_iso3, Math.round(Number(r.value))]));
+
+    const { data: countries } = await supabase.from('countries').select('iso3, name, region').in('iso3', topISOs);
+    const nameMap = new Map((countries ?? []).map((c: { iso3: string; name: string; region?: string }) => [c.iso3, c]));
+
+    return (scoreRows ?? []).map(r => {
+      const c = nameMap.get(r.country_iso3) as { iso3: string; name: string; region?: string } | undefined;
+      const gradeNum = gradeMap.get(r.country_iso3) ?? 0;
+      return {
+        iso3:   r.country_iso3,
+        name:   c?.name ?? r.country_iso3,
+        region: c?.region ?? '',
+        grade:  GRADE_LABELS[gradeNum] ?? 'F',
+        cls:    'Talker' as const,
+      };
+    });
+  } catch { return []; }
 }
 
 // ── Page ────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [stats, classCounts, co2Insight, renewableInsight, scoreboardData, featured] = await Promise.all([
+  const [stats, classCounts, co2Insight, renewableInsight, scoreboardData, countryList, topChangers, biggestTalkers] = await Promise.all([
     getStats(),
     getClassCounts(),
     getCO2Insight(),
     getRenewableInsight(),
     getScoreboardData(),
-    getFeaturedCountries(),
+    getCountryList(),
+    getTopChangers(),
+    getBiggestTalkers(),
   ]);
+
+  const statsSubtitle = [
+    stats.countries  > 0 ? `${stats.countries}+ countries` : '200+ countries',
+    stats.indicators > 0 ? `${stats.indicators} indicators`  : '60 indicators',
+    stats.dataPoints > 0 ? `${(stats.dataPoints / 1000).toFixed(0)}K+ data points` : '170K+ data points',
+  ].join(' · ');
 
   return (
     <div>
 
       {/* ── 1. Hero ─────────────────────────────────────────────────────── */}
-      <section className="px-4 py-24 sm:py-36">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-4 inline-block rounded-full border border-[--border-card] bg-[--bg-section] px-4 py-1.5 text-sm font-medium text-[--text-secondary]">
-            Open climate data platform
+      <section className="relative overflow-hidden bg-white">
+        {/* Background world map */}
+        {scoreboardData.length > 0 && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.18]">
+            <WorldScoreboard countries={scoreboardData} width={1440} height={720} />
           </div>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-[--text-primary] sm:text-5xl lg:text-6xl">
-            Who is really changing?{' '}
-            <span className="text-[--accent-negative]">Who is just talking?</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-[--text-secondary] sm:text-xl">
-            Tracking{' '}
-            <strong className="text-[--text-primary]">
-              {stats.countries > 0 ? `${stats.countries}+` : '200+'} countries
-            </strong>
-            {' '}×{' '}
-            <strong className="text-[--text-primary]">
-              {stats.indicators > 0 ? stats.indicators : 60} climate indicators
-            </strong>.
-            {' '}Data-driven accountability for the Paris Agreement era.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/report"
-              className="inline-flex items-center gap-2 rounded-full bg-[--accent-primary] px-8 py-4 text-lg font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg"
-            >
-              Get Report Cards
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-            <a
-              href="#world-map"
-              className="inline-flex items-center gap-2 rounded-full border border-[--border-card] px-8 py-4 text-lg font-semibold text-[--text-primary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
-            >
-              Explore the Map
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 2. Stats ─────────────────────────────────────────────────────── */}
-      <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
-        <div className="mx-auto grid max-w-[1200px] gap-6 md:grid-cols-3">
-          {[
-            { value: stats.countries > 0 ? `${stats.countries}+` : '200+', label: 'Countries',    sub: 'Every nation tracked',                             icon: '🌍' },
-            { value: stats.indicators > 0 ? String(stats.indicators) : '60', label: 'Indicators', sub: 'Emissions, energy, vulnerability, economy',          icon: '📊' },
-            { value: stats.dataPoints > 0 ? `${(stats.dataPoints / 1000).toFixed(0)}K+` : '170K+', label: 'Data Points', sub: '2000–2023 time series', icon: '📈' },
-          ].map(card => (
-            <div key={card.label} className="rounded-xl border border-[--border-card] bg-white p-6 text-center" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <div className="text-3xl">{card.icon}</div>
-              <p className="mt-3 font-mono text-4xl font-bold text-[--accent-primary]">{card.value}</p>
-              <p className="mt-1 text-base font-semibold text-[--text-primary]">{card.label}</p>
-              <p className="mt-1 text-sm text-[--text-muted]">{card.sub}</p>
+        )}
+        {/* Overlay content */}
+        <div className="relative z-10 px-4 py-28 sm:py-40">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-4 inline-block rounded-full border border-[--border-card] bg-white/80 px-4 py-1.5 text-sm font-medium text-[--text-secondary] backdrop-blur-sm">
+              Open climate accountability platform
             </div>
-          ))}
+            <h1 className="mt-4 text-4xl font-bold tracking-tight text-[--text-primary] sm:text-5xl lg:text-6xl">
+              Is your country keeping its{' '}
+              <span className="text-[--accent-primary]">climate promise?</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-xl text-lg text-[--text-secondary]">
+              Check your country&apos;s report card — grades backed by real emissions, energy, and climate risk data.
+            </p>
+
+            {/* Search */}
+            <div className="mt-8">
+              <HeroSearch countries={countryList} />
+              <p className="mt-3 text-xs text-[--text-muted]">
+                Tracking {statsSubtitle}
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/report"
+                className="inline-flex items-center gap-2 rounded-full border border-[--accent-primary] px-6 py-3 text-sm font-semibold text-[--accent-primary] transition-all hover:bg-[--accent-primary] hover:text-white"
+              >
+                Browse all report cards
+              </Link>
+              <a
+                href="#world-map"
+                className="inline-flex items-center gap-2 rounded-full border border-[--border-card] bg-white/80 px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+              >
+                Explore the map ↓
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── 3. World Map ─────────────────────────────────────────────────── */}
+      {/* ── 2. World Map ─────────────────────────────────────────────────── */}
       <section id="world-map" className="scroll-mt-16 border-t border-[--border-card] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -286,12 +306,12 @@ export default async function HomePage() {
                 {' '}— based on post-Paris CO₂ trend and renewable energy growth
               </p>
             </div>
-            <Link href="/insights" className="shrink-0 text-sm font-medium text-[--accent-primary] hover:underline">
+            <Link href="/methodology" className="shrink-0 text-sm font-medium text-[--accent-primary] hover:underline">
               See methodology →
             </Link>
           </div>
 
-          {/* Legend — bigger and clearer */}
+          {/* Legend */}
           <div className="mb-4 flex flex-wrap gap-5">
             {([ ['Changer', '#10B981', '↓CO₂ + ↑Renewable'], ['Starter', '#F59E0B', 'one condition met'], ['Talker', '#EF4444', 'neither condition'] ] as const).map(([cls, color, desc]) => (
               <div key={cls} className="flex items-center gap-2">
@@ -322,13 +342,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 4. Key Findings ───────────────────────────────────────────────── */}
+      {/* ── 3. Key Findings ───────────────────────────────────────────────── */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
           <h2 className="mb-8 text-center text-3xl font-bold text-[--text-primary]">Key Findings</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
-            <Link href="/insights" className="group block">
+            <Link href="/report" className="group block">
               <div className="h-full rounded-xl border border-[--border-card] bg-white p-6 transition-shadow hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
                   <svg className="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -336,16 +356,16 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <p className="font-mono text-3xl font-bold text-emerald-500">
-                  {classCounts.Changer > 0 ? `${classCounts.Changer}` : '64'} countries
+                  {classCounts.Changer > 0 ? `${classCounts.Changer}` : '64'} nations
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
-                  are genuinely cutting emissions while growing renewables
+                  are genuinely cutting emissions while scaling renewables — the real Changers
                 </p>
-                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">View analysis →</p>
+                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">See Changers →</p>
               </div>
             </Link>
 
-            <Link href="/insights" className="group block">
+            <Link href="/report" className="group block">
               <div className="h-full rounded-xl border border-[--border-card] bg-white p-6 transition-shadow hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
                   <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -353,12 +373,12 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <p className="font-mono text-3xl font-bold text-red-500">
-                  {classCounts.Talker > 0 ? `${classCounts.Talker}` : '72'} countries
+                  {classCounts.Talker > 0 ? `${classCounts.Talker}` : '72'} nations
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
-                  signed Paris but show no measurable progress on either metric
+                  signed Paris but show no measurable progress — Talkers, not Doers
                 </p>
-                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">View analysis →</p>
+                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">See Talkers →</p>
               </div>
             </Link>
 
@@ -370,12 +390,12 @@ export default async function HomePage() {
                   </svg>
                 </div>
                 <p className="font-mono text-3xl font-bold text-[--accent-primary]">
-                  {co2Insight ? `${co2Insight.maxVal}t vs ${co2Insight.minVal}t` : '14t vs 0.05t'}
+                  {co2Insight ? `${co2Insight.ratio}×` : '280×'}
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
                   {co2Insight
-                    ? `The highest per-capita emitters produce ${co2Insight.ratio}× more CO₂ than the lowest (large nations, 2022)`
-                    : 'Extreme CO₂ inequality persists across large nations'}
+                    ? 'gap between highest and lowest per-capita emitters among large nations'
+                    : 'CO₂ inequality between highest and lowest per-capita emitters'}
                 </p>
                 <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">View analysis →</p>
               </div>
@@ -403,7 +423,6 @@ export default async function HomePage() {
 
           </div>
 
-          {/* Report Card CTA */}
           <div className="mt-8 flex justify-center">
             <Link
               href="/report"
@@ -415,65 +434,95 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 5. Featured Countries ─────────────────────────────────────────── */}
+      {/* ── 4. Top Changers & Biggest Talkers ─────────────────────────────── */}
       <section className="border-t border-[--border-card] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="mb-8 text-3xl font-bold text-[--text-primary]">Featured Countries</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PILOT_COUNTRIES.map(c => {
-              const clsNum    = featured.clsMap[c.iso3];
-              const cls       = clsNum ? CLASS_NAME_MAP[clsNum] : undefined;
-              const gradeNum  = featured.gradeNumMap[c.iso3];
-              const grade     = gradeNum !== undefined ? GRADE_LABELS[gradeNum] : undefined;
-              return (
-                <Link
-                  key={c.iso3}
-                  href={`/report/${c.iso3}`}
-                  className="group flex items-start gap-4 rounded-xl border border-[--border-card] bg-white p-5 transition-all hover:border-[--accent-primary] hover:shadow-md"
-                  style={{ boxShadow: 'var(--shadow-card)' }}
-                >
-                  <Image
-                    src={`https://flagcdn.com/${c.flag}.svg`}
-                    alt={`${c.name} flag`}
-                    width={48}
-                    height={36}
-                    className="mt-0.5 rounded shadow"
-                    unoptimized
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-base font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">{c.name}</p>
-                      {cls && (
-                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: CLASS_COLOR[cls] }}>
-                          {cls}
-                        </span>
-                      )}
-                      {grade && (
-                        <span className="rounded-full border px-2 py-0.5 text-xs font-bold" style={{ color: GRADE_COLOR_FG[grade], borderColor: GRADE_COLOR_FG[grade] }}>
-                          {grade}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-0.5 text-sm text-[--text-muted]">{c.context}</p>
-                    <div className="mt-2 flex flex-wrap gap-3 text-xs font-medium text-[--text-secondary]">
-                      {featured.co2Map[c.iso3] && <span>CO₂ {featured.co2Map[c.iso3]}/cap</span>}
-                      {featured.renMap[c.iso3] && <span>Renewable {featured.renMap[c.iso3]}</span>}
-                    </div>
-                  </div>
-                  <svg className="mt-1 h-5 w-5 shrink-0 text-[--text-muted] group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                  </svg>
-                </Link>
-              );
-            })}
+          <div className="grid gap-8 lg:grid-cols-2">
+
+            {/* Top Changers */}
+            <div>
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-[--text-primary]">Top Changers</h2>
+                  <p className="mt-1 text-sm text-[--text-muted]">Highest-scoring countries cutting emissions &amp; growing renewables</p>
+                </div>
+                <Link href="/report" className="text-sm font-medium text-[--accent-primary] hover:underline">See all →</Link>
+              </div>
+              <div className="space-y-3">
+                {(topChangers.length > 0 ? topChangers : (Array.from({ length: 5 }) as null[])).map((c, i) =>
+                  c ? (
+                    <Link
+                      key={(c as HomepageCountry).iso3}
+                      href={`/report/${(c as HomepageCountry).iso3}`}
+                      className="group flex items-center gap-4 rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[#10B981] hover:shadow-sm"
+                      style={{ boxShadow: 'var(--shadow-card)' }}
+                    >
+                      <span className="w-6 text-center text-sm font-bold text-[--text-muted]">{i + 1}</span>
+                      <span className="text-2xl">{iso3ToFlag((c as HomepageCountry).iso3)}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-[--text-primary] group-hover:text-[#10B981]">{(c as HomepageCountry).name}</p>
+                        <p className="text-xs text-[--text-muted]">{(c as HomepageCountry).region}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[(c as HomepageCountry).cls], color: CLASS_COLOR[(c as HomepageCountry).cls] }}>{(c as HomepageCountry).cls}</span>
+                        {(c as HomepageCountry).grade && (
+                          <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: GRADE_BG[(c as HomepageCountry).grade] ?? '#F3F4F6', color: GRADE_COLOR[(c as HomepageCountry).grade] ?? '#6B7280' }}>{(c as HomepageCountry).grade}</span>
+                        )}
+                      </div>
+                    </Link>
+                  ) : (
+                    <div key={i} className="h-16 animate-pulse rounded-xl border border-[--border-card] bg-gray-50" />
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Biggest Talkers */}
+            <div>
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-[--text-primary]">Biggest Talkers</h2>
+                  <p className="mt-1 text-sm text-[--text-muted]">Signed Paris — but data shows no measurable progress</p>
+                </div>
+                <Link href="/report" className="text-sm font-medium text-[--accent-primary] hover:underline">See all →</Link>
+              </div>
+              <div className="space-y-3">
+                {(biggestTalkers.length > 0 ? biggestTalkers : (Array.from({ length: 5 }) as null[])).map((c, i) =>
+                  c ? (
+                    <Link
+                      key={(c as HomepageCountry).iso3}
+                      href={`/report/${(c as HomepageCountry).iso3}`}
+                      className="group flex items-center gap-4 rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[#EF4444] hover:shadow-sm"
+                      style={{ boxShadow: 'var(--shadow-card)' }}
+                    >
+                      <span className="w-6 text-center text-sm font-bold text-[--text-muted]">{i + 1}</span>
+                      <span className="text-2xl">{iso3ToFlag((c as HomepageCountry).iso3)}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-[--text-primary] group-hover:text-[#EF4444]">{(c as HomepageCountry).name}</p>
+                        <p className="text-xs text-[--text-muted]">{(c as HomepageCountry).region}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[(c as HomepageCountry).cls], color: CLASS_COLOR[(c as HomepageCountry).cls] }}>{(c as HomepageCountry).cls}</span>
+                        {(c as HomepageCountry).grade && (
+                          <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: GRADE_BG[(c as HomepageCountry).grade] ?? '#F3F4F6', color: GRADE_COLOR[(c as HomepageCountry).grade] ?? '#6B7280' }}>{(c as HomepageCountry).grade}</span>
+                        )}
+                      </div>
+                    </Link>
+                  ) : (
+                    <div key={i} className="h-16 animate-pulse rounded-xl border border-[--border-card] bg-gray-50" />
+                  )
+                )}
+              </div>
+            </div>
+
           </div>
 
           <div className="mt-10 text-center">
             <Link
-              href="/dashboard"
+              href="/explore"
               className="inline-flex items-center gap-2 rounded-full border border-[--accent-primary] px-8 py-3 text-base font-semibold text-[--accent-primary] transition-all hover:bg-[--accent-primary] hover:text-white"
             >
-              Explore all {stats.countries > 0 ? `${stats.countries}+` : '200+'} countries
+              Explore all countries
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
