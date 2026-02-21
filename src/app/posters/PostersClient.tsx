@@ -138,10 +138,11 @@ async function fetchCountriesFromDB(): Promise<CountryMeta[]> {
 function PosterShell({ source, children }: { source: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: '#FAFAF9', border: '1px solid #E2E8F0', borderRadius: '16px',
+      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+      border: '1px solid #E2E8F0', borderRadius: '16px',
       boxShadow: '0 4px 32px rgba(0,0,0,0.07)', padding: '36px',
       aspectRatio: '1 / 1', display: 'flex', flexDirection: 'column',
-      maxWidth: '560px', margin: '0 auto',
+      maxWidth: '560px', margin: '0 auto', overflow: 'hidden',
     }}>
       <div style={{ fontSize: '11px', color: '#94A3B8', fontFamily: 'Inter, system-ui, sans-serif', letterSpacing: '0.05em', marginBottom: '14px' }}>
         visualclimate.org
@@ -152,6 +153,15 @@ function PosterShell({ source, children }: { source: string; children: React.Rea
       <div style={{ fontSize: '11px', color: '#CBD5E1', fontFamily: 'Inter, system-ui, sans-serif', marginTop: '14px' }}>
         {source}
       </div>
+      {/* Branding bar */}
+      <div style={{
+        height: '4px',
+        marginTop: '12px',
+        marginLeft: '-36px',
+        marginRight: '-36px',
+        marginBottom: '-36px',
+        background: 'linear-gradient(90deg, #10B981 0%, #3B82F6 50%, #8B5CF6 100%)',
+      }} />
     </div>
   );
 }
@@ -512,9 +522,10 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
 
   return (
     <div style={{
-      background: '#FAFAF9', border: '1px solid #E2E8F0', borderRadius: '16px',
+      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+      border: '1px solid #E2E8F0', borderRadius: '16px',
       boxShadow: '0 4px 32px rgba(0,0,0,0.07)', padding: '32px',
-      maxWidth: '900px', margin: '0 auto',
+      maxWidth: '900px', margin: '0 auto', overflow: 'hidden',
     }}>
       <div style={{ fontSize: '11px', color: '#94A3B8', fontFamily: 'Inter, system-ui, sans-serif', letterSpacing: '0.05em', marginBottom: '12px' }}>
         visualclimate.org
@@ -542,6 +553,15 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
       <div style={{ fontSize: '11px', color: '#CBD5E1', fontFamily: 'Inter, system-ui, sans-serif', marginTop: '16px' }}>
         Source: World Bank WDI CO₂ / Ember Climate Renewable % · VisualClimate classification · visualclimate.org
       </div>
+      {/* Branding bar */}
+      <div style={{
+        height: '4px',
+        marginTop: '16px',
+        marginLeft: '-32px',
+        marginRight: '-32px',
+        marginBottom: '-32px',
+        background: 'linear-gradient(90deg, #10B981 0%, #3B82F6 50%, #8B5CF6 100%)',
+      }} />
     </div>
   );
 }
@@ -691,7 +711,7 @@ export function PostersClient() {
 
       {/* ── Featured: World Scoreboard (full-width banner) ────────────────── */}
       <div
-        className="group relative overflow-hidden rounded-2xl border border-[--border-card] cursor-default"
+        className="group relative overflow-hidden rounded-2xl border border-[--border-card] cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
         <div ref={el => { refs.current.scoreboard = el; }}>
@@ -709,7 +729,7 @@ export function PostersClient() {
 
         {/* Energy Flow — medium (spans 1 col) */}
         <div
-          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
           style={{ boxShadow: 'var(--shadow-card)' }}
         >
           <div ref={el => { refs.current.energy = el; }}>
@@ -725,7 +745,7 @@ export function PostersClient() {
 
         {/* Paris Gap — medium (spans 1 col) */}
         <div
-          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
           style={{ boxShadow: 'var(--shadow-card)' }}
         >
           <div ref={el => { refs.current.gap = el; }}>
@@ -741,7 +761,7 @@ export function PostersClient() {
 
         {/* Carbon Inequality — small */}
         <div
-          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
           style={{ boxShadow: 'var(--shadow-card)' }}
         >
           <div ref={el => { refs.current.inequality = el; }}>
@@ -757,7 +777,7 @@ export function PostersClient() {
 
         {/* Air Quality — small */}
         <div
-          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default"
+          className="group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
           style={{ boxShadow: 'var(--shadow-card)' }}
         >
           <div ref={el => { refs.current.air = el; }}>

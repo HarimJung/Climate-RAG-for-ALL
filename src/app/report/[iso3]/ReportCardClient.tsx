@@ -70,9 +70,17 @@ function PentagonChart({ data }: { data: ReportCardData }) {
 
   return (
     <svg viewBox="0 0 300 300" className="w-full max-w-xs mx-auto" aria-label="Radar chart of domain scores">
-      {/* Grid rings */}
+      <defs>
+        <radialGradient id="radar-bg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor="#f8fafc" />
+          <stop offset="100%" stopColor="#f1f5f9" />
+        </radialGradient>
+      </defs>
+      {/* Radial gradient background */}
+      <rect width="300" height="300" fill="url(#radar-bg)" />
+      {/* Grid rings — dashed */}
       {gridRings.map((pts, i) => (
-        <polygon key={i} points={pts} fill="none" stroke="#E5E7EB" strokeWidth="1" />
+        <polygon key={i} points={pts} fill="none" stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4 4" />
       ))}
       {/* Axis lines */}
       {axes.map((a, i) => (
@@ -81,7 +89,7 @@ function PentagonChart({ data }: { data: ReportCardData }) {
       {/* Outer pentagon */}
       <polygon points={outerPts} fill="none" stroke="#D1D5DB" strokeWidth="1.5" />
       {/* Score area */}
-      <polygon points={scorePts} fill="#0066FF" fillOpacity="0.15" stroke="#0066FF" strokeWidth="2" />
+      <polygon points={scorePts} fill="#0066FF" fillOpacity="0.12" stroke="#0066FF" strokeWidth="2" />
       {/* Score dots */}
       {DOMAIN_META.map((d, i) => {
         const frac = scoreValues[d.key] / 100;
@@ -90,28 +98,28 @@ function PentagonChart({ data }: { data: ReportCardData }) {
             key={i}
             cx={cx + r * frac * axes[i].cos}
             cy={cy + r * frac * axes[i].sin}
-            r={4}
+            r={6}
             fill={d.color}
             stroke="white"
-            strokeWidth={1.5}
+            strokeWidth={2}
           />
         );
       })}
-      {/* Domain labels */}
-      {axes.map((a, i) => (
-        <text
-          key={i}
-          x={a.labelX}
-          y={a.labelY}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize="10"
-          fontWeight="600"
-          fill="#4A4A6A"
-        >
-          {DOMAIN_META[i].label}
-        </text>
-      ))}
+      {/* Domain labels with score */}
+      {axes.map((a, i) => {
+        const score = scoreValues[DOMAIN_META[i].key];
+        return (
+          <text key={i} textAnchor="middle" dominantBaseline="middle">
+            <tspan x={a.labelX} dy="-6" fontSize="10" fontWeight="600" fill={DOMAIN_META[i].color}>
+              {DOMAIN_META[i].label}
+            </tspan>
+            <tspan x={a.labelX} dy="14" fontSize="9" fontWeight="700" fill={DOMAIN_META[i].color}
+              fontFamily="monospace">
+              {score != null ? score.toFixed(1) : '—'}
+            </tspan>
+          </text>
+        );
+      })}
     </svg>
   );
 }

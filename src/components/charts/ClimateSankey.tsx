@@ -66,8 +66,8 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
   const cleanH = Math.max((renewable + nuclear) * S, 4);
   const cleanY = co2Y + co2H + GAP;
 
-  // Opacity: default 0.35; on hover → hovered=0.72, others=0.08
-  const lo = (id: string) => hovered === null ? 0.35 : hovered === id ? 0.72 : 0.08;
+  // Opacity: default 0.7; on hover → hovered=1.0, others=0.08
+  const lo = (id: string) => hovered === null ? 0.7 : hovered === id ? 1.0 : 0.08;
   const no = (id: string) => hovered === null ? 1    : hovered === id ? 1    : 0.25;
   const bind = (id: string) => ({
     onMouseEnter: () => setHovered(id),
@@ -93,17 +93,20 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         <rect width={900} height={500} fill="#FAFAF9" />
 
         <defs>
+          {/* grad-fossil: #EF4444 → #F97316 */}
           <linearGradient id={`${gid}-fossil`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor={C.fossil}      stopOpacity="0.9" />
-            <stop offset="100%" stopColor={C.electricity}  stopOpacity="0.6" />
+            <stop offset="0%"   stopColor="#EF4444" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#F97316" stopOpacity="0.7" />
           </linearGradient>
+          {/* grad-renewable: #10B981 → #34D399 */}
           <linearGradient id={`${gid}-renewable`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor={C.renewable}   stopOpacity="0.9" />
-            <stop offset="100%" stopColor={C.electricity}  stopOpacity="0.6" />
+            <stop offset="0%"   stopColor="#10B981" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#34D399" stopOpacity="0.7" />
           </linearGradient>
+          {/* grad-nuclear: #8B5CF6 → #A78BFA */}
           <linearGradient id={`${gid}-nuclear`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor={C.nuclear}     stopOpacity="0.9" />
-            <stop offset="100%" stopColor={C.electricity}  stopOpacity="0.6" />
+            <stop offset="0%"   stopColor="#8B5CF6" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.7" />
           </linearGradient>
           <linearGradient id={`${gid}-co2`} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%"   stopColor={C.electricity}  stopOpacity="0.6" />
@@ -161,10 +164,40 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
             fill={`url(#${gid}-clean)`} opacity={lo('lk-clean')} {...bind('lk-clean')} />
         )}
 
+        {/* ── MID-LINK LABELS (% at midpoint of each band) ── */}
+        {(() => {
+          const midX = (LX + NW + MX) / 2;
+          const fossilMidY  = (fossilY  + fossilH  / 2 + eFT  + (eFB  - eFT)  / 2) / 2;
+          const renewMidY   = (renewableY + renewableH / 2 + eRT + (eRB - eRT) / 2) / 2;
+          const nuclearMidY = nuclear > 0 ? (nuclearY + nuclearH / 2 + eNT + (eNB - eNT) / 2) / 2 : null;
+          return (
+            <>
+              {fossil > 3 && (
+                <text x={midX} y={fossilMidY + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                  fill="white" fontFamily="monospace" style={{ pointerEvents: 'none' }}>
+                  {fossil.toFixed(0)}%
+                </text>
+              )}
+              {renewable > 3 && (
+                <text x={midX} y={renewMidY + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                  fill="white" fontFamily="monospace" style={{ pointerEvents: 'none' }}>
+                  {renewable.toFixed(0)}%
+                </text>
+              )}
+              {nuclear > 3 && nuclearMidY !== null && (
+                <text x={midX} y={nuclearMidY + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                  fill="white" fontFamily="monospace" style={{ pointerEvents: 'none' }}>
+                  {nuclear.toFixed(0)}%
+                </text>
+              )}
+            </>
+          );
+        })()}
+
         {/* ── LEFT NODES ── */}
 
         {/* Fossil */}
-        <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={4} fill={C.fossil}
+        <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={8} fill={C.fossil}
           opacity={no('nd-fossil')} {...bind('nd-fossil')} />
         <text x={LX - 12} y={cy(fossilY, fossilH) - 7} textAnchor="end" fontSize={13}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Fossil</text>
@@ -172,7 +205,7 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           fontFamily="monospace" fontWeight="700" fill={C.fossil}>{fossil.toFixed(1)}%</text>
 
         {/* Renewable */}
-        <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={4} fill={C.renewable}
+        <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={8} fill={C.renewable}
           opacity={no('nd-renewable')} {...bind('nd-renewable')} />
         <text x={LX - 12} y={cy(renewableY, renewableH) - 7} textAnchor="end" fontSize={13}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Renewable</text>
@@ -182,7 +215,7 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         {/* Nuclear (only when > 0) */}
         {nuclear > 0 && (
           <>
-            <rect x={LX} y={nuclearY} width={NW} height={nuclearH} rx={4} fill={C.nuclear}
+            <rect x={LX} y={nuclearY} width={NW} height={nuclearH} rx={8} fill={C.nuclear}
               opacity={no('nd-nuclear')} {...bind('nd-nuclear')} />
             <text x={LX - 12} y={cy(nuclearY, nuclearH) - 7} textAnchor="end" fontSize={13}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Nuclear</text>
@@ -192,14 +225,14 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         )}
 
         {/* ── MIDDLE NODE ── */}
-        <rect x={MX} y={elecY} width={NW} height={elecH} rx={4} fill={C.electricity} />
+        <rect x={MX} y={elecY} width={NW} height={elecH} rx={8} fill={C.electricity} />
         <text x={MX + NW / 2} y={elecY - 10} textAnchor="middle" fontSize={12}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Electricity</text>
 
         {/* ── RIGHT NODES ── */}
 
         {/* CO2 Output */}
-        <rect x={RX} y={co2Y} width={NW} height={co2H} rx={4} fill={C.co2}
+        <rect x={RX} y={co2Y} width={NW} height={co2H} rx={8} fill={C.co2}
           opacity={no('nd-co2')} {...bind('nd-co2')} />
         <text x={RX + NW + 12} y={cy(co2Y, co2H) - 7} fontSize={13}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">CO2 Output</text>
@@ -209,7 +242,7 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         {/* Clean Output */}
         {(renewable + nuclear) > 0 && (
           <>
-            <rect x={RX} y={cleanY} width={NW} height={cleanH} rx={4} fill={C.clean}
+            <rect x={RX} y={cleanY} width={NW} height={cleanH} rx={8} fill={C.clean}
               opacity={no('nd-clean')} {...bind('nd-clean')} />
             <text x={RX + NW + 12} y={cy(cleanY, cleanH) - 7} fontSize={13}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Clean Output</text>

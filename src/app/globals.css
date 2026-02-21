@@ -31,4 +31,27 @@
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: var(--font-inter), 'Inter', sans-serif;
+}
+
+/* Stat numbers / chart values → JetBrains Mono */
+.stat-number,
+.chart-value {
+  font-family: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+}
+
+/* Big stat (48px bold): e.g. CO2 per capita, Report Card score */
+.big-stat {
+  font-size: 3rem;
+  font-weight: 800;
+  font-family: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }

@@ -199,8 +199,8 @@ function EmissionsLineChart({
     <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label={`${countryName} CO₂ per capita`}>
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0066FF" stopOpacity={0.13} />
-          <stop offset="100%" stopColor="#0066FF" stopOpacity={0} />
+          <stop offset="0%" stopColor="#EF4444" stopOpacity={0.12} />
+          <stop offset="100%" stopColor="#EF4444" stopOpacity={0} />
         </linearGradient>
       </defs>
       {yTickVals.map(v => <line key={v} x1={ML} y1={ys(v)} x2={VW - MR} y2={ys(v)} stroke="#E8E8ED" strokeWidth={1} />)}
@@ -208,11 +208,23 @@ function EmissionsLineChart({
       {xtick.map(y => <text key={y} x={xs(y)} y={VH - 10} textAnchor="middle" fontSize={11} fill="#4A4A6A">{y}</text>)}
       <text x={12} y={MT + H / 2} textAnchor="middle" fontSize={10} fill="#6B7280" transform={`rotate(-90,12,${MT + H / 2})`}>t CO₂e/capita</text>
       {minYear <= 2015 && maxYear >= 2015 && <>
-        <line x1={xs(2015)} y1={MT} x2={xs(2015)} y2={MT + H} stroke="#E5484D" strokeWidth={1.5} strokeDasharray="6,4" />
-        <text x={xs(2015) + 5} y={MT + 14} fontSize={10} fill="#E5484D" fontWeight="600">Paris</text>
+        <line x1={xs(2015)} y1={MT} x2={xs(2015)} y2={MT + H} stroke="#94A3B8" strokeWidth={1.5} strokeDasharray="6,4" />
+        <text x={xs(2015) + 5} y={MT + 14} fontSize={10} fill="#94A3B8" fontWeight="600">Paris</text>
       </>}
       <path d={areaPath} fill={`url(#${gradId})`} />
-      <path d={prodPath} fill="none" stroke="#0066FF" strokeWidth={2.5} strokeLinejoin="round" />
+      <path d={prodPath} fill="none" stroke="#EF4444" strokeWidth={2.5} strokeLinejoin="round" />
+      {/* End-of-line dot + label */}
+      {sorted.length > 0 && (() => {
+        const last = sorted[sorted.length - 1];
+        return (
+          <>
+            <circle cx={xs(last.year)} cy={ys(last.value)} r={4} fill="#EF4444" stroke="white" strokeWidth={1.5} />
+            <text x={xs(last.year) - 5} y={ys(last.value) - 8} textAnchor="end" fontSize={10} fontWeight="600" fill="#EF4444" fontFamily="monospace">
+              {last.value.toFixed(1)}t
+            </text>
+          </>
+        );
+      })()}
       {consPath && <path d={consPath} fill="none" stroke="#8B5CF6" strokeWidth={2} strokeDasharray="6,4" strokeLinejoin="round" />}
       {gapAnnotation && <g>
         <line x1={gapAnnotation.x} y1={gapAnnotation.ymid - 10} x2={gapAnnotation.x} y2={gapAnnotation.ymid + 10} stroke="#94A3B8" strokeWidth={1} />
@@ -298,9 +310,32 @@ function IndexedTripleLineChart({
       {ytv.map(v => <text key={v} x={ML - 6} y={ys(v)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#4A4A6A">{v}</text>)}
       {xt.map(y => <text key={y} x={xs(y)} y={VH - 10} textAnchor="middle" fontSize={11} fill="#4A4A6A">{y}</text>)}
       <text x={12} y={MT + H / 2} textAnchor="middle" fontSize={10} fill="#6B7280" transform={`rotate(-90,12,${MT + H / 2})`}>Index ({baseYear}=100)</text>
-      <path d={gdpPath} fill="none" stroke="#00A67E" strokeWidth={2.5} />
+      {/* Area fills under GDP and CO2 lines */}
+      {gdpCo2.length > 0 && (() => {
+        const gdpAreaPath = `${gdpPath} L${xs(gdpCo2[gdpCo2.length-1].year).toFixed(1)} ${ys(minVal).toFixed(1)} L${xs(gdpCo2[0].year).toFixed(1)} ${ys(minVal).toFixed(1)} Z`;
+        const co2AreaPath = `${co2Path} L${xs(gdpCo2[gdpCo2.length-1].year).toFixed(1)} ${ys(minVal).toFixed(1)} L${xs(gdpCo2[0].year).toFixed(1)} ${ys(minVal).toFixed(1)} Z`;
+        return (
+          <>
+            <path d={gdpAreaPath} fill="rgba(16,185,129,0.06)" />
+            <path d={co2AreaPath} fill="rgba(239,68,68,0.06)" />
+          </>
+        );
+      })()}
+      <path d={gdpPath} fill="none" stroke="#10B981" strokeWidth={2.5} />
       <path d={co2Path} fill="none" stroke="#E5484D" strokeWidth={2.5} />
       {cpgPath && <path d={cpgPath} fill="none" stroke="#F59E0B" strokeWidth={2} strokeDasharray="5,3" />}
+      {/* End-of-line dots */}
+      {gdpCo2.length > 0 && (() => {
+        const lastD = gdpCo2[gdpCo2.length - 1];
+        return (
+          <>
+            <circle cx={xs(lastD.year)} cy={ys(lastD.gdp)} r={4} fill="#10B981" stroke="white" strokeWidth={1.5} />
+            <text x={xs(lastD.year) + 6} y={ys(lastD.gdp) + 4} fontSize={10} fontWeight="600" fill="#10B981" fontFamily="monospace">{lastD.gdp.toFixed(0)}</text>
+            <circle cx={xs(lastD.year)} cy={ys(lastD.co2)} r={4} fill="#E5484D" stroke="white" strokeWidth={1.5} />
+            <text x={xs(lastD.year) + 6} y={ys(lastD.co2) + 4} fontSize={10} fontWeight="600" fill="#E5484D" fontFamily="monospace">{lastD.co2.toFixed(0)}</text>
+          </>
+        );
+      })()}
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
     </svg>
@@ -308,23 +343,69 @@ function IndexedTripleLineChart({
 }
 
 // ── Chart: Donut (Energy Mix) ─────────────────────────────────────────────────
+const DONUT_GRAD: Record<string, [string, string]> = {
+  'Fossil':          ['#EF4444', '#DC2626'],
+  'Renewable':       ['#10B981', '#059669'],
+  'Nuclear':         ['#8B5CF6', '#7C3AED'],
+  'Nuclear & Other': ['#8B5CF6', '#7C3AED'],
+};
+
 function DonutChart({ segments }: { segments: { label: string; value: number; color: string }[] }) {
   const total = segments.reduce((s, d) => s + d.value, 0);
   if (total === 0) return null;
-  const CX = 110, CY = 110, OR = 88, IR = 54;
+  const CX = 120, CY = 120, OR = 88, IR = 52;
+  const largest = segments.reduce((a, b) => a.value > b.value ? a : b);
   let angle = -90;
-  const paths = segments.map(seg => {
+  const paths = segments.map((seg, idx) => {
     const sweep = (seg.value / total) * 360;
+    const midAngle = angle + sweep / 2;
     const d = arcPath(CX, CY, OR, IR, angle, angle + Math.max(sweep - 0.5, 0));
+    const labelPos = polarToCartesian(CX, CY, OR + 18, midAngle);
     angle += sweep;
-    return { ...seg, d };
+    const gradColors = DONUT_GRAD[seg.label];
+    return { ...seg, d, midAngle, labelPos, gradId: `dnt-${idx}`, gradColors };
   });
   return (
     <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-      <svg viewBox="0 0 220 220" width={220} height={220}>
-        {paths.map(p => <path key={p.label} d={p.d} fill={p.color} stroke="white" strokeWidth={2} />)}
-        <text x={CX} y={CY - 5} textAnchor="middle" fontSize={18} fontWeight="700" fill="#1A1A2E">{total.toFixed(0)}%</text>
-        <text x={CX} y={CY + 15} textAnchor="middle" fontSize={11} fill="#4A4A6A">Total</text>
+      <svg viewBox="0 0 240 240" width={240} height={240}>
+        <defs>
+          {paths.map(p => p.gradColors ? (
+            <radialGradient key={p.gradId} id={p.gradId} cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stopColor={p.gradColors[0]} />
+              <stop offset="100%" stopColor={p.gradColors[1]} />
+            </radialGradient>
+          ) : null)}
+        </defs>
+        {paths.map(p => (
+          <path
+            key={p.label}
+            d={p.d}
+            fill={p.gradColors ? `url(#${p.gradId})` : p.color}
+            stroke="white"
+            strokeWidth={3}
+            style={{ filter: `drop-shadow(0 0 6px ${p.color}50)` }}
+          />
+        ))}
+        {/* Outer segment labels */}
+        {paths.map(p => p.value > 4 ? (
+          <text
+            key={`lbl-${p.label}`}
+            x={p.labelPos.x}
+            y={p.labelPos.y + 4}
+            textAnchor="middle"
+            fontSize={10}
+            fontWeight="700"
+            fill={p.color}
+            fontFamily="monospace"
+          >
+            {p.value.toFixed(0)}%
+          </text>
+        ) : null)}
+        {/* Center text: largest source name + % */}
+        <text x={CX} y={CY - 8} textAnchor="middle" fontSize={12} fontWeight="600" fill="#4A4A6A"
+          fontFamily="var(--font-jetbrains-mono), monospace">{largest.label.split(' ')[0]}</text>
+        <text x={CX} y={CY + 14} textAnchor="middle" fontSize={22} fontWeight="700" fill={largest.color}
+          fontFamily="var(--font-jetbrains-mono), monospace">{largest.value.toFixed(0)}%</text>
       </svg>
       <ul className="flex flex-col gap-2.5">
         {segments.map(s => (
