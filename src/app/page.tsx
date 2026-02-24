@@ -246,45 +246,58 @@ export default async function HomePage() {
     <div>
 
       {/* ── 1. Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white">
+      <section
+        className="relative min-h-[85vh] overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 50%, #FFF7ED 100%)',
+        }}
+      >
+        {/* Gradient blobs */}
+        <div className="pointer-events-none absolute left-[10%] top-[15%] h-[400px] w-[400px] rounded-full bg-[#10B981] opacity-20 blur-[100px]" />
+        <div className="pointer-events-none absolute right-[15%] top-[25%] h-[400px] w-[400px] rounded-full bg-[#F59E0B] opacity-20 blur-[100px]" />
+        <div className="pointer-events-none absolute bottom-[20%] left-[40%] h-[400px] w-[400px] rounded-full bg-[#EF4444] opacity-20 blur-[100px]" />
+
         {/* Background world map */}
         {scoreboardData.length > 0 && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.18]">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.12]">
             <WorldScoreboard countries={scoreboardData} width={1440} height={720} />
           </div>
         )}
+
         {/* Overlay content */}
-        <div className="relative z-10 px-4 py-28 sm:py-40">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-4 inline-block rounded-full border border-[--border-card] bg-white/80 px-4 py-1.5 text-sm font-medium text-[--text-secondary] backdrop-blur-sm">
+        <div className="relative z-10 flex min-h-[85vh] items-center px-4 py-20">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="mb-6 inline-block rounded-full border border-white/50 bg-white/70 px-5 py-2 text-sm font-semibold text-[#334155] backdrop-blur-xl">
               Open climate accountability platform
             </div>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight text-[--text-primary] sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-[#0F172A] sm:text-6xl lg:text-7xl">
               Is your country keeping its{' '}
-              <span className="text-[--accent-primary]">climate promise?</span>
+              <span className="bg-gradient-to-r from-[#3B82F6] to-[#10B981] bg-clip-text text-transparent">
+                climate promise?
+              </span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg text-[--text-secondary]">
+            <p className="mx-auto mt-8 max-w-2xl text-xl leading-relaxed text-[#334155]">
               Check your country&apos;s report card — grades backed by real emissions, energy, and climate risk data.
             </p>
 
             {/* Search */}
-            <div className="mt-8">
+            <div className="mt-10">
               <HeroSearch countries={countryList} />
-              <p className="mt-3 text-xs text-[--text-muted]">
+              <p className="mt-4 text-sm text-[#64748B]">
                 Tracking {statsSubtitle}
               </p>
             </div>
 
-            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/report"
-                className="inline-flex items-center gap-2 rounded-full border border-[--accent-primary] px-6 py-3 text-sm font-semibold text-[--accent-primary] transition-all hover:bg-[--accent-primary] hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full bg-[#3B82F6] px-8 py-4 text-base font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:scale-105 hover:bg-[#2563EB] hover:shadow-xl hover:shadow-blue-500/40"
               >
                 Browse all report cards
               </Link>
               <a
                 href="#world-map"
-                className="inline-flex items-center gap-2 rounded-full border border-[--border-card] bg-white/80 px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+                className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-8 py-4 text-base font-semibold text-[#334155] backdrop-blur-xl transition-all hover:border-[#3B82F6] hover:bg-white/90 hover:text-[#3B82F6]"
               >
                 Explore the map ↓
               </a>

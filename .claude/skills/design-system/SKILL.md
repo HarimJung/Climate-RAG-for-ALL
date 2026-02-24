@@ -1,118 +1,84 @@
----
-name: design-system
-description: VisualClimate design system tokens — colors, typography, spacing, component patterns. Load when building UI components or charts.
----
+## 🎨 DESIGN SYSTEM v2 — Mandatory for ALL UI work
 
-# VisualClimate Design System
+### Philosophy
+VisualClimate is a world-class climate data storytelling platform.
+Every component must feel like it belongs in a Bloomberg Terminal × Apple Keynote hybrid.
+Data is the hero. Numbers are large. White space is generous. Motion is purposeful.
 
-## Philosophy
-Stripe-quality dark theme. Data-dense, clean, professional.
-Every pixel serves a purpose. No decoration without function.
+### Brand Identity
+- Concept: "Climate Pulse" — three concentric rings (Changer/Starter/Talker)
+- Tone: Authoritative but accessible. Data journalism, not academic paper.
+- Tagline: "Who's really changing? Who's just talking?"
 
-## Color Tokens
+### Color Palette (MANDATORY — never deviate)
+- Changer:    #10B981 (primary green)     gradient: #10B981 → #34D399
+- Starter:    #F59E0B (amber)              gradient: #F59E0B → #FBBF24
+- Talker:     #EF4444 (red)                gradient: #EF4444 → #F87171
+- Accent:     #3B82F6 (blue)               gradient: #3B82F6 → #60A5FA
+- Purple:     #8B5CF6                      gradient: #8B5CF6 → #A78BFA
+- Page BG:    #F8FAFC
+- Card BG:    #FFFFFF
+- Hero BG:    linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 50%, #FFF7ED 100%)
+- Text:       #0F172A (headings), #334155 (body), #64748B (caption), #94A3B8 (muted)
+- Border:     #E2E8F0 (default), #F1F5F9 (subtle)
 
-### Backgrounds
-- `--bg-primary`: #0a0a0f (page background)
-- `--bg-secondary`: #12121a (card background)
-- `--bg-tertiary`: #1a1a2e (elevated surface)
-- `--bg-hover`: #252542 (interactive hover)
+### Typography
+- Headings: font-family: 'Inter', sans-serif; font-weight: 800
+- Body: font-family: 'Inter', sans-serif; font-weight: 400
+- Numbers/Data: font-family: 'JetBrains Mono', monospace; font-weight: 700
+- Hero number: text-[72px] md:text-[96px] font-mono font-black tracking-tight
+- Big stat: text-[48px] md:text-[64px] font-mono font-bold
+- Card stat: text-[32px] md:text-[40px] font-mono font-bold
+- Grade badge: text-[56px] font-mono font-black with colored glow
 
-### Text
-- `--text-primary`: #f0f0f5 (headings, key data)
-- `--text-secondary`: #a0a0b5 (body text, labels)
-- `--text-tertiary`: #6b6b80 (captions, metadata)
-- `--text-muted`: #4a4a5c (disabled, placeholder)
+### Card System
+- Base: rounded-2xl bg-white border border-gray-100 p-6 md:p-8
+  shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+  hover:-translate-y-1 transition-all duration-300
+- Glass: backdrop-blur-xl bg-white/70 border border-white/50 (used sparingly on hero)
+- Accent line: w-1 h-full rounded-full bg-gradient-to-b (Changer/Starter/Talker gradient)
+- NEVER: sharp corners (< rounded-xl), no shadow, bg-gray-50 as card background
 
-### Accent Colors (Data Visualization)
-- `--accent-blue`: #3b82f6 (primary action, links)
-- `--accent-green`: #22c55e (positive trend, success)
-- `--accent-red`: #ef4444 (negative trend, danger)
-- `--accent-amber`: #f59e0b (warning, caution)
-- `--accent-purple`: #a855f7 (highlight, special)
-- `--accent-cyan`: #06b6d4 (secondary data)
+### Gradients on SVG Charts (MANDATORY)
+- Every Sankey link: use <linearGradient> matching source→target color
+- Every donut sector: radial gradient from dark→light of its category color
+- Every line chart area fill: vertical gradient from line color (opacity 0.15) → transparent
+- Every bar chart: horizontal gradient matching domain color
+- Radar chart fill: radial gradient from center (#3B82F6 opacity 0.08) → edge (#3B82F6 opacity 0.25)
+  with colored dots (r=6) at each vertex
 
-### Chart Palette (6 countries — color-blind safe)
-- KOR: #3b82f6 (blue)
-- USA: #ef4444 (red)
-- DEU: #f59e0b (amber)
-- BRA: #22c55e (green)
-- NGA: #a855f7 (purple)
-- BGD: #06b6d4 (cyan)
+### Motion Rules (using 'motion/react')
+- Page sections: fade-in + translateY(20px) on viewport entry, duration 0.6s, stagger 0.1s
+- Numbers: CountUp animation on viewport entry (duration 1.5s, easing easeOut)
+- Cards: staggered entrance (0.05s per card)
+- Hover: scale(1.02) + shadow increase, spring transition
+- Chart paths: draw-on animation (pathLength 0→1, duration 1.2s)
+- Grade badge: scale(0→1) + slight rotation on mount, spring physics
+- NEVER: bouncy/playful motion, spinning loaders, parallax scroll jank
 
-### Borders
-- `--border-subtle`: #1e1e2e
-- `--border-default`: #2d2d44
-- `--border-strong`: #3d3d5c
+### Layout Patterns
+- Hero: min-h-[85vh], centered content, gradient background with 2-3 soft gradient blobs
+  (absolute positioned, w-[400px] h-[400px] rounded-full blur-[100px] opacity-20)
+- Section spacing: py-20 md:py-32 between major sections
+- Max content width: max-w-7xl mx-auto px-4 md:px-6
+- Bento grid: grid-cols-1 md:grid-cols-4 gap-4 (use col-span-1/2/3 for visual hierarchy)
+- Country card grid: grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4
 
-## Typography
+### Component-Specific Rules
+- Grade badge: 80×80px circle with grade letter centered, glow-{color} class,
+  bg-{color}/10 border border-{color}/20
+- Domain score bar: h-3 rounded-full, bg-gray-100, fill with domain gradient, animated width
+- Sparkline in cards: 60×24px mini SVG, stroke-width 1.5, domain color, no axes
+- Country flag: use emoji (no image), text-2xl, inside a 40×40 rounded-full bg-gray-50 center
+- Data source table: ALWAYS collapsible accordion by category, default closed
+- Poster gallery: masonry grid or carousel, hover overlay with title + download button
 
-### Font Stack
-- Primary: `Inter, system-ui, -apple-system, sans-serif`
-- Mono: `JetBrains Mono, Fira Code, monospace` (data values, code)
-
-### Scale
-- `--text-xs`: 0.75rem / 1rem (12px — metadata, timestamps)
-- `--text-sm`: 0.875rem / 1.25rem (14px — body, labels)
-- `--text-base`: 1rem / 1.5rem (16px — default)
-- `--text-lg`: 1.125rem / 1.75rem (18px — section headers)
-- `--text-xl`: 1.25rem / 1.75rem (20px — page titles)
-- `--text-2xl`: 1.5rem / 2rem (24px — hero numbers)
-- `--text-4xl`: 2.25rem / 2.5rem (36px — big stat callout)
-
-### Weight
-- Regular (400): body text
-- Medium (500): labels, nav
-- Semibold (600): headings
-- Bold (700): hero numbers, key metrics
-
-## Spacing (4px Base Grid)
-- `--space-1`: 4px
-- `--space-2`: 8px
-- `--space-3`: 12px
-- `--space-4`: 16px
-- `--space-6`: 24px
-- `--space-8`: 32px
-- `--space-12`: 48px
-- `--space-16`: 64px
-
-## Border Radius
-- `--radius-sm`: 4px (badges, small elements)
-- `--radius-md`: 8px (cards, inputs)
-- `--radius-lg`: 12px (modals, large panels)
-- `--radius-full`: 9999px (pills, avatars)
-
-## Component Patterns
-
-### Card
-```
-bg-[#12121a] border border-[#2d2d44] rounded-lg p-6 hover:border-[#3d3d5c] transition-colors
-```
-
-### Data Table Row
-```
-border-b border-[#1e1e2e] py-3 px-4 hover:bg-[#1a1a2e] transition-colors
-```
-
-### Button (Primary)
-```
-bg-[#3b82f6] hover:bg-[#2563eb] text-white px-4 py-2 rounded-md font-medium text-sm transition-colors
-```
-
-### Chart Container
-```
-bg-[#12121a] border border-[#2d2d44] rounded-lg p-6 min-h-[300px] relative
-```
-
-### Navigation
-```
-bg-[#0a0a0f] border-b border-[#1e1e2e] px-6 py-4 flex items-center justify-between
-```
-
-## Chart Design Rules
-- Always dark background (#12121a)
-- Gridlines: #1e1e2e (subtle)
-- Axis labels: --text-tertiary
-- Data labels: --text-secondary
-- Legend: below chart, horizontal layout
-- Tooltip: bg-[#252542] border border-[#3d3d5c] rounded-md shadow-lg
-- Transitions: 300ms ease-out
+### Absolute Prohibitions
+- ❌ Dark backgrounds anywhere (no bg-gray-900, bg-slate-900, bg-[#0F172A])
+- ❌ Tables with >10 visible rows (must paginate or accordion)
+- ❌ Charts without gradients
+- ❌ Numbers in body font (must be mono)
+- ❌ Cards without hover effect
+- ❌ Sections without spacing (py-20 minimum)
+- ❌ Raw data dumps without visual treatment
+- ❌ Same-size everything (must have visual hierarchy)
