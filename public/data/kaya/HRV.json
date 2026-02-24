@@ -1,0 +1,77 @@
+{
+  "iso3": "HRV",
+  "country_name": "Croatia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 18.02,
+  "co2_end": 18.66,
+  "co2_change": 0.64,
+  "factors": {
+    "population": {
+      "contribution": -1.31,
+      "pct": -205.2
+    },
+    "gdp_per_capita": {
+      "contribution": 10.63,
+      "pct": 1661.2
+    },
+    "energy_intensity": {
+      "contribution": -8.76,
+      "pct": -1368.8
+    },
+    "carbon_intensity": {
+      "contribution": -6.12,
+      "pct": -956
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -6.2,
+  "residual_pct": 968.73,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 18.02,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": -1.31,
+      "type": "decrease"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 10.63,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -8.76,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -6.12,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 18.66,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

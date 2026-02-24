@@ -1,0 +1,77 @@
+{
+  "iso3": "GEO",
+  "country_name": "Georgia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 10.65,
+  "co2_end": 13.56,
+  "co2_change": 2.91,
+  "factors": {
+    "population": {
+      "contribution": -0.03,
+      "pct": -1
+    },
+    "gdp_per_capita": {
+      "contribution": 8.92,
+      "pct": 306.6
+    },
+    "energy_intensity": {
+      "contribution": -6.58,
+      "pct": -226.3
+    },
+    "carbon_intensity": {
+      "contribution": 1.07,
+      "pct": 36.7
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": 0.47,
+  "residual_pct": 16.02,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 10.65,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": -0.03,
+      "type": "decrease"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 8.92,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -6.58,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": 1.07,
+      "type": "increase"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 13.56,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

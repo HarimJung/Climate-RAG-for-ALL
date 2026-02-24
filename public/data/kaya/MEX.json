@@ -1,0 +1,77 @@
+{
+  "iso3": "MEX",
+  "country_name": "Mexico",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 490.43,
+  "co2_end": 475.6,
+  "co2_change": -14.83,
+  "factors": {
+    "population": {
+      "contribution": 32.95,
+      "pct": -222.2
+    },
+    "gdp_per_capita": {
+      "contribution": 147.25,
+      "pct": -992.8
+    },
+    "energy_intensity": {
+      "contribution": -144.12,
+      "pct": 971.7
+    },
+    "carbon_intensity": {
+      "contribution": -37.47,
+      "pct": 252.6
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": 13.44,
+  "residual_pct": 90.63,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 490.43,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 32.95,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 147.25,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -144.12,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -37.47,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 475.6,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

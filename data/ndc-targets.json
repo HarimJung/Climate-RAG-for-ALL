@@ -1,0 +1,211 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-24T19:08:40.567Z",
+    "source": "UNFCCC NDC Registry + Climate Watch API",
+    "methodology_version": "1.0",
+    "total_countries": 20,
+    "api_status": "unavailable (using UNFCCC baseline only)"
+  },
+  "targets": {
+    "KOR": {
+      "country_name": "South Korea",
+      "target_year": 2030,
+      "target_pct_reduction": 40,
+      "reference_year": 2018,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2021): 40% reduction from 2018 levels by 2030"
+    },
+    "USA": {
+      "country_name": "United States",
+      "target_year": 2030,
+      "target_pct_reduction": 50,
+      "reference_year": 2005,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "NDC (2021): 50-52% reduction from 2005 levels by 2030; using lower bound 50%"
+    },
+    "DEU": {
+      "country_name": "Germany",
+      "target_year": 2030,
+      "target_pct_reduction": 65,
+      "reference_year": 1990,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "German Climate Protection Act (2021): 65% reduction from 1990 levels by 2030; part of EU NDC"
+    },
+    "BRA": {
+      "country_name": "Brazil",
+      "target_year": 2030,
+      "target_pct_reduction": 50,
+      "reference_year": 2005,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2023): 50% reduction from 2005 levels by 2030"
+    },
+    "NGA": {
+      "country_name": "Nigeria",
+      "target_year": 2030,
+      "target_pct_reduction": 47,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "submitted",
+      "conditional": false,
+      "notes": "NDC (2021): 47% unconditional reduction below BAU by 2030"
+    },
+    "BGD": {
+      "country_name": "Bangladesh",
+      "target_year": 2030,
+      "target_pct_reduction": 22,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2021): 22% unconditional reduction below BAU by 2030"
+    },
+    "CHN": {
+      "country_name": "China",
+      "target_year": 2030,
+      "target_pct_reduction": 65,
+      "reference_year": 2005,
+      "reference_type": "intensity",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2021): 65% carbon intensity reduction from 2005 by 2030; peak emissions before 2030"
+    },
+    "IND": {
+      "country_name": "India",
+      "target_year": 2030,
+      "target_pct_reduction": 45,
+      "reference_year": 2005,
+      "reference_type": "intensity",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2022): 45% carbon intensity reduction from 2005 by 2030"
+    },
+    "JPN": {
+      "country_name": "Japan",
+      "target_year": 2030,
+      "target_pct_reduction": 46,
+      "reference_year": 2013,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2021): 46% reduction from 2013 levels by 2030"
+    },
+    "GBR": {
+      "country_name": "United Kingdom",
+      "target_year": 2030,
+      "target_pct_reduction": 68,
+      "reference_year": 1990,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "NDC (2020): 68% reduction from 1990 levels by 2030"
+    },
+    "CAN": {
+      "country_name": "Canada",
+      "target_year": 2030,
+      "target_pct_reduction": 40,
+      "reference_year": 2005,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2021): 40-45% reduction from 2005 levels by 2030; using lower bound 40%"
+    },
+    "AUS": {
+      "country_name": "Australia",
+      "target_year": 2030,
+      "target_pct_reduction": 43,
+      "reference_year": 2005,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2022): 43% reduction from 2005 levels by 2030"
+    },
+    "FRA": {
+      "country_name": "France",
+      "target_year": 2030,
+      "target_pct_reduction": 55,
+      "reference_year": 1990,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "EU NDC (2020): at least 55% net reduction from 1990 by 2030; France national target"
+    },
+    "IDN": {
+      "country_name": "Indonesia",
+      "target_year": 2030,
+      "target_pct_reduction": 32,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Enhanced NDC (2022): 31.89% unconditional reduction below BAU by 2030; rounded to 32%"
+    },
+    "ZAF": {
+      "country_name": "South Africa",
+      "target_year": 2030,
+      "target_pct_reduction": 32,
+      "reference_year": null,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2021): emissions to 350-420 MtCO2e by 2030; ~32% below current levels"
+    },
+    "MEX": {
+      "country_name": "Mexico",
+      "target_year": 2030,
+      "target_pct_reduction": 35,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "submitted",
+      "conditional": false,
+      "notes": "NDC (2020): 35% unconditional GHG reduction below BAU by 2030"
+    },
+    "RUS": {
+      "country_name": "Russia",
+      "target_year": 2030,
+      "target_pct_reduction": 30,
+      "reference_year": 1990,
+      "reference_type": "absolute",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2020): 70% of 1990 levels by 2030 (i.e. 30% reduction from 1990)"
+    },
+    "SAU": {
+      "country_name": "Saudi Arabia",
+      "target_year": 2030,
+      "target_pct_reduction": 19,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "submitted",
+      "conditional": false,
+      "notes": "NDC (2021): 278 MtCO2e annual abatement by 2030; ~19% below BAU"
+    },
+    "TUR": {
+      "country_name": "Turkey",
+      "target_year": 2030,
+      "target_pct_reduction": 41,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2023): 41% reduction below BAU by 2030"
+    },
+    "EGY": {
+      "country_name": "Egypt",
+      "target_year": 2030,
+      "target_pct_reduction": 33,
+      "reference_year": null,
+      "reference_type": "bau",
+      "submission_status": "updated",
+      "conditional": false,
+      "notes": "Updated NDC (2022): 33% reduction below BAU in electricity sector by 2030"
+    }
+  }
+}

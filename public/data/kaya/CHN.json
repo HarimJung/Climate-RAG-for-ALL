@@ -1,0 +1,77 @@
+{
+  "iso3": "CHN",
+  "country_name": "China",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 10749.9,
+  "co2_end": 13021.24,
+  "co2_change": 2271.35,
+  "factors": {
+    "population": {
+      "contribution": 245.97,
+      "pct": 10.8
+    },
+    "gdp_per_capita": {
+      "contribution": 5369.5,
+      "pct": 236.4
+    },
+    "energy_intensity": {
+      "contribution": -2113.41,
+      "pct": -93
+    },
+    "carbon_intensity": {
+      "contribution": -1570.9,
+      "pct": -69.2
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -340.19,
+  "residual_pct": 14.98,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 10749.9,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 245.97,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 5369.5,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -2113.41,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -1570.9,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 13021.24,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

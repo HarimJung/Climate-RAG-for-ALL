@@ -1,0 +1,77 @@
+{
+  "iso3": "BRA",
+  "country_name": "Brazil",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 517.94,
+  "co2_end": 480.23,
+  "co2_change": -37.71,
+  "factors": {
+    "population": {
+      "contribution": 22.09,
+      "pct": -58.6
+    },
+    "gdp_per_capita": {
+      "contribution": 79.57,
+      "pct": -211
+    },
+    "energy_intensity": {
+      "contribution": -80.35,
+      "pct": 213.1
+    },
+    "carbon_intensity": {
+      "contribution": -332.86,
+      "pct": 882.8
+    }
+  },
+  "biggest_driver": "carbon_intensity",
+  "biggest_driver_label": "Carbon Intensity",
+  "residual": -273.85,
+  "residual_pct": 726.28,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 517.94,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 22.09,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 79.57,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -80.35,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -332.86,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 480.23,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

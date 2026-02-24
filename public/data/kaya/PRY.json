@@ -1,0 +1,77 @@
+{
+  "iso3": "PRY",
+  "country_name": "Paraguay",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 6.66,
+  "co2_end": 7.74,
+  "co2_change": 1.08,
+  "factors": {
+    "population": {
+      "contribution": 0.85,
+      "pct": 78.3
+    },
+    "gdp_per_capita": {
+      "contribution": 0.51,
+      "pct": 46.8
+    },
+    "energy_intensity": {
+      "contribution": 0.31,
+      "pct": 28.3
+    },
+    "carbon_intensity": {
+      "contribution": 0.23,
+      "pct": 20.8
+    }
+  },
+  "biggest_driver": "population",
+  "biggest_driver_label": "Population",
+  "residual": 0.8,
+  "residual_pct": 74.22,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 6.66,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 0.85,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 0.51,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": 0.31,
+      "type": "increase"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": 0.23,
+      "type": "increase"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 7.74,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

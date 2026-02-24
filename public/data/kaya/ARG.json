@@ -1,0 +1,77 @@
+{
+  "iso3": "ARG",
+  "country_name": "Argentina",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 196.19,
+  "co2_end": 189.89,
+  "co2_change": -6.3,
+  "factors": {
+    "population": {
+      "contribution": 8.76,
+      "pct": -139
+    },
+    "gdp_per_capita": {
+      "contribution": 7.67,
+      "pct": -121.7
+    },
+    "energy_intensity": {
+      "contribution": -16.2,
+      "pct": 257.1
+    },
+    "carbon_intensity": {
+      "contribution": -35.87,
+      "pct": 569
+    }
+  },
+  "biggest_driver": "carbon_intensity",
+  "biggest_driver_label": "Carbon Intensity",
+  "residual": -29.34,
+  "residual_pct": 465.44,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 196.19,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 8.76,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 7.67,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -16.2,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -35.87,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 189.89,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.375Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

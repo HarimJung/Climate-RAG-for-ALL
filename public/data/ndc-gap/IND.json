@@ -1,0 +1,190 @@
+{
+  "iso3": "IND",
+  "country_name": "India",
+  "historical": [
+    {
+      "year": 2000,
+      "value": 0.942309744278839
+    },
+    {
+      "year": 2001,
+      "value": 0.939789720011458
+    },
+    {
+      "year": 2002,
+      "value": 0.957620477500199
+    },
+    {
+      "year": 2003,
+      "value": 0.969744882653011
+    },
+    {
+      "year": 2004,
+      "value": 1.02822643182898
+    },
+    {
+      "year": 2005,
+      "value": 1.05460489385527
+    },
+    {
+      "year": 2006,
+      "value": 1.10810989189174
+    },
+    {
+      "year": 2007,
+      "value": 1.18862350046436
+    },
+    {
+      "year": 2008,
+      "value": 1.25815998206335
+    },
+    {
+      "year": 2009,
+      "value": 1.32284533301467
+    },
+    {
+      "year": 2010,
+      "value": 1.39129863287623
+    },
+    {
+      "year": 2011,
+      "value": 1.46337391608571
+    },
+    {
+      "year": 2012,
+      "value": 1.57607553513255
+    },
+    {
+      "year": 2013,
+      "value": 1.59945855716817
+    },
+    {
+      "year": 2014,
+      "value": 1.70517686000076
+    },
+    {
+      "year": 2015,
+      "value": 1.71550269097521
+    },
+    {
+      "year": 2016,
+      "value": 1.7202923565219
+    },
+    {
+      "year": 2017,
+      "value": 1.79545339877531
+    },
+    {
+      "year": 2018,
+      "value": 1.85989309419052
+    },
+    {
+      "year": 2019,
+      "value": 1.83688223212799
+    },
+    {
+      "year": 2020,
+      "value": 1.68040016064392
+    },
+    {
+      "year": 2021,
+      "value": 1.83702951699406
+    },
+    {
+      "year": 2022,
+      "value": 1.96929618962877
+    },
+    {
+      "year": 2023,
+      "value": 2.09622858892568
+    }
+  ],
+  "projection": [
+    {
+      "year": 2024,
+      "value": 2.1494
+    },
+    {
+      "year": 2025,
+      "value": 2.2039
+    },
+    {
+      "year": 2026,
+      "value": 2.2599
+    },
+    {
+      "year": 2027,
+      "value": 2.3172
+    },
+    {
+      "year": 2028,
+      "value": 2.376
+    },
+    {
+      "year": 2029,
+      "value": 2.4363
+    },
+    {
+      "year": 2030,
+      "value": 2.4981
+    }
+  ],
+  "confidence_band": [
+    {
+      "year": 2024,
+      "upper": 2.4085,
+      "lower": 1.8903
+    },
+    {
+      "year": 2025,
+      "upper": 2.5704,
+      "lower": 1.8375
+    },
+    {
+      "year": 2026,
+      "upper": 2.7086,
+      "lower": 1.8111
+    },
+    {
+      "year": 2027,
+      "upper": 2.8354,
+      "lower": 1.799
+    },
+    {
+      "year": 2028,
+      "upper": 2.9554,
+      "lower": 1.7966
+    },
+    {
+      "year": 2029,
+      "upper": 3.0709,
+      "lower": 1.8016
+    },
+    {
+      "year": 2030,
+      "upper": 3.1836,
+      "lower": 1.8126
+    }
+  ],
+  "ndc_target": {
+    "year": 2030,
+    "value": 0.58,
+    "pct_reduction": 45,
+    "reference_year": 2005,
+    "reference_type": "intensity"
+  },
+  "gap": 1.9181,
+  "gap_pct": 330.7,
+  "achievement_probability": 0,
+  "cagr_2015_2023": 2.537,
+  "status": "off_track",
+  "metadata": {
+    "generated_at": "2026-02-24T23:20:32.217Z",
+    "source_indicators": [
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0",
+    "quality_threshold": 0.7,
+    "confidence": "HIGH"
+  }
+}

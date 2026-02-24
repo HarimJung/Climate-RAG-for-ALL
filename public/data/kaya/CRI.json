@@ -1,0 +1,77 @@
+{
+  "iso3": "CRI",
+  "country_name": "Costa Rica",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 7.76,
+  "co2_end": 8.1,
+  "co2_change": 0.34,
+  "factors": {
+    "population": {
+      "contribution": 0.47,
+      "pct": 138.2
+    },
+    "gdp_per_capita": {
+      "contribution": 3.01,
+      "pct": 885.9
+    },
+    "energy_intensity": {
+      "contribution": -3.01,
+      "pct": -885.2
+    },
+    "carbon_intensity": {
+      "contribution": -2.38,
+      "pct": -700.2
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -2.25,
+  "residual_pct": 661.21,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 7.76,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 0.47,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 3.01,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -3.01,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -2.38,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 8.1,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

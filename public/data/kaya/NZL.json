@@ -1,0 +1,77 @@
+{
+  "iso3": "NZL",
+  "country_name": "New Zealand",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 35.39,
+  "co2_end": 31.78,
+  "co2_change": -3.61,
+  "factors": {
+    "population": {
+      "contribution": 4.22,
+      "pct": -116.8
+    },
+    "gdp_per_capita": {
+      "contribution": 8.33,
+      "pct": -230.6
+    },
+    "energy_intensity": {
+      "contribution": -14.89,
+      "pct": 412.2
+    },
+    "carbon_intensity": {
+      "contribution": -10.25,
+      "pct": 283.8
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -8.98,
+  "residual_pct": 248.63,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 35.39,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 4.22,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 8.33,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -14.89,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -10.25,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 31.78,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

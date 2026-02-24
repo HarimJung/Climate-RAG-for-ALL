@@ -1,0 +1,77 @@
+{
+  "iso3": "USA",
+  "country_name": "United States",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 5132.98,
+  "co2_end": 4618.27,
+  "co2_change": -514.72,
+  "factors": {
+    "population": {
+      "contribution": 223.31,
+      "pct": -43.4
+    },
+    "gdp_per_capita": {
+      "contribution": 1732.93,
+      "pct": -336.7
+    },
+    "energy_intensity": {
+      "contribution": -2047.41,
+      "pct": 397.8
+    },
+    "carbon_intensity": {
+      "contribution": -1234.13,
+      "pct": 239.8
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -810.57,
+  "residual_pct": 157.48,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 5132.98,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 223.31,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 1732.93,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -2047.41,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -1234.13,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 4618.27,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

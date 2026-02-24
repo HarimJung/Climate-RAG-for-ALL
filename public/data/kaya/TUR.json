@@ -1,0 +1,77 @@
+{
+  "iso3": "TUR",
+  "country_name": "Turkey",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 367.84,
+  "co2_end": 446.44,
+  "co2_change": 78.6,
+  "factors": {
+    "population": {
+      "contribution": 36.67,
+      "pct": 46.7
+    },
+    "gdp_per_capita": {
+      "contribution": 89.75,
+      "pct": 114.2
+    },
+    "energy_intensity": {
+      "contribution": -42.92,
+      "pct": -54.6
+    },
+    "carbon_intensity": {
+      "contribution": -10.57,
+      "pct": -13.5
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -5.68,
+  "residual_pct": 7.23,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 367.84,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 36.67,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 89.75,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -42.92,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -10.57,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 446.44,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "iso3": "FRA",
+  "country_name": "France",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 332.15,
+  "co2_end": 284.15,
+  "co2_change": -48,
+  "factors": {
+    "population": {
+      "contribution": 8.58,
+      "pct": -17.9
+    },
+    "gdp_per_capita": {
+      "contribution": 61.59,
+      "pct": -128.3
+    },
+    "energy_intensity": {
+      "contribution": -122.57,
+      "pct": 255.4
+    },
+    "carbon_intensity": {
+      "contribution": -14.78,
+      "pct": 30.8
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -19.17,
+  "residual_pct": 39.95,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 332.15,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 8.58,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 61.59,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -122.57,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -14.78,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 284.15,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

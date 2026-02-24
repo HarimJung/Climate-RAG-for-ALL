@@ -1,0 +1,1643 @@
+{
+  "on_track": 3,
+  "off_track": 16,
+  "no_target": 182,
+  "insufficient_data": 2,
+  "total_countries": 203,
+  "countries": [
+    {
+      "iso3": "GBR",
+      "country_name": "United Kingdom",
+      "status": "on_track",
+      "gap_pct": -48.8,
+      "probability": 96.7,
+      "cagr_2015_2023": -4.421
+    },
+    {
+      "iso3": "DEU",
+      "country_name": "Germany",
+      "status": "on_track",
+      "gap_pct": -38,
+      "probability": 91.6,
+      "cagr_2015_2023": -3.746
+    },
+    {
+      "iso3": "FRA",
+      "country_name": "France",
+      "status": "on_track",
+      "gap_pct": -11,
+      "probability": 69,
+      "cagr_2015_2023": -2.263
+    },
+    {
+      "iso3": "AUS",
+      "country_name": "Australia",
+      "status": "off_track",
+      "gap_pct": 12.2,
+      "probability": 31.6,
+      "cagr_2015_2023": -2.131
+    },
+    {
+      "iso3": "CAN",
+      "country_name": "Canada",
+      "status": "off_track",
+      "gap_pct": 16.7,
+      "probability": 22.6,
+      "cagr_2015_2023": -1.593
+    },
+    {
+      "iso3": "JPN",
+      "country_name": "Japan",
+      "status": "off_track",
+      "gap_pct": 22,
+      "probability": 22.4,
+      "cagr_2015_2023": -2.296
+    },
+    {
+      "iso3": "USA",
+      "country_name": "United States",
+      "status": "off_track",
+      "gap_pct": 20.6,
+      "probability": 18.5,
+      "cagr_2015_2023": -1.872
+    },
+    {
+      "iso3": "BGD",
+      "country_name": "Bangladesh",
+      "status": "off_track",
+      "gap_pct": 28.2,
+      "probability": 10.7,
+      "cagr_2015_2023": 3.279
+    },
+    {
+      "iso3": "IDN",
+      "country_name": "Indonesia",
+      "status": "off_track",
+      "gap_pct": 47.1,
+      "probability": 5.7,
+      "cagr_2015_2023": 4.331
+    },
+    {
+      "iso3": "KOR",
+      "country_name": "South Korea",
+      "status": "off_track",
+      "gap_pct": 32.1,
+      "probability": 4.6,
+      "cagr_2015_2023": -1.245
+    },
+    {
+      "iso3": "MEX",
+      "country_name": "Mexico",
+      "status": "off_track",
+      "gap_pct": 53.8,
+      "probability": 3.6,
+      "cagr_2015_2023": -1.24
+    },
+    {
+      "iso3": "SAU",
+      "country_name": "Saudi Arabia",
+      "status": "off_track",
+      "gap_pct": 23.5,
+      "probability": 1.8,
+      "cagr_2015_2023": -1.045
+    },
+    {
+      "iso3": "EGY",
+      "country_name": "Egypt",
+      "status": "off_track",
+      "gap_pct": 49.3,
+      "probability": 0.2,
+      "cagr_2015_2023": 0.023
+    },
+    {
+      "iso3": "BRA",
+      "country_name": "Brazil",
+      "status": "off_track",
+      "gap_pct": 104.6,
+      "probability": 0.1,
+      "cagr_2015_2023": -1.507
+    },
+    {
+      "iso3": "NGA",
+      "country_name": "Nigeria",
+      "status": "off_track",
+      "gap_pct": 88.7,
+      "probability": 0.1,
+      "cagr_2015_2023": -1.459
+    },
+    {
+      "iso3": "CHN",
+      "country_name": "China",
+      "status": "off_track",
+      "gap_pct": 539.6,
+      "probability": 0,
+      "cagr_2015_2023": 2.142
+    },
+    {
+      "iso3": "IND",
+      "country_name": "India",
+      "status": "off_track",
+      "gap_pct": 330.7,
+      "probability": 0,
+      "cagr_2015_2023": 2.537
+    },
+    {
+      "iso3": "RUS",
+      "country_name": "Russia",
+      "status": "off_track",
+      "gap_pct": 146.3,
+      "probability": 0,
+      "cagr_2015_2023": 1.371
+    },
+    {
+      "iso3": "TUR",
+      "country_name": "Turkey",
+      "status": "off_track",
+      "gap_pct": 69.5,
+      "probability": 0,
+      "cagr_2015_2023": 1.342
+    },
+    {
+      "iso3": "ABW",
+      "country_name": "ABW",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.952
+    },
+    {
+      "iso3": "AFG",
+      "country_name": "AFG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.518
+    },
+    {
+      "iso3": "AGO",
+      "country_name": "AGO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -5.555
+    },
+    {
+      "iso3": "ALB",
+      "country_name": "ALB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.254
+    },
+    {
+      "iso3": "ARE",
+      "country_name": "ARE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.44
+    },
+    {
+      "iso3": "ARG",
+      "country_name": "ARG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.982
+    },
+    {
+      "iso3": "ARM",
+      "country_name": "ARM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.852
+    },
+    {
+      "iso3": "ASM",
+      "country_name": "ASM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.344
+    },
+    {
+      "iso3": "ATG",
+      "country_name": "ATG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.573
+    },
+    {
+      "iso3": "AUT",
+      "country_name": "AUT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.427
+    },
+    {
+      "iso3": "AZE",
+      "country_name": "AZE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.753
+    },
+    {
+      "iso3": "BDI",
+      "country_name": "BDI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 7.334
+    },
+    {
+      "iso3": "BEL",
+      "country_name": "BEL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.734
+    },
+    {
+      "iso3": "BEN",
+      "country_name": "BEN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.574
+    },
+    {
+      "iso3": "BFA",
+      "country_name": "BFA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.311
+    },
+    {
+      "iso3": "BGR",
+      "country_name": "BGR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.7
+    },
+    {
+      "iso3": "BHR",
+      "country_name": "BHR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.055
+    },
+    {
+      "iso3": "BHS",
+      "country_name": "BHS",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.453
+    },
+    {
+      "iso3": "BIH",
+      "country_name": "BIH",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.251
+    },
+    {
+      "iso3": "BLR",
+      "country_name": "BLR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.802
+    },
+    {
+      "iso3": "BLZ",
+      "country_name": "BLZ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.502
+    },
+    {
+      "iso3": "BMU",
+      "country_name": "BMU",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.179
+    },
+    {
+      "iso3": "BOL",
+      "country_name": "BOL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.212
+    },
+    {
+      "iso3": "BRB",
+      "country_name": "BRB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.659
+    },
+    {
+      "iso3": "BRN",
+      "country_name": "BRN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.433
+    },
+    {
+      "iso3": "BTN",
+      "country_name": "BTN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.454
+    },
+    {
+      "iso3": "BWA",
+      "country_name": "BWA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.128
+    },
+    {
+      "iso3": "CAF",
+      "country_name": "CAF",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.133
+    },
+    {
+      "iso3": "CHE",
+      "country_name": "CHE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.059
+    },
+    {
+      "iso3": "CHL",
+      "country_name": "CHL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.187
+    },
+    {
+      "iso3": "CIV",
+      "country_name": "CIV",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.224
+    },
+    {
+      "iso3": "CMR",
+      "country_name": "CMR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.274
+    },
+    {
+      "iso3": "COD",
+      "country_name": "COD",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.425
+    },
+    {
+      "iso3": "COG",
+      "country_name": "COG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.516
+    },
+    {
+      "iso3": "COL",
+      "country_name": "COL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.428
+    },
+    {
+      "iso3": "COM",
+      "country_name": "COM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 10.281
+    },
+    {
+      "iso3": "CPV",
+      "country_name": "CPV",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.64
+    },
+    {
+      "iso3": "CRI",
+      "country_name": "CRI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.188
+    },
+    {
+      "iso3": "CUB",
+      "country_name": "CUB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.429
+    },
+    {
+      "iso3": "CYM",
+      "country_name": "CYM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.4
+    },
+    {
+      "iso3": "CYP",
+      "country_name": "CYP",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.605
+    },
+    {
+      "iso3": "CZE",
+      "country_name": "CZE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.255
+    },
+    {
+      "iso3": "DJI",
+      "country_name": "DJI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.587
+    },
+    {
+      "iso3": "DMA",
+      "country_name": "DMA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.201
+    },
+    {
+      "iso3": "DNK",
+      "country_name": "DNK",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.772
+    },
+    {
+      "iso3": "DOM",
+      "country_name": "DOM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.98
+    },
+    {
+      "iso3": "DZA",
+      "country_name": "DZA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.048
+    },
+    {
+      "iso3": "ECU",
+      "country_name": "ECU",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.276
+    },
+    {
+      "iso3": "ERI",
+      "country_name": "ERI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.133
+    },
+    {
+      "iso3": "ESP",
+      "country_name": "ESP",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.037
+    },
+    {
+      "iso3": "EST",
+      "country_name": "EST",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -7.762
+    },
+    {
+      "iso3": "ETH",
+      "country_name": "ETH",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.608
+    },
+    {
+      "iso3": "FIN",
+      "country_name": "FIN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.328
+    },
+    {
+      "iso3": "FJI",
+      "country_name": "FJI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.533
+    },
+    {
+      "iso3": "FRO",
+      "country_name": "FRO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.723
+    },
+    {
+      "iso3": "FSM",
+      "country_name": "FSM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.441
+    },
+    {
+      "iso3": "GAB",
+      "country_name": "GAB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -5.188
+    },
+    {
+      "iso3": "GEO",
+      "country_name": "GEO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.1
+    },
+    {
+      "iso3": "GHA",
+      "country_name": "GHA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.967
+    },
+    {
+      "iso3": "GIB",
+      "country_name": "GIB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.976
+    },
+    {
+      "iso3": "GIN",
+      "country_name": "GIN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 4.59
+    },
+    {
+      "iso3": "GMB",
+      "country_name": "GMB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.253
+    },
+    {
+      "iso3": "GNB",
+      "country_name": "GNB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.474
+    },
+    {
+      "iso3": "GNQ",
+      "country_name": "GNQ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.471
+    },
+    {
+      "iso3": "GRC",
+      "country_name": "GRC",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.261
+    },
+    {
+      "iso3": "GRD",
+      "country_name": "GRD",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 4.491
+    },
+    {
+      "iso3": "GRL",
+      "country_name": "GRL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.342
+    },
+    {
+      "iso3": "GTM",
+      "country_name": "GTM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.563
+    },
+    {
+      "iso3": "GUM",
+      "country_name": "GUM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.072
+    },
+    {
+      "iso3": "GUY",
+      "country_name": "GUY",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 6.505
+    },
+    {
+      "iso3": "HKG",
+      "country_name": "HKG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.595
+    },
+    {
+      "iso3": "HND",
+      "country_name": "HND",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.634
+    },
+    {
+      "iso3": "HRV",
+      "country_name": "HRV",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.357
+    },
+    {
+      "iso3": "HTI",
+      "country_name": "HTI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.657
+    },
+    {
+      "iso3": "HUN",
+      "country_name": "HUN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.991
+    },
+    {
+      "iso3": "IRL",
+      "country_name": "IRL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.172
+    },
+    {
+      "iso3": "IRN",
+      "country_name": "IRN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.114
+    },
+    {
+      "iso3": "IRQ",
+      "country_name": "IRQ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 4.368
+    },
+    {
+      "iso3": "ISL",
+      "country_name": "ISL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.355
+    },
+    {
+      "iso3": "ISR",
+      "country_name": "ISR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.422
+    },
+    {
+      "iso3": "ITA",
+      "country_name": "ITA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.607
+    },
+    {
+      "iso3": "JAM",
+      "country_name": "JAM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.847
+    },
+    {
+      "iso3": "JOR",
+      "country_name": "JOR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.019
+    },
+    {
+      "iso3": "KAZ",
+      "country_name": "KAZ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.434
+    },
+    {
+      "iso3": "KEN",
+      "country_name": "KEN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.784
+    },
+    {
+      "iso3": "KGZ",
+      "country_name": "KGZ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.103
+    },
+    {
+      "iso3": "KHM",
+      "country_name": "KHM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 8.988
+    },
+    {
+      "iso3": "KIR",
+      "country_name": "KIR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.911
+    },
+    {
+      "iso3": "KNA",
+      "country_name": "KNA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.231
+    },
+    {
+      "iso3": "KWT",
+      "country_name": "KWT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.165
+    },
+    {
+      "iso3": "LAO",
+      "country_name": "LAO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 12.462
+    },
+    {
+      "iso3": "LBN",
+      "country_name": "LBN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -9.48
+    },
+    {
+      "iso3": "LBR",
+      "country_name": "LBR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -6.632
+    },
+    {
+      "iso3": "LBY",
+      "country_name": "LBY",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.458
+    },
+    {
+      "iso3": "LCA",
+      "country_name": "LCA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.956
+    },
+    {
+      "iso3": "LKA",
+      "country_name": "LKA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.513
+    },
+    {
+      "iso3": "LSO",
+      "country_name": "LSO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.314
+    },
+    {
+      "iso3": "LTU",
+      "country_name": "LTU",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.467
+    },
+    {
+      "iso3": "LUX",
+      "country_name": "LUX",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -5.475
+    },
+    {
+      "iso3": "LVA",
+      "country_name": "LVA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.676
+    },
+    {
+      "iso3": "MAC",
+      "country_name": "MAC",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -6.645
+    },
+    {
+      "iso3": "MAR",
+      "country_name": "MAR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.627
+    },
+    {
+      "iso3": "MDA",
+      "country_name": "MDA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.664
+    },
+    {
+      "iso3": "MDG",
+      "country_name": "MDG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.146
+    },
+    {
+      "iso3": "MDV",
+      "country_name": "MDV",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.044
+    },
+    {
+      "iso3": "MHL",
+      "country_name": "MHL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.899
+    },
+    {
+      "iso3": "MKD",
+      "country_name": "MKD",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.705
+    },
+    {
+      "iso3": "MLI",
+      "country_name": "MLI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.967
+    },
+    {
+      "iso3": "MLT",
+      "country_name": "MLT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.879
+    },
+    {
+      "iso3": "MMR",
+      "country_name": "MMR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.142
+    },
+    {
+      "iso3": "MNG",
+      "country_name": "MNG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.43
+    },
+    {
+      "iso3": "MNP",
+      "country_name": "MNP",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.664
+    },
+    {
+      "iso3": "MOZ",
+      "country_name": "MOZ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.433
+    },
+    {
+      "iso3": "MRT",
+      "country_name": "MRT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 4.133
+    },
+    {
+      "iso3": "MUS",
+      "country_name": "MUS",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.147
+    },
+    {
+      "iso3": "MWI",
+      "country_name": "MWI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.122
+    },
+    {
+      "iso3": "MYS",
+      "country_name": "MYS",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.088
+    },
+    {
+      "iso3": "NAM",
+      "country_name": "NAM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.569
+    },
+    {
+      "iso3": "NCL",
+      "country_name": "NCL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.507
+    },
+    {
+      "iso3": "NER",
+      "country_name": "NER",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.325
+    },
+    {
+      "iso3": "NIC",
+      "country_name": "NIC",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.203
+    },
+    {
+      "iso3": "NLD",
+      "country_name": "NLD",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.571
+    },
+    {
+      "iso3": "NOR",
+      "country_name": "NOR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.516
+    },
+    {
+      "iso3": "NPL",
+      "country_name": "NPL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 8.878
+    },
+    {
+      "iso3": "NZL",
+      "country_name": "NZL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.813
+    },
+    {
+      "iso3": "OMN",
+      "country_name": "OMN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.003
+    },
+    {
+      "iso3": "PAK",
+      "country_name": "PAK",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.354
+    },
+    {
+      "iso3": "PAN",
+      "country_name": "PAN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.781
+    },
+    {
+      "iso3": "PER",
+      "country_name": "PER",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.811
+    },
+    {
+      "iso3": "PHL",
+      "country_name": "PHL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.488
+    },
+    {
+      "iso3": "PLW",
+      "country_name": "PLW",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.006
+    },
+    {
+      "iso3": "PNG",
+      "country_name": "PNG",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.144
+    },
+    {
+      "iso3": "POL",
+      "country_name": "POL",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.636
+    },
+    {
+      "iso3": "PRI",
+      "country_name": "PRI",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.673
+    },
+    {
+      "iso3": "PRK",
+      "country_name": "PRK",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 8.682
+    },
+    {
+      "iso3": "PRT",
+      "country_name": "PRT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.22
+    },
+    {
+      "iso3": "PRY",
+      "country_name": "PRY",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.564
+    },
+    {
+      "iso3": "PYF",
+      "country_name": "PYF",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.143
+    },
+    {
+      "iso3": "QAT",
+      "country_name": "QAT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.004
+    },
+    {
+      "iso3": "ROU",
+      "country_name": "ROU",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.179
+    },
+    {
+      "iso3": "RWA",
+      "country_name": "RWA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 7.045
+    },
+    {
+      "iso3": "SDN",
+      "country_name": "SDN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.672
+    },
+    {
+      "iso3": "SEN",
+      "country_name": "SEN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.318
+    },
+    {
+      "iso3": "SGP",
+      "country_name": "SGP",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.625
+    },
+    {
+      "iso3": "SLB",
+      "country_name": "SLB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.052
+    },
+    {
+      "iso3": "SLE",
+      "country_name": "SLE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.735
+    },
+    {
+      "iso3": "SLV",
+      "country_name": "SLV",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.787
+    },
+    {
+      "iso3": "SOM",
+      "country_name": "SOM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.107
+    },
+    {
+      "iso3": "STP",
+      "country_name": "STP",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.339
+    },
+    {
+      "iso3": "SUR",
+      "country_name": "SUR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.057
+    },
+    {
+      "iso3": "SVK",
+      "country_name": "SVK",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.285
+    },
+    {
+      "iso3": "SVN",
+      "country_name": "SVN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.881
+    },
+    {
+      "iso3": "SWE",
+      "country_name": "SWE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.828
+    },
+    {
+      "iso3": "SWZ",
+      "country_name": "SWZ",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.261
+    },
+    {
+      "iso3": "SYC",
+      "country_name": "SYC",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -4.998
+    },
+    {
+      "iso3": "SYR",
+      "country_name": "SYR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.07
+    },
+    {
+      "iso3": "TCA",
+      "country_name": "TCA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 10.3
+    },
+    {
+      "iso3": "TCD",
+      "country_name": "TCD",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.985
+    },
+    {
+      "iso3": "TGO",
+      "country_name": "TGO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.808
+    },
+    {
+      "iso3": "THA",
+      "country_name": "THA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.492
+    },
+    {
+      "iso3": "TJK",
+      "country_name": "TJK",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.398
+    },
+    {
+      "iso3": "TKM",
+      "country_name": "TKM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.062
+    },
+    {
+      "iso3": "TLS",
+      "country_name": "TLS",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.273
+    },
+    {
+      "iso3": "TON",
+      "country_name": "TON",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.5
+    },
+    {
+      "iso3": "TTO",
+      "country_name": "TTO",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -3.964
+    },
+    {
+      "iso3": "TUN",
+      "country_name": "TUN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.647
+    },
+    {
+      "iso3": "TZA",
+      "country_name": "TZA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 3.093
+    },
+    {
+      "iso3": "UGA",
+      "country_name": "UGA",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.414
+    },
+    {
+      "iso3": "UKR",
+      "country_name": "UKR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -5.186
+    },
+    {
+      "iso3": "URY",
+      "country_name": "URY",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 2.1
+    },
+    {
+      "iso3": "UZB",
+      "country_name": "UZB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.774
+    },
+    {
+      "iso3": "VCT",
+      "country_name": "VCT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 4.437
+    },
+    {
+      "iso3": "VEN",
+      "country_name": "VEN",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -6.345
+    },
+    {
+      "iso3": "VGB",
+      "country_name": "VGB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 1.138
+    },
+    {
+      "iso3": "VIR",
+      "country_name": "VIR",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 0.329
+    },
+    {
+      "iso3": "VNM",
+      "country_name": "VNM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 7.622
+    },
+    {
+      "iso3": "VUT",
+      "country_name": "VUT",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 4.457
+    },
+    {
+      "iso3": "WSM",
+      "country_name": "WSM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -0.717
+    },
+    {
+      "iso3": "YEM",
+      "country_name": "YEM",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -6.388
+    },
+    {
+      "iso3": "ZAF",
+      "country_name": "South Africa",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -2.311
+    },
+    {
+      "iso3": "ZMB",
+      "country_name": "ZMB",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": 5.52
+    },
+    {
+      "iso3": "ZWE",
+      "country_name": "ZWE",
+      "status": "no_target",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": -1.691
+    },
+    {
+      "iso3": "NRU",
+      "country_name": "NRU",
+      "status": "insufficient_data",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": null
+    },
+    {
+      "iso3": "TUV",
+      "country_name": "TUV",
+      "status": "insufficient_data",
+      "gap_pct": null,
+      "probability": null,
+      "cagr_2015_2023": null
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:20:32.235Z",
+    "source_indicators": [
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0",
+    "quality_threshold": 0.7,
+    "cagr_period": "2015-2023",
+    "confidence_note": "Probability calculated using z-score with historical volatility; HIGH confidence requires 15+ data points"
+  }
+}

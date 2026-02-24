@@ -1,0 +1,77 @@
+{
+  "iso3": "LUX",
+  "country_name": "Luxembourg",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 9.31,
+  "co2_end": 6.94,
+  "co2_change": -2.37,
+  "factors": {
+    "population": {
+      "contribution": 1.36,
+      "pct": -57.5
+    },
+    "gdp_per_capita": {
+      "contribution": 1.95,
+      "pct": -82.2
+    },
+    "energy_intensity": {
+      "contribution": -4.86,
+      "pct": 205.3
+    },
+    "carbon_intensity": {
+      "contribution": -6.75,
+      "pct": 285.1
+    }
+  },
+  "biggest_driver": "carbon_intensity",
+  "biggest_driver_label": "Carbon Intensity",
+  "residual": -5.94,
+  "residual_pct": 250.73,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 9.31,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 1.36,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 1.95,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -4.86,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -6.75,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 6.94,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

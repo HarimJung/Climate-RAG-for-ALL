@@ -1,0 +1,77 @@
+{
+  "iso3": "IDN",
+  "country_name": "Indonesia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 512.4,
+  "co2_end": 772.56,
+  "co2_change": 260.16,
+  "factors": {
+    "population": {
+      "contribution": 42.9,
+      "pct": 16.5
+    },
+    "gdp_per_capita": {
+      "contribution": 236.19,
+      "pct": 90.8
+    },
+    "energy_intensity": {
+      "contribution": -35.65,
+      "pct": -13.7
+    },
+    "carbon_intensity": {
+      "contribution": -10.27,
+      "pct": -3.9
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -27,
+  "residual_pct": 10.38,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 512.4,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 42.9,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 236.19,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -35.65,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -10.27,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 772.56,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "iso3": "IND",
+  "country_name": "India",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 2278.23,
+  "co2_end": 3014.52,
+  "co2_change": 736.29,
+  "factors": {
+    "population": {
+      "contribution": 200.23,
+      "pct": 27.2
+    },
+    "gdp_per_capita": {
+      "contribution": 1180.36,
+      "pct": 160.3
+    },
+    "energy_intensity": {
+      "contribution": -675.8,
+      "pct": -91.8
+    },
+    "carbon_intensity": {
+      "contribution": -108.75,
+      "pct": -14.8
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -140.24,
+  "residual_pct": 19.05,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 2278.23,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 200.23,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 1180.36,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -675.8,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -108.75,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 3014.52,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

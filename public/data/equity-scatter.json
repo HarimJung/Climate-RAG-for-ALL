@@ -1,0 +1,292 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-24T23:19:08.550Z",
+    "country_count": 20,
+    "excluded_count": 230,
+    "exclusion_reasons": {
+      "missing_cumulative_co2": 35,
+      "missing_population": 35,
+      "missing_vulnerability": 230,
+      "missing_co2_pc": 47,
+      "small_population": 0
+    },
+    "median_cumulative_co2_pc": 371.66,
+    "median_vulnerability": 0.373,
+    "source_indicators": [
+      "OWID.CUMULATIVE_CO2",
+      "SP.POP.TOTL",
+      "NDGAIN.VULNERABILITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology": "cumulative_co2_per_capita = OWID.CUMULATIVE_CO2 * 1000000 / SP.POP.TOTL; quadrants split at median values",
+    "methodology_version": "1.0"
+  },
+  "quadrant_summary": {
+    "Historical Polluter": 9,
+    "Double Burden": 1,
+    "Climate Victim": 9,
+    "Low Impact": 1
+  },
+  "countries": [
+    {
+      "iso3": "USA",
+      "name": "United States",
+      "cumulative_co2_per_capita": 1276.59,
+      "vulnerability": 0.312,
+      "current_co2_pc": 13.71,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "GBR",
+      "name": "United Kingdom",
+      "cumulative_co2_per_capita": 1164.61,
+      "vulnerability": 0.298,
+      "current_co2_pc": 4.45,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "DEU",
+      "name": "Germany",
+      "cumulative_co2_per_capita": 1135.39,
+      "vulnerability": 0.301,
+      "current_co2_pc": 7.08,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "CAN",
+      "name": "Canada",
+      "cumulative_co2_per_capita": 875.94,
+      "vulnerability": 0.31,
+      "current_co2_pc": 14.15,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "RUS",
+      "name": "Russia",
+      "cumulative_co2_per_capita": 841.49,
+      "vulnerability": 0.37,
+      "current_co2_pc": 13.55,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "AUS",
+      "name": "Australia",
+      "cumulative_co2_per_capita": 737.17,
+      "vulnerability": 0.318,
+      "current_co2_pc": 14.16,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "FRA",
+      "name": "France",
+      "cumulative_co2_per_capita": 581.86,
+      "vulnerability": 0.305,
+      "current_co2_pc": 4.16,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "JPN",
+      "name": "Japan",
+      "cumulative_co2_per_capita": 551.34,
+      "vulnerability": 0.336,
+      "current_co2_pc": 8.05,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "SAU",
+      "name": "Saudi Arabia",
+      "cumulative_co2_per_capita": 543.82,
+      "vulnerability": 0.412,
+      "current_co2_pc": 18.85,
+      "quadrant": "Double Burden",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "KOR",
+      "name": "South Korea",
+      "cumulative_co2_per_capita": 389.15,
+      "vulnerability": 0.357,
+      "current_co2_pc": 11.42,
+      "quadrant": "Historical Polluter",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "ZAF",
+      "name": "South Africa",
+      "cumulative_co2_per_capita": 354.16,
+      "vulnerability": 0.41,
+      "current_co2_pc": 6.76,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "CHN",
+      "name": "China",
+      "cumulative_co2_per_capita": 193.38,
+      "vulnerability": 0.385,
+      "current_co2_pc": 9.23,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "MEX",
+      "name": "Mexico",
+      "cumulative_co2_per_capita": 166.14,
+      "vulnerability": 0.395,
+      "current_co2_pc": 3.67,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "TUR",
+      "name": "Turkey",
+      "cumulative_co2_per_capita": 145.03,
+      "vulnerability": 0.375,
+      "current_co2_pc": 5.23,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "BRA",
+      "name": "Brazil",
+      "cumulative_co2_per_capita": 83.9,
+      "vulnerability": 0.369,
+      "current_co2_pc": 2.27,
+      "quadrant": "Low Impact",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "EGY",
+      "name": "Egypt",
+      "cumulative_co2_per_capita": 62.98,
+      "vulnerability": 0.438,
+      "current_co2_pc": 2.41,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "IDN",
+      "name": "Indonesia",
+      "cumulative_co2_per_capita": 59.06,
+      "vulnerability": 0.455,
+      "current_co2_pc": 2.75,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "IND",
+      "name": "India",
+      "cumulative_co2_per_capita": 43.72,
+      "vulnerability": 0.48,
+      "current_co2_pc": 2.1,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "NGA",
+      "name": "Nigeria",
+      "cumulative_co2_per_capita": 20.08,
+      "vulnerability": 0.481,
+      "current_co2_pc": 0.55,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    },
+    {
+      "iso3": "BGD",
+      "name": "Bangladesh",
+      "cumulative_co2_per_capita": 11.04,
+      "vulnerability": 0.568,
+      "current_co2_pc": 0.69,
+      "quadrant": "Climate Victim",
+      "data_year": {
+        "cumulative": 2023,
+        "vulnerability": 2023,
+        "co2_pc": 2023
+      }
+    }
+  ]
+}

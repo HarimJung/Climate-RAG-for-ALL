@@ -1,0 +1,77 @@
+{
+  "iso3": "BIH",
+  "country_name": "Bosnia and Herzegovina",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 20.83,
+  "co2_end": 20.83,
+  "co2_change": 0,
+  "factors": {
+    "population": {
+      "contribution": -2.28,
+      "pct": 108712.8
+    },
+    "gdp_per_capita": {
+      "contribution": 14.17,
+      "pct": -674602.2
+    },
+    "energy_intensity": {
+      "contribution": -9.19,
+      "pct": 437730.2
+    },
+    "carbon_intensity": {
+      "contribution": -1.86,
+      "pct": 88805.3
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": 0.83,
+  "residual_pct": 39453.84,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 20.83,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": -2.28,
+      "type": "decrease"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 14.17,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -9.19,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -1.86,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 20.83,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

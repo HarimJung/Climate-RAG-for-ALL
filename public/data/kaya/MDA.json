@@ -1,0 +1,77 @@
+{
+  "iso3": "MDA",
+  "country_name": "Moldova",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 8.3,
+  "co2_end": 8.21,
+  "co2_change": -0.09,
+  "factors": {
+    "population": {
+      "contribution": -1.24,
+      "pct": 1354
+    },
+    "gdp_per_capita": {
+      "contribution": 7.84,
+      "pct": -8540.7
+    },
+    "energy_intensity": {
+      "contribution": -7.89,
+      "pct": 8593
+    },
+    "carbon_intensity": {
+      "contribution": -0.74,
+      "pct": 807.7
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -1.94,
+  "residual_pct": 2114.04,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 8.3,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": -1.24,
+      "type": "decrease"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 7.84,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -7.89,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -0.74,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 8.21,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

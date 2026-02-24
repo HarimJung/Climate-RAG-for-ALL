@@ -1,0 +1,77 @@
+{
+  "iso3": "CHE",
+  "country_name": "Switzerland",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 40.22,
+  "co2_end": 33.67,
+  "co2_change": -6.56,
+  "factors": {
+    "population": {
+      "contribution": 2.66,
+      "pct": -40.6
+    },
+    "gdp_per_capita": {
+      "contribution": 6.55,
+      "pct": -99.9
+    },
+    "energy_intensity": {
+      "contribution": -12.25,
+      "pct": 186.8
+    },
+    "carbon_intensity": {
+      "contribution": 2.57,
+      "pct": -39.2
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": 6.09,
+  "residual_pct": 92.87,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 40.22,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 2.66,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 6.55,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -12.25,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": 2.57,
+      "type": "increase"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 33.67,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

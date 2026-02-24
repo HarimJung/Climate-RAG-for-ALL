@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ClimateSankey } from '@/components/charts/ClimateSankey';
 import { ClimateGap } from '@/components/charts/ClimateGap';
+import { NDCGapChart } from '@/components/charts/NDCGapChart';
+import { KayaWaterfall } from '@/components/charts/KayaWaterfall';
+import { EquityScatter } from '@/components/charts/EquityScatter';
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 import riskProfileKOR from '../../../../data/analysis/risk-profile-KOR.json';
 import riskProfileUSA from '../../../../data/analysis/risk-profile-USA.json';
@@ -885,6 +888,20 @@ export function CountryClient({
         </div>
       </section>
 
+      {/* ── Section: NDC Gap Tracker ── */}
+      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionTitle>NDC Gap Tracker</SectionTitle>
+          <Card>
+            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+              {countryName} — CO&#x2082; per capita projection vs NDC target
+            </h3>
+            <NDCGapChart iso3={iso3} />
+            <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
+          </Card>
+        </div>
+      </section>
+
       {/* ── Section 2: Energy Transition ── */}
       {emberMix && (
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
@@ -1165,6 +1182,20 @@ export function CountryClient({
         </section>
       )}
 
+      {/* ── Section: Kaya Decomposition ── */}
+      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionTitle>Why Did Emissions Change? (Kaya Decomposition)</SectionTitle>
+          <Card>
+            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+              {countryName} — LMDI Factor Decomposition
+            </h3>
+            <KayaWaterfall iso3={iso3} />
+            <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
+          </Card>
+        </div>
+      </section>
+
       {/* ── Section 8: Climate Vulnerability ── */}
       <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
@@ -1181,6 +1212,14 @@ export function CountryClient({
               </div>
             )}
             <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
+          </Card>
+
+          <Card className="mt-6">
+            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+              Climate Equity: Who Polluted vs Who Suffers
+            </h3>
+            <EquityScatter highlightIso3={iso3} />
+            <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
           </Card>
 
             {myScatter && (

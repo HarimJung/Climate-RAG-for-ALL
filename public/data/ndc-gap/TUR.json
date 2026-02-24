@@ -1,0 +1,190 @@
+{
+  "iso3": "TUR",
+  "country_name": "Turkey",
+  "historical": [
+    {
+      "year": 2000,
+      "value": 3.47043278431936
+    },
+    {
+      "year": 2001,
+      "value": 3.1206808144442
+    },
+    {
+      "year": 2002,
+      "value": 3.24208511129842
+    },
+    {
+      "year": 2003,
+      "value": 3.38625448591684
+    },
+    {
+      "year": 2004,
+      "value": 3.43889343076092
+    },
+    {
+      "year": 2005,
+      "value": 3.5495611200862
+    },
+    {
+      "year": 2006,
+      "value": 3.91176721812036
+    },
+    {
+      "year": 2007,
+      "value": 4.28079364507414
+    },
+    {
+      "year": 2008,
+      "value": 4.21593984029483
+    },
+    {
+      "year": 2009,
+      "value": 4.1835136272879
+    },
+    {
+      "year": 2010,
+      "value": 4.26801919276368
+    },
+    {
+      "year": 2011,
+      "value": 4.48332295905392
+    },
+    {
+      "year": 2012,
+      "value": 4.57803809727294
+    },
+    {
+      "year": 2013,
+      "value": 4.38456228128668
+    },
+    {
+      "year": 2014,
+      "value": 4.60446003106117
+    },
+    {
+      "year": 2015,
+      "value": 4.70276339686943
+    },
+    {
+      "year": 2016,
+      "value": 4.93533246982308
+    },
+    {
+      "year": 2017,
+      "value": 5.39416444458135
+    },
+    {
+      "year": 2018,
+      "value": 5.27401972926131
+    },
+    {
+      "year": 2019,
+      "value": 5.01913672458907
+    },
+    {
+      "year": 2020,
+      "value": 5.07395962903497
+    },
+    {
+      "year": 2021,
+      "value": 5.47500634541911
+    },
+    {
+      "year": 2022,
+      "value": 5.22956172007378
+    },
+    {
+      "year": 2023,
+      "value": 5.23215412799609
+    }
+  ],
+  "projection": [
+    {
+      "year": 2024,
+      "value": 5.3024
+    },
+    {
+      "year": 2025,
+      "value": 5.3736
+    },
+    {
+      "year": 2026,
+      "value": 5.4457
+    },
+    {
+      "year": 2027,
+      "value": 5.5188
+    },
+    {
+      "year": 2028,
+      "value": 5.5929
+    },
+    {
+      "year": 2029,
+      "value": 5.668
+    },
+    {
+      "year": 2030,
+      "value": 5.744
+    }
+  ],
+  "confidence_band": [
+    {
+      "year": 2024,
+      "upper": 5.7738,
+      "lower": 4.831
+    },
+    {
+      "year": 2025,
+      "upper": 6.0402,
+      "lower": 4.707
+    },
+    {
+      "year": 2026,
+      "upper": 6.2621,
+      "lower": 4.6293
+    },
+    {
+      "year": 2027,
+      "upper": 6.4615,
+      "lower": 4.5761
+    },
+    {
+      "year": 2028,
+      "upper": 6.6469,
+      "lower": 4.5389
+    },
+    {
+      "year": 2029,
+      "upper": 6.8226,
+      "lower": 4.5133
+    },
+    {
+      "year": 2030,
+      "upper": 6.9912,
+      "lower": 4.4969
+    }
+  ],
+  "ndc_target": {
+    "year": 2030,
+    "value": 3.389,
+    "pct_reduction": 41,
+    "reference_year": null,
+    "reference_type": "bau"
+  },
+  "gap": 2.355,
+  "gap_pct": 69.5,
+  "achievement_probability": 0,
+  "cagr_2015_2023": 1.342,
+  "status": "off_track",
+  "metadata": {
+    "generated_at": "2026-02-24T23:20:32.232Z",
+    "source_indicators": [
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0",
+    "quality_threshold": 0.7,
+    "confidence": "HIGH"
+  }
+}

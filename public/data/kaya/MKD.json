@@ -1,0 +1,77 @@
+{
+  "iso3": "MKD",
+  "country_name": "North Macedonia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 7.93,
+  "co2_end": 8.02,
+  "co2_change": 0.09,
+  "factors": {
+    "population": {
+      "contribution": -0.36,
+      "pct": -408.2
+    },
+    "gdp_per_capita": {
+      "contribution": 3.9,
+      "pct": 4461.3
+    },
+    "energy_intensity": {
+      "contribution": -3.57,
+      "pct": -4080.9
+    },
+    "carbon_intensity": {
+      "contribution": -0.82,
+      "pct": -935.9
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -0.93,
+  "residual_pct": 1063.73,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 7.93,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": -0.36,
+      "type": "decrease"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 3.9,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -3.57,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -0.82,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 8.02,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

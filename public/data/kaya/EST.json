@@ -1,0 +1,77 @@
+{
+  "iso3": "EST",
+  "country_name": "Estonia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 21.02,
+  "co2_end": 11.47,
+  "co2_change": -9.55,
+  "factors": {
+    "population": {
+      "contribution": 0.62,
+      "pct": -6.5
+    },
+    "gdp_per_capita": {
+      "contribution": 9.55,
+      "pct": -100
+    },
+    "energy_intensity": {
+      "contribution": -11.85,
+      "pct": 124.2
+    },
+    "carbon_intensity": {
+      "contribution": -6.03,
+      "pct": 63.1
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": 1.83,
+  "residual_pct": 19.2,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 21.02,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 0.62,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 9.55,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -11.85,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -6.03,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 11.47,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "iso3": "CZE",
+  "country_name": "Czechia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 108.29,
+  "co2_end": 85.61,
+  "co2_change": -22.68,
+  "factors": {
+    "population": {
+      "contribution": 2.95,
+      "pct": -13
+    },
+    "gdp_per_capita": {
+      "contribution": 58.55,
+      "pct": -258.1
+    },
+    "energy_intensity": {
+      "contribution": -70.27,
+      "pct": 309.8
+    },
+    "carbon_intensity": {
+      "contribution": -22.31,
+      "pct": 98.4
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -8.4,
+  "residual_pct": 37.05,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 108.29,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 2.95,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 58.55,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -70.27,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -22.31,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 85.61,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

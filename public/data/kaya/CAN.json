@@ -1,0 +1,77 @@
+{
+  "iso3": "CAN",
+  "country_name": "Canada",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 574.38,
+  "co2_end": 567.1,
+  "co2_change": -7.28,
+  "factors": {
+    "population": {
+      "contribution": 67.23,
+      "pct": -923.2
+    },
+    "gdp_per_capita": {
+      "contribution": 122.32,
+      "pct": -1679.6
+    },
+    "energy_intensity": {
+      "contribution": -149.71,
+      "pct": 2055.8
+    },
+    "carbon_intensity": {
+      "contribution": -64.48,
+      "pct": 885.4
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -17.36,
+  "residual_pct": 238.42,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 574.38,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 67.23,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 122.32,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -149.71,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -64.48,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 567.1,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

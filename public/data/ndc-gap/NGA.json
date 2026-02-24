@@ -1,0 +1,190 @@
+{
+  "iso3": "NGA",
+  "country_name": "Nigeria",
+  "historical": [
+    {
+      "year": 2000,
+      "value": 0.792790969926579
+    },
+    {
+      "year": 2001,
+      "value": 0.818897081180304
+    },
+    {
+      "year": 2002,
+      "value": 0.720895078592108
+    },
+    {
+      "year": 2003,
+      "value": 0.7843536892773
+    },
+    {
+      "year": 2004,
+      "value": 0.736921009510727
+    },
+    {
+      "year": 2005,
+      "value": 0.710050686175941
+    },
+    {
+      "year": 2006,
+      "value": 0.621989926382773
+    },
+    {
+      "year": 2007,
+      "value": 0.550572897626193
+    },
+    {
+      "year": 2008,
+      "value": 0.581139578438694
+    },
+    {
+      "year": 2009,
+      "value": 0.499337659024901
+    },
+    {
+      "year": 2010,
+      "value": 0.566502430832841
+    },
+    {
+      "year": 2011,
+      "value": 0.606966647220167
+    },
+    {
+      "year": 2012,
+      "value": 0.580337328542393
+    },
+    {
+      "year": 2013,
+      "value": 0.63302873569183
+    },
+    {
+      "year": 2014,
+      "value": 0.660183629190404
+    },
+    {
+      "year": 2015,
+      "value": 0.621244733321397
+    },
+    {
+      "year": 2016,
+      "value": 0.631791150085677
+    },
+    {
+      "year": 2017,
+      "value": 0.579461406473008
+    },
+    {
+      "year": 2018,
+      "value": 0.592412108680957
+    },
+    {
+      "year": 2019,
+      "value": 0.60197968413501
+    },
+    {
+      "year": 2020,
+      "value": 0.555700571123744
+    },
+    {
+      "year": 2021,
+      "value": 0.599006670437755
+    },
+    {
+      "year": 2022,
+      "value": 0.578271036832404
+    },
+    {
+      "year": 2023,
+      "value": 0.552339272252252
+    }
+  ],
+  "projection": [
+    {
+      "year": 2024,
+      "value": 0.5443
+    },
+    {
+      "year": 2025,
+      "value": 0.5363
+    },
+    {
+      "year": 2026,
+      "value": 0.5285
+    },
+    {
+      "year": 2027,
+      "value": 0.5208
+    },
+    {
+      "year": 2028,
+      "value": 0.5132
+    },
+    {
+      "year": 2029,
+      "value": 0.5057
+    },
+    {
+      "year": 2030,
+      "value": 0.4983
+    }
+  ],
+  "confidence_band": [
+    {
+      "year": 2024,
+      "upper": 0.597,
+      "lower": 0.4915
+    },
+    {
+      "year": 2025,
+      "upper": 0.611,
+      "lower": 0.4617
+    },
+    {
+      "year": 2026,
+      "upper": 0.6199,
+      "lower": 0.4371
+    },
+    {
+      "year": 2027,
+      "upper": 0.6263,
+      "lower": 0.4153
+    },
+    {
+      "year": 2028,
+      "upper": 0.6312,
+      "lower": 0.3952
+    },
+    {
+      "year": 2029,
+      "upper": 0.635,
+      "lower": 0.3765
+    },
+    {
+      "year": 2030,
+      "upper": 0.6379,
+      "lower": 0.3588
+    }
+  ],
+  "ndc_target": {
+    "year": 2030,
+    "value": 0.2641,
+    "pct_reduction": 47,
+    "reference_year": null,
+    "reference_type": "bau"
+  },
+  "gap": 0.2342,
+  "gap_pct": 88.7,
+  "achievement_probability": 0.1,
+  "cagr_2015_2023": -1.459,
+  "status": "off_track",
+  "metadata": {
+    "generated_at": "2026-02-24T23:20:32.225Z",
+    "source_indicators": [
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0",
+    "quality_threshold": 0.7,
+    "confidence": "HIGH"
+  }
+}

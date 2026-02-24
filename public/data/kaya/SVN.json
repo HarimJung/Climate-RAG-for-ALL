@@ -1,0 +1,77 @@
+{
+  "iso3": "SVN",
+  "country_name": "Slovenia",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 14.29,
+  "co2_end": 12.62,
+  "co2_change": -1.68,
+  "factors": {
+    "population": {
+      "contribution": 0.39,
+      "pct": -23.3
+    },
+    "gdp_per_capita": {
+      "contribution": 6.48,
+      "pct": -386.3
+    },
+    "energy_intensity": {
+      "contribution": -7.8,
+      "pct": 465.4
+    },
+    "carbon_intensity": {
+      "contribution": -4.74,
+      "pct": 282.5
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -3.99,
+  "residual_pct": 238.26,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 14.29,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 0.39,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 6.48,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -7.8,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -4.74,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 12.62,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

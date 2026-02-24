@@ -1,0 +1,77 @@
+{
+  "iso3": "ESP",
+  "country_name": "Spain",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 271.54,
+  "co2_end": 220.99,
+  "co2_change": -50.55,
+  "factors": {
+    "population": {
+      "contribution": 9.98,
+      "pct": -19.8
+    },
+    "gdp_per_capita": {
+      "contribution": 63.16,
+      "pct": -124.9
+    },
+    "energy_intensity": {
+      "contribution": -87.94,
+      "pct": 174
+    },
+    "carbon_intensity": {
+      "contribution": -162.84,
+      "pct": 322.2
+    }
+  },
+  "biggest_driver": "carbon_intensity",
+  "biggest_driver_label": "Carbon Intensity",
+  "residual": -127.09,
+  "residual_pct": 251.43,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 271.54,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 9.98,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 63.16,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -87.94,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -162.84,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 220.99,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

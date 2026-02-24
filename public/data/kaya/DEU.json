@@ -1,0 +1,77 @@
+{
+  "iso3": "DEU",
+  "country_name": "Germany",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 784.91,
+  "co2_end": 589.66,
+  "co2_change": -195.25,
+  "factors": {
+    "population": {
+      "contribution": 14.69,
+      "pct": -7.5
+    },
+    "gdp_per_capita": {
+      "contribution": 188.62,
+      "pct": -96.6
+    },
+    "energy_intensity": {
+      "contribution": -359.2,
+      "pct": 184
+    },
+    "carbon_intensity": {
+      "contribution": -218.42,
+      "pct": 111.9
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -179.06,
+  "residual_pct": 91.7,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 784.91,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 14.69,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 188.62,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -359.2,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -218.42,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 589.66,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "iso3": "MUS",
+  "country_name": "Mauritius",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 3.99,
+  "co2_end": 4.32,
+  "co2_change": 0.33,
+  "factors": {
+    "population": {
+      "contribution": -0.05,
+      "pct": -14.2
+    },
+    "gdp_per_capita": {
+      "contribution": 0.68,
+      "pct": 204.1
+    },
+    "energy_intensity": {
+      "contribution": -0.56,
+      "pct": -168.2
+    },
+    "carbon_intensity": {
+      "contribution": 0.07,
+      "pct": 20.2
+    }
+  },
+  "biggest_driver": "gdp_per_capita",
+  "biggest_driver_label": "GDP per Capita",
+  "residual": -0.19,
+  "residual_pct": 58.07,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 3.99,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": -0.05,
+      "type": "decrease"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 0.68,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -0.56,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": 0.07,
+      "type": "increase"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 4.32,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

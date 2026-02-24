@@ -1,0 +1,77 @@
+{
+  "iso3": "FIN",
+  "country_name": "Finland",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 45.98,
+  "co2_end": 32.89,
+  "co2_change": -13.09,
+  "factors": {
+    "population": {
+      "contribution": 0.78,
+      "pct": -6
+    },
+    "gdp_per_capita": {
+      "contribution": 9.42,
+      "pct": -71.9
+    },
+    "energy_intensity": {
+      "contribution": -9.81,
+      "pct": 74.9
+    },
+    "carbon_intensity": {
+      "contribution": -30.51,
+      "pct": 233.1
+    }
+  },
+  "biggest_driver": "carbon_intensity",
+  "biggest_driver_label": "Carbon Intensity",
+  "residual": -17.03,
+  "residual_pct": 130.15,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 45.98,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 0.78,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 9.42,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -9.81,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -30.51,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 32.89,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.377Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

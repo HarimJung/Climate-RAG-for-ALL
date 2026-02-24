@@ -1,0 +1,190 @@
+{
+  "iso3": "EGY",
+  "country_name": "Egypt",
+  "historical": [
+    {
+      "year": 2000,
+      "value": 1.75027301728806
+    },
+    {
+      "year": 2001,
+      "value": 1.89148509278964
+    },
+    {
+      "year": 2002,
+      "value": 1.90141842765088
+    },
+    {
+      "year": 2003,
+      "value": 1.89914658738482
+    },
+    {
+      "year": 2004,
+      "value": 2.0184066565906
+    },
+    {
+      "year": 2005,
+      "value": 2.1995658648073
+    },
+    {
+      "year": 2006,
+      "value": 2.28386190572735
+    },
+    {
+      "year": 2007,
+      "value": 2.39637572755543
+    },
+    {
+      "year": 2008,
+      "value": 2.35283522329508
+    },
+    {
+      "year": 2009,
+      "value": 2.40386934022582
+    },
+    {
+      "year": 2010,
+      "value": 2.37407988100642
+    },
+    {
+      "year": 2011,
+      "value": 2.40787061503775
+    },
+    {
+      "year": 2012,
+      "value": 2.50058176167515
+    },
+    {
+      "year": 2013,
+      "value": 2.39951090462348
+    },
+    {
+      "year": 2014,
+      "value": 2.39012321445552
+    },
+    {
+      "year": 2015,
+      "value": 2.40381816615146
+    },
+    {
+      "year": 2016,
+      "value": 2.46076060182603
+    },
+    {
+      "year": 2017,
+      "value": 2.52378641552398
+    },
+    {
+      "year": 2018,
+      "value": 2.42443152195678
+    },
+    {
+      "year": 2019,
+      "value": 2.20383858928624
+    },
+    {
+      "year": 2020,
+      "value": 2.25205800434348
+    },
+    {
+      "year": 2021,
+      "value": 2.35795200966486
+    },
+    {
+      "year": 2022,
+      "value": 2.29974804261299
+    },
+    {
+      "year": 2023,
+      "value": 2.40830000255291
+    }
+  ],
+  "projection": [
+    {
+      "year": 2024,
+      "value": 2.4089
+    },
+    {
+      "year": 2025,
+      "value": 2.4094
+    },
+    {
+      "year": 2026,
+      "value": 2.41
+    },
+    {
+      "year": 2027,
+      "value": 2.4105
+    },
+    {
+      "year": 2028,
+      "value": 2.4111
+    },
+    {
+      "year": 2029,
+      "value": 2.4117
+    },
+    {
+      "year": 2030,
+      "value": 2.4122
+    }
+  ],
+  "confidence_band": [
+    {
+      "year": 2024,
+      "upper": 2.6098,
+      "lower": 2.2079
+    },
+    {
+      "year": 2025,
+      "upper": 2.6936,
+      "lower": 2.1253
+    },
+    {
+      "year": 2026,
+      "upper": 2.758,
+      "lower": 2.062
+    },
+    {
+      "year": 2027,
+      "upper": 2.8124,
+      "lower": 2.0087
+    },
+    {
+      "year": 2028,
+      "upper": 2.8604,
+      "lower": 1.9619
+    },
+    {
+      "year": 2029,
+      "upper": 2.9038,
+      "lower": 1.9195
+    },
+    {
+      "year": 2030,
+      "upper": 2.9438,
+      "lower": 1.8807
+    }
+  ],
+  "ndc_target": {
+    "year": 2030,
+    "value": 1.6162,
+    "pct_reduction": 33,
+    "reference_year": null,
+    "reference_type": "bau"
+  },
+  "gap": 0.796,
+  "gap_pct": 49.3,
+  "achievement_probability": 0.2,
+  "cagr_2015_2023": 0.023,
+  "status": "off_track",
+  "metadata": {
+    "generated_at": "2026-02-24T23:20:32.211Z",
+    "source_indicators": [
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0",
+    "quality_threshold": 0.7,
+    "confidence": "HIGH"
+  }
+}

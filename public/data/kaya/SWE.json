@@ -1,0 +1,77 @@
+{
+  "iso3": "SWE",
+  "country_name": "Sweden",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 42.9,
+  "co2_end": 36.67,
+  "co2_change": -6.23,
+  "factors": {
+    "population": {
+      "contribution": 2.94,
+      "pct": -47.1
+    },
+    "gdp_per_capita": {
+      "contribution": 2.91,
+      "pct": -46.7
+    },
+    "energy_intensity": {
+      "contribution": -5.11,
+      "pct": 82
+    },
+    "carbon_intensity": {
+      "contribution": -2.12,
+      "pct": 34
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": 4.85,
+  "residual_pct": 77.83,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 42.9,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 2.94,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 2.91,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -5.11,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -2.12,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 36.67,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "iso3": "THA",
+  "country_name": "Thailand",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 281.47,
+  "co2_end": 275.03,
+  "co2_change": -6.43,
+  "factors": {
+    "population": {
+      "contribution": 4.56,
+      "pct": -70.9
+    },
+    "gdp_per_capita": {
+      "contribution": 65.59,
+      "pct": -1019.5
+    },
+    "energy_intensity": {
+      "contribution": -77.54,
+      "pct": 1205.2
+    },
+    "carbon_intensity": {
+      "contribution": -23.38,
+      "pct": 363.4
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -24.33,
+  "residual_pct": 378.17,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 281.47,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 4.56,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 65.59,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -77.54,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -23.38,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 275.03,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

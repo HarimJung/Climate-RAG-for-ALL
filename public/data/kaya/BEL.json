@@ -1,0 +1,77 @@
+{
+  "iso3": "BEL",
+  "country_name": "Belgium",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 102.42,
+  "co2_end": 85.73,
+  "co2_change": -16.69,
+  "factors": {
+    "population": {
+      "contribution": 4.2,
+      "pct": -25.2
+    },
+    "gdp_per_capita": {
+      "contribution": 28.65,
+      "pct": -171.7
+    },
+    "energy_intensity": {
+      "contribution": -41.19,
+      "pct": 246.9
+    },
+    "carbon_intensity": {
+      "contribution": -46.31,
+      "pct": 277.5
+    }
+  },
+  "biggest_driver": "carbon_intensity",
+  "biggest_driver_label": "Carbon Intensity",
+  "residual": -37.97,
+  "residual_pct": 227.52,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 102.42,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 4.2,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": 28.65,
+      "type": "increase"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -41.19,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -46.31,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 85.73,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.376Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}

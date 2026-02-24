@@ -1,0 +1,77 @@
+{
+  "iso3": "ZAF",
+  "country_name": "South Africa",
+  "period": {
+    "start": 2015,
+    "end": 2023
+  },
+  "co2_start": 462.27,
+  "co2_end": 427.27,
+  "co2_change": -35,
+  "factors": {
+    "population": {
+      "contribution": 49.5,
+      "pct": -141.4
+    },
+    "gdp_per_capita": {
+      "contribution": -4.87,
+      "pct": 13.9
+    },
+    "energy_intensity": {
+      "contribution": -64.22,
+      "pct": 183.5
+    },
+    "carbon_intensity": {
+      "contribution": -47.82,
+      "pct": 136.6
+    }
+  },
+  "biggest_driver": "energy_intensity",
+  "biggest_driver_label": "Energy Intensity",
+  "residual": -32.41,
+  "residual_pct": 92.59,
+  "confidence": "LOW",
+  "waterfall": [
+    {
+      "label": "CO2 2015",
+      "value": 462.27,
+      "type": "start"
+    },
+    {
+      "label": "Population",
+      "value": 49.5,
+      "type": "increase"
+    },
+    {
+      "label": "GDP/capita",
+      "value": -4.87,
+      "type": "decrease"
+    },
+    {
+      "label": "Energy/GDP",
+      "value": -64.22,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2/Energy",
+      "value": -47.82,
+      "type": "decrease"
+    },
+    {
+      "label": "CO2 2023",
+      "value": 427.27,
+      "type": "end"
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-02-24T23:16:04.378Z",
+    "source_indicators": [
+      "SP.POP.TOTL",
+      "NY.GDP.PCAP.CD",
+      "EG.USE.PCAP.KG.OE",
+      "EMBER.CARBON.INTENSITY",
+      "EN.GHG.CO2.PC.CE.AR5"
+    ],
+    "methodology_version": "1.0"
+  }
+}
