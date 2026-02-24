@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ClimateSankey } from '@/components/charts/ClimateSankey';
 import { ClimateGap } from '@/components/charts/ClimateGap';
@@ -164,10 +164,12 @@ function EmissionsLineChart({
   consumption?: { year: number; value: number }[];
   countryName: string;
 }) {
+  const [hover, setHover] = useState<{ year: number; prodVal: number; consVal: number | null; x: number; y: number } | null>(null);
+
   const VW = 760, VH = 280, ML = 54, MR = 16, MT = 20, MB = 36;
   const W = VW - ML - MR, H = VH - MT - MB;
   const sorted = [...production].sort((a, b) => a.year - b.year);
-  if (sorted.length === 0) return <div className="flex h-40 items-center justify-center text-sm text-[--text-muted]">No data</div>;
+  if (sorted.length === 0) return <div className="flex h-40 items-center justify-center text-sm text-[--text-muted]">Data not available</div>;
   const sortedCons = consumption ? [...consumption].sort((a, b) => a.year - b.year) : [];
   const allVals = [...sorted.map(d => d.value), ...sortedCons.map(d => d.value)];
   const minYear = sorted[0].year, maxYear = sorted[sorted.length - 1].year;
@@ -195,9 +197,21 @@ function EmissionsLineChart({
     }
   }
 
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * VW;
+    const rawYear = minYear + ((svgX - ML) / W) * (maxYear - minYear);
+    const clamped = Math.max(minYear, Math.min(maxYear, Math.round(rawYear)));
+    const nearest = sorted.reduce((a, b) => Math.abs(a.year - clamped) <= Math.abs(b.year - clamped) ? a : b);
+    const consPoint = sortedCons.find(d => d.year === nearest.year) ?? null;
+    setHover({ year: nearest.year, prodVal: nearest.value, consVal: consPoint?.value ?? null, x: xs(nearest.year), y: ys(nearest.value) });
+  }, [sorted, sortedCons, minYear, maxYear]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const xtick = xTicks(minYear, maxYear);
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label={`${countryName} CO₂ per capita`}>
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label={`${countryName} CO₂ per capita`}
+      onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#EF4444" stopOpacity={0.18} />
@@ -242,6 +256,22 @@ function EmissionsLineChart({
       </g>}
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
+      {/* Hover tooltip */}
+      {hover && (() => {
+        const tx = hover.x + 8 + 104 < VW - MR ? hover.x + 8 : hover.x - 112;
+        const hascons = hover.consVal != null;
+        const th = hascons ? 52 : 38;
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
+            <circle cx={hover.x} cy={hover.y} r={4} fill="#EF4444" stroke="white" strokeWidth={2} />
+            <rect x={tx} y={MT + 4} width={104} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
+            <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
+            <text x={tx + 8} y={MT + 32} fontSize={10} fill="#EF4444" fontFamily="monospace">Prod: {hover.prodVal.toFixed(2)}t</text>
+            {hascons && <text x={tx + 8} y={MT + 46} fontSize={10} fill="#8B5CF6" fontFamily="monospace">Cons: {hover.consVal!.toFixed(2)}t</text>}
+          </g>
+        );
+      })()}
     </svg>
   );
 }
@@ -290,6 +320,8 @@ function IndexedTripleLineChart({
   co2PerGdp: { year: number; value: number }[];
   baseYear: number;
 }) {
+  const [hover, setHover] = useState<{ year: number; gdp: number; co2: number; cpg: number | null; x: number } | null>(null);
+
   const VW = 760, VH = 280, ML = 54, MR = 16, MT = 18, MB = 36;
   const W = VW - ML - MR, H = VH - MT - MB;
   if (gdpCo2.length === 0) return null;
@@ -313,8 +345,20 @@ function IndexedTripleLineChart({
   const cpgPath = cpgIndexed.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(d.value).toFixed(1)}`).join(' ');
   const xt = xTicks(minYear, maxYear);
   const ytv = yTickVals.filter(v => v >= minVal);
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * VW;
+    const rawYear = minYear + ((svgX - ML) / W) * (maxYear - minYear);
+    const clamped = Math.max(minYear, Math.min(maxYear, Math.round(rawYear)));
+    const nearest = gdpCo2.reduce((a, b) => Math.abs(a.year - clamped) <= Math.abs(b.year - clamped) ? a : b);
+    const cpgPoint = cpgIndexed.find(d => d.year === nearest.year) ?? null;
+    setHover({ year: nearest.year, gdp: nearest.gdp, co2: nearest.co2, cpg: cpgPoint?.value ?? null, x: xs(nearest.year) });
+  }, [gdpCo2, cpgIndexed, minYear, maxYear]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full">
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full"
+      onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
       {ytv.map(v => <line key={v} x1={ML} y1={ys(v)} x2={VW - MR} y2={ys(v)} stroke="#E8E8ED" strokeWidth={1} />)}
       {ys(100) >= MT && ys(100) <= MT + H && <line x1={ML} y1={ys(100)} x2={VW - MR} y2={ys(100)} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,4" />}
       {ytv.map(v => <text key={v} x={ML - 6} y={ys(v)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#4A4A6A">{v}</text>)}
@@ -348,6 +392,24 @@ function IndexedTripleLineChart({
       })()}
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
+      {/* Hover tooltip */}
+      {hover && (() => {
+        const tx = hover.x + 8 + 118 < VW - MR ? hover.x + 8 : hover.x - 126;
+        const hasCpg = hover.cpg != null;
+        const th = hasCpg ? 64 : 50;
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
+            <circle cx={hover.x} cy={ys(hover.gdp)} r={3} fill="#10B981" stroke="white" strokeWidth={1.5} />
+            <circle cx={hover.x} cy={ys(hover.co2)} r={3} fill="#E5484D" stroke="white" strokeWidth={1.5} />
+            <rect x={tx} y={MT + 4} width={118} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
+            <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
+            <text x={tx + 8} y={MT + 32} fontSize={10} fill="#10B981" fontFamily="monospace">GDP: {hover.gdp.toFixed(1)}</text>
+            <text x={tx + 8} y={MT + 46} fontSize={10} fill="#E5484D" fontFamily="monospace">CO₂: {hover.co2.toFixed(1)}</text>
+            {hasCpg && <text x={tx + 8} y={MT + 60} fontSize={10} fill="#F59E0B" fontFamily="monospace">CI: {hover.cpg!.toFixed(1)}</text>}
+          </g>
+        );
+      })()}
     </svg>
   );
 }
@@ -750,7 +812,7 @@ export function CountryClient({
     <div className="space-y-0">
 
       {/* ── Section 1: Emissions Trajectory ── */}
-      <section className="border-b border-[--border-card] bg-white px-4 py-12">
+      <section className="border-b border-[--border-card] bg-white px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
           <SectionTitle>Emissions Trajectory</SectionTitle>
           <div className="grid gap-6 lg:grid-cols-2">
@@ -825,7 +887,7 @@ export function CountryClient({
 
       {/* ── Section 2: Energy Transition ── */}
       {emberMix && (
-        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Energy Transition</SectionTitle>
             <div className="grid gap-6 lg:grid-cols-2">
@@ -892,7 +954,7 @@ export function CountryClient({
 
       {/* ── Section 3 (NEW): Emission Sources ── */}
       {ctraceBarsWithPct.length > 0 && (
-        <section className="border-b border-[--border-card] bg-white px-4 py-12">
+        <section className="border-b border-[--border-card] bg-white px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Where Do Emissions Come From?</SectionTitle>
             <Card>
@@ -930,7 +992,7 @@ export function CountryClient({
 
       {/* ── Section 4 (NEW): Fossil Fuel Breakdown ── */}
       {hasFuelData && (
-        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>What Burns? Fossil CO&#x2082; by Fuel Type</SectionTitle>
             <Card>
@@ -951,7 +1013,7 @@ export function CountryClient({
 
       {/* ── Section 5 (NEW): Historical Responsibility ── */}
       {(extra.cumulativeCo2 != null || extra.shareCumulative != null || extra.tempGhg != null) && (
-        <section className="border-b border-[--border-card] bg-white px-4 py-12">
+        <section className="border-b border-[--border-card] bg-white px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Historical Responsibility</SectionTitle>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -1005,7 +1067,7 @@ export function CountryClient({
 
       {/* ── Section 6 (NEW): Beyond CO₂ ── */}
       {(extra.methaneSeries.length > 0 || extra.n2oSeries.length > 0) && (
-        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Beyond CO&#x2082;: Methane &amp; Nitrous Oxide</SectionTitle>
             <div className="mb-6 grid gap-4 sm:grid-cols-2">
@@ -1049,7 +1111,7 @@ export function CountryClient({
 
       {/* ── Section 7: Economic Decoupling (upgraded) ── */}
       {gdpVsCo2.length > 0 && (
-        <section className="border-b border-[--border-card] bg-white px-4 py-12">
+        <section className="border-b border-[--border-card] bg-white px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Economic Decoupling</SectionTitle>
             <Card>
@@ -1104,17 +1166,22 @@ export function CountryClient({
       )}
 
       {/* ── Section 8: Climate Vulnerability ── */}
-      {scatterData.length > 0 && (
-        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-12">
-          <div className="mx-auto max-w-[1200px]">
-            <SectionTitle>Climate Vulnerability</SectionTitle>
-            <Card>
-              <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
-                Vulnerability vs Readiness (Pilot Countries, 2023)
-              </h3>
+      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionTitle>Climate Vulnerability</SectionTitle>
+          <Card>
+            <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
+              Vulnerability vs Readiness (Pilot Countries, 2023)
+            </h3>
+            {scatterData.length > 0 ? (
               <VulnerabilityScatter data={scatterData} highlightIso3={iso3} />
-              <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
-            </Card>
+            ) : (
+              <div className="flex h-40 items-center justify-center rounded-lg bg-[--bg-section]">
+                <p className="text-sm text-[--text-muted]">Data not available</p>
+              </div>
+            )}
+            <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
+          </Card>
 
             {myScatter && (
               <InsightText>
@@ -1161,7 +1228,6 @@ export function CountryClient({
             )}
           </div>
         </section>
-      )}
     </div>
   );
 }

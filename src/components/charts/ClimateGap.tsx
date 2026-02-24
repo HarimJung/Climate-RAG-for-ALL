@@ -49,6 +49,15 @@ function yPos(v: number) {
 }
 
 export function ClimateGap({ highlightIso3, className = '' }: ClimateGapProps) {
+  const isInChart = !highlightIso3 || COUNTRIES.some(c => c.iso3 === highlightIso3);
+  if (!isInChart) {
+    return (
+      <div className={`flex flex-col items-center justify-center gap-2 rounded-lg bg-[#F8F9FA] py-16 text-center ${className}`}>
+        <p className="text-sm font-medium text-[#4A4A6A]">Slope chart covers 20 benchmark countries.</p>
+        <p className="text-xs text-[#94A3B8]">{highlightIso3} is not yet included in the comparison set.</p>
+      </div>
+    );
+  }
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}

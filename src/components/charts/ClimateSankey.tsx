@@ -151,9 +151,11 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
 
         {/* ── LINKS ── */}
 
-        {/* Fossil → Electricity */}
-        <path d={band(LX + NW, fossilY, fossilY + fossilH, MX, eFT, eFB)}
-          fill={`url(#${gid}-fossil)`} opacity={lo('lk-fossil')} {...bind('lk-fossil')} />
+        {/* Fossil → Electricity (only when fossil > 0) */}
+        {fossil > 0 && (
+          <path d={band(LX + NW, fossilY, fossilY + fossilH, MX, eFT, eFB)}
+            fill={`url(#${gid}-fossil)`} opacity={lo('lk-fossil')} {...bind('lk-fossil')} />
+        )}
 
         {/* Renewable → Electricity */}
         {renewable > 0 && (
@@ -167,9 +169,11 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
             fill={`url(#${gid}-nuclear)`} opacity={lo('lk-nuclear')} {...bind('lk-nuclear')} />
         )}
 
-        {/* Electricity → CO2 Output */}
-        <path d={band(MX + NW, eFT, eFB, RX, co2Y, co2Y + co2H)}
-          fill={`url(#${gid}-co2)`} opacity={lo('lk-co2')} {...bind('lk-co2')} />
+        {/* Electricity → CO2 Output (only when fossil > 0) */}
+        {fossil > 0 && (
+          <path d={band(MX + NW, eFT, eFB, RX, co2Y, co2Y + co2H)}
+            fill={`url(#${gid}-co2)`} opacity={lo('lk-co2')} {...bind('lk-co2')} />
+        )}
 
         {/* Electricity → Clean Output */}
         {(renewable + nuclear) > 0 && (
@@ -209,13 +213,17 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
 
         {/* ── LEFT NODES ── */}
 
-        {/* Fossil — rounded with shadow */}
-        <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={12} fill={C.fossil}
-          opacity={no('nd-fossil')} filter={hovered === 'nd-fossil' ? `url(#${gid}-glow)` : undefined} {...bind('nd-fossil')} />
-        <text x={LX - 12} y={cy(fossilY, fossilH) - 7} textAnchor="end" fontSize={13}
-          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Fossil</text>
-        <text x={LX - 12} y={cy(fossilY, fossilH) + 9} textAnchor="end" fontSize={12}
-          fontFamily="monospace" fontWeight="700" fill={C.fossil}>{fossil.toFixed(1)}%</text>
+        {/* Fossil — rounded with shadow (only when fossil > 0) */}
+        {fossil > 0 && (
+          <>
+            <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={12} fill={C.fossil}
+              opacity={no('nd-fossil')} filter={hovered === 'nd-fossil' ? `url(#${gid}-glow)` : undefined} {...bind('nd-fossil')} />
+            <text x={LX - 12} y={cy(fossilY, fossilH) - 7} textAnchor="end" fontSize={13}
+              fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Fossil</text>
+            <text x={LX - 12} y={cy(fossilY, fossilH) + 9} textAnchor="end" fontSize={12}
+              fontFamily="monospace" fontWeight="700" fill={C.fossil}>{fossil.toFixed(1)}%</text>
+          </>
+        )}
 
         {/* Renewable — rounded with shadow */}
         <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={12} fill={C.renewable}
@@ -245,13 +253,17 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
 
         {/* ── RIGHT NODES ── */}
 
-        {/* CO2 Output — rounded with shadow */}
-        <rect x={RX} y={co2Y} width={NW} height={co2H} rx={12} fill={C.co2}
-          opacity={no('nd-co2')} filter={hovered === 'nd-co2' ? `url(#${gid}-glow)` : undefined} {...bind('nd-co2')} />
-        <text x={RX + NW + 12} y={cy(co2Y, co2H) - 7} fontSize={13}
-          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">CO2 Output</text>
-        <text x={RX + NW + 12} y={cy(co2Y, co2H) + 9} fontSize={12}
-          fontFamily="monospace" fontWeight="700" fill={C.co2}>{fossil.toFixed(1)}%</text>
+        {/* CO2 Output — rounded with shadow (only when fossil > 0) */}
+        {fossil > 0 && (
+          <>
+            <rect x={RX} y={co2Y} width={NW} height={co2H} rx={12} fill={C.co2}
+              opacity={no('nd-co2')} filter={hovered === 'nd-co2' ? `url(#${gid}-glow)` : undefined} {...bind('nd-co2')} />
+            <text x={RX + NW + 12} y={cy(co2Y, co2H) - 7} fontSize={13}
+              fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">CO2 Output</text>
+            <text x={RX + NW + 12} y={cy(co2Y, co2H) + 9} fontSize={12}
+              fontFamily="monospace" fontWeight="700" fill={C.co2}>{fossil.toFixed(1)}%</text>
+          </>
+        )}
 
         {/* Clean Output — rounded with shadow */}
         {(renewable + nuclear) > 0 && (
