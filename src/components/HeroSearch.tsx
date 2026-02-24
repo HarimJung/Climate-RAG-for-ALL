@@ -62,9 +62,9 @@ export function HeroSearch({ countries }: { countries: Country[] }) {
   }, []);
 
   return (
-    <div data-hero-search className="relative mx-auto w-full max-w-lg">
-      <div className="flex items-center overflow-hidden rounded-full border-2 border-[--accent-primary] bg-white shadow-lg">
-        <svg className="ml-4 h-5 w-5 shrink-0 text-[--text-muted]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <div data-hero-search className="relative mx-auto w-full max-w-2xl">
+      <div className="glow-blue flex items-center overflow-hidden rounded-full border-2 border-white/80 bg-white/95 shadow-2xl backdrop-blur-xl transition-all focus-within:border-[--accent-primary] focus-within:bg-white">
+        <svg className="ml-6 h-6 w-6 shrink-0 text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
         <input
@@ -75,12 +75,12 @@ export function HeroSearch({ countries }: { countries: Country[] }) {
           onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder="Search any country…"
-          className="flex-1 bg-transparent px-3 py-4 text-base text-[--text-primary] placeholder-[--text-muted] outline-none"
+          className="flex-1 bg-transparent px-4 py-6 text-lg font-medium text-[--text-primary] placeholder-[--text-muted] outline-none"
           autoComplete="off"
         />
         {query && (
-          <button onClick={() => { setQuery(''); inputRef.current?.focus(); }} className="mr-2 p-1 text-[--text-muted] hover:text-[--text-primary]">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <button onClick={() => { setQuery(''); inputRef.current?.focus(); }} className="mr-4 rounded-full p-2 text-[--text-muted] transition-colors hover:bg-gray-100 hover:text-[--text-primary]">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
           </button>
@@ -91,21 +91,25 @@ export function HeroSearch({ countries }: { countries: Country[] }) {
       {open && results.length > 0 && (
         <ul
           ref={listRef}
-          className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-[--border-card] bg-white shadow-xl"
+          className="absolute left-0 right-0 top-full z-50 mt-3 overflow-hidden rounded-2xl border border-white/80 bg-white/95 shadow-2xl backdrop-blur-xl"
         >
           {results.map((c, i) => (
             <li key={c.iso3}>
               <button
                 onMouseDown={() => select(c.iso3)}
                 onMouseEnter={() => setHighlighted(i)}
-                className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors ${
-                  i === highlighted ? 'bg-blue-50 text-[--accent-primary]' : 'hover:bg-gray-50'
+                className={`flex w-full items-center gap-4 px-6 py-4 text-left transition-all ${
+                  i === highlighted
+                    ? 'bg-gradient-to-r from-blue-50 to-emerald-50 text-[--accent-primary] scale-[1.02]'
+                    : 'hover:bg-gray-50'
                 }`}
               >
-                <span className="text-xl">{iso3ToFlag(c.iso3)}</span>
-                <span className="font-medium text-[--text-primary]">{c.name}</span>
-                <span className="ml-auto text-xs font-mono text-[--text-muted]">{c.iso3}</span>
-                <span className="text-xs text-[--text-muted]">→ report</span>
+                <span className="text-2xl">{iso3ToFlag(c.iso3)}</span>
+                <span className="flex-1 font-semibold text-[--text-primary]">{c.name}</span>
+                <span className="text-xs font-mono text-[--text-muted]">{c.iso3}</span>
+                <svg className="h-4 w-4 text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
               </button>
             </li>
           ))}

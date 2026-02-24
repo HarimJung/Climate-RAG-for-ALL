@@ -1,20 +1,28 @@
 import Link from 'next/link';
 
 const FOOTER_LINKS = {
-  Product: [
-    { href: '/dashboard', label: 'Dashboard' },
+  Platform: [
+    { href: '/report', label: 'Report Card' },
+    { href: '/explore', label: 'Explore' },
+    { href: '/posters', label: 'Posters' },
     { href: '/compare', label: 'Compare' },
-    { href: '/insights', label: 'Insights' },
+  ],
+  Insights: [
+    { href: '/insights', label: 'All Insights' },
+    { href: '/insights/emissions-trend', label: 'Emissions Trends' },
+    { href: '/insights/climate-vulnerability', label: 'Climate Vulnerability' },
   ],
   Resources: [
     { href: '/guides', label: 'Guides' },
     { href: '/guides/climate-data-sources', label: 'Data Sources' },
     { href: '/guides/issb-s2-beginners', label: 'ISSB S2 Guide' },
+    { href: '/learn', label: 'Learn' },
   ],
-  Data: [
+  'Data Partners': [
     { href: 'https://data.worldbank.org', label: 'World Bank', external: true },
     { href: 'https://www.climatewatchdata.org', label: 'Climate Watch', external: true },
-    { href: 'https://www.ipcc.ch', label: 'IPCC', external: true },
+    { href: 'https://ember-climate.org', label: 'Ember', external: true },
+    { href: 'https://gain.nd.edu', label: 'ND-GAIN', external: true },
   ],
 };
 
@@ -22,22 +30,29 @@ export function Footer() {
   return (
     <footer className="border-t border-[--border-card] bg-[--bg-section]">
       <div className="mx-auto max-w-[1200px] px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="text-xl font-bold">
+        {/* Brand Section */}
+        <div className="mb-12">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="16" r="6" fill="#0066FF" opacity="0.8" />
+              <circle cx="16" cy="10" r="6" fill="#00A67E" opacity="0.8" />
+              <circle cx="22" cy="16" r="6" fill="#0066FF" opacity="0.6" />
+            </svg>
+            <span className="text-xl font-bold">
               <span className="text-[--text-primary]">Visual</span>
               <span className="text-[--accent-primary]">Climate</span>
-            </Link>
-            <p className="mt-3 text-sm leading-relaxed text-[--text-secondary]">
-              Open climate intelligence platform. Tracking 200+ countries.
-            </p>
-          </div>
+            </span>
+          </Link>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-[--text-secondary]">
+            Open climate intelligence platform. Transforming climate data into actionable insights for 200+ countries.
+          </p>
+        </div>
 
-          {/* Link Columns */}
+        {/* 4-Column Grid */}
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {Object.entries(FOOTER_LINKS).map(([title, links]) => (
             <div key={title}>
-              <h3 className="text-sm font-semibold uppercase tracking-widest text-[--text-muted]">{title}</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-[--text-muted]">{title}</h3>
               <ul className="mt-4 space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
@@ -55,12 +70,14 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[--border-card] pt-8 sm:flex-row">
           <p className="text-sm text-[--text-muted]">
             &copy; 2026 VisualClimate. Data from World Bank, Climate Watch, Ember, ND-GAIN.
           </p>
           <div className="flex gap-6 text-sm text-[--text-muted]">
-            <span>Built with Next.js + Supabase</span>
+            <Link href="/about" className="hover:text-[--accent-primary]">About</Link>
+            <a href="https://github.com/visualclimate" target="_blank" rel="noopener noreferrer" className="hover:text-[--accent-primary]">GitHub</a>
           </div>
         </div>
       </div>

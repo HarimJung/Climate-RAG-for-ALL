@@ -55,3 +55,54 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
+
+/* Glow effects */
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 166, 126, 0.3), 0 0 40px rgba(0, 166, 126, 0.15);
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.3), 0 0 40px rgba(0, 102, 255, 0.15);
+}
+
+.glow-amber {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 0 40px rgba(245, 158, 11, 0.15);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(229, 72, 77, 0.3), 0 0 40px rgba(229, 72, 77, 0.15);
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(232, 232, 237, 0.8);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #0066FF 0%, #00A67E 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero gradient background */
+.hero-gradient {
+  background: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-anim {
+  animation: float 3s ease-in-out infinite;
+}

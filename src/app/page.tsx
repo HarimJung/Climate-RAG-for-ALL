@@ -247,59 +247,100 @@ export default async function HomePage() {
 
       {/* ── 1. Hero ─────────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-[85vh] overflow-hidden"
+        className="relative min-h-screen overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 50%, #FFF7ED 100%)',
+          background: 'linear-gradient(135deg, #EEF2FF 0%, #F0FDF4 35%, #FFF7ED 70%, #FEFCE8 100%)',
         }}
       >
         {/* Gradient blobs */}
-        <div className="pointer-events-none absolute left-[10%] top-[15%] h-[400px] w-[400px] rounded-full bg-[#10B981] opacity-20 blur-[100px]" />
-        <div className="pointer-events-none absolute right-[15%] top-[25%] h-[400px] w-[400px] rounded-full bg-[#F59E0B] opacity-20 blur-[100px]" />
-        <div className="pointer-events-none absolute bottom-[20%] left-[40%] h-[400px] w-[400px] rounded-full bg-[#EF4444] opacity-20 blur-[100px]" />
+        <div className="pointer-events-none absolute left-[5%] top-[10%] h-[500px] w-[500px] rounded-full bg-[#0066FF] opacity-[0.15] blur-[120px]" />
+        <div className="pointer-events-none absolute right-[10%] top-[20%] h-[600px] w-[600px] rounded-full bg-[#00A67E] opacity-[0.12] blur-[140px]" />
+        <div className="pointer-events-none absolute bottom-[15%] left-[35%] h-[450px] w-[450px] rounded-full bg-[#F59E0B] opacity-[0.1] blur-[130px]" />
 
         {/* Background world map */}
         {scoreboardData.length > 0 && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.12]">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.08]">
             <WorldScoreboard countries={scoreboardData} width={1440} height={720} />
           </div>
         )}
 
         {/* Overlay content */}
-        <div className="relative z-10 flex min-h-[85vh] items-center px-4 py-20">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-6 inline-block rounded-full border border-white/50 bg-white/70 px-5 py-2 text-sm font-semibold text-[#334155] backdrop-blur-xl">
-              Open climate accountability platform
+        <div className="relative z-10 flex min-h-screen items-center px-4 py-24">
+          <div className="mx-auto w-full max-w-5xl text-center">
+            {/* Badge */}
+            <div className="mb-8 inline-block rounded-full border border-white/60 bg-white/80 px-6 py-2.5 text-sm font-semibold text-[--text-secondary] shadow-lg backdrop-blur-xl">
+              <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-[--accent-positive]" />
+              Open Climate Accountability Platform
             </div>
-            <h1 className="mt-6 text-5xl font-extrabold tracking-tight text-[#0F172A] sm:text-6xl lg:text-7xl">
+
+            {/* Main title */}
+            <h1 className="text-6xl font-extrabold leading-[1.1] tracking-tight text-[--text-primary] sm:text-7xl lg:text-8xl">
               Is your country keeping its{' '}
-              <span className="bg-gradient-to-r from-[#3B82F6] to-[#10B981] bg-clip-text text-transparent">
+              <span className="gradient-text">
                 climate promise?
               </span>
             </h1>
-            <p className="mx-auto mt-8 max-w-2xl text-xl leading-relaxed text-[#334155]">
+
+            {/* Subtitle */}
+            <p className="mx-auto mt-8 max-w-3xl text-xl leading-relaxed text-[--text-secondary] sm:text-2xl">
               Check your country&apos;s report card — grades backed by real emissions, energy, and climate risk data.
             </p>
 
-            {/* Search */}
-            <div className="mt-10">
+            {/* Search bar */}
+            <div className="mt-12">
               <HeroSearch countries={countryList} />
-              <p className="mt-4 text-sm text-[#64748B]">
-                Tracking {statsSubtitle}
-              </p>
             </div>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            {/* Stats counters */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-[--text-muted]">
+              <div className="flex items-center gap-2">
+                <svg className="h-4 w-4 text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+                <span className="font-semibold text-[--text-primary]">
+                  {stats.countries > 0 ? stats.countries : '200+'}
+                </span>
+                <span>countries tracked</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-4 w-4 text-[--accent-positive]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                </svg>
+                <span className="font-semibold text-[--text-primary]">
+                  {stats.indicators > 0 ? stats.indicators : '60'}
+                </span>
+                <span>climate indicators</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-4 w-4 text-[--accent-warning]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                </svg>
+                <span className="font-semibold text-[--text-primary]">
+                  {stats.dataPoints > 0 ? `${(stats.dataPoints / 1000).toFixed(0)}K+` : '170K+'}
+                </span>
+                <span>data points</span>
+              </div>
+            </div>
+
+            {/* CTA buttons */}
+            <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/report"
-                className="inline-flex items-center gap-2 rounded-full bg-[#3B82F6] px-8 py-4 text-base font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:scale-105 hover:bg-[#2563EB] hover:shadow-xl hover:shadow-blue-500/40"
+                className="glow-blue inline-flex items-center gap-2 rounded-full bg-[--accent-primary] px-10 py-5 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-[#0052CC]"
               >
                 Browse all report cards
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
               </Link>
               <a
                 href="#world-map"
-                className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-8 py-4 text-base font-semibold text-[#334155] backdrop-blur-xl transition-all hover:border-[#3B82F6] hover:bg-white/90 hover:text-[#3B82F6]"
+                className="glass-card inline-flex items-center gap-2 rounded-full px-10 py-5 text-lg font-semibold text-[--text-primary] transition-all hover:scale-105 hover:border-[--accent-primary] hover:text-[--accent-primary]"
               >
-                Explore the map ↓
+                Explore the map
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
               </a>
             </div>
           </div>
@@ -355,81 +396,104 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 3. Key Findings ───────────────────────────────────────────────── */}
+      {/* ── 3. Key Findings (Bento Grid) ─────────────────────────────────── */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
           <h2 className="mb-8 text-center text-3xl font-bold text-[--text-primary]">Key Findings</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-4 gap-6">
 
-            <Link href="/report" className="group block">
-              <div className="h-full rounded-xl border border-[--border-card] bg-white p-6 transition-shadow hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
-                  <svg className="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            {/* 64 Changers — col-span-2 */}
+            <Link href="/report" className="group col-span-2 block">
+              <div className="relative h-full overflow-hidden rounded-xl border border-[--border-card] bg-white p-8 transition-all hover:shadow-lg" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-emerald-400 to-emerald-600" />
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
+                  <svg className="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
                   </svg>
                 </div>
-                <p className="font-mono text-3xl font-bold text-emerald-500">
-                  {classCounts.Changer > 0 ? `${classCounts.Changer}` : '64'} nations
+                <p className="font-mono text-7xl font-bold text-emerald-500 leading-none">
+                  {classCounts.Changer > 0 ? classCounts.Changer : '64'}
                 </p>
+                <p className="mt-3 text-xl font-semibold text-[--text-primary]">nations are real Changers</p>
                 <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
-                  are genuinely cutting emissions while scaling renewables — the real Changers
+                  Genuinely cutting emissions while scaling renewables — data-backed progress
                 </p>
-                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">See Changers →</p>
+                <p className="mt-4 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">See all Changers →</p>
               </div>
             </Link>
 
-            <Link href="/report" className="group block">
-              <div className="h-full rounded-xl border border-[--border-card] bg-white p-6 transition-shadow hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
-                  <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            {/* 72 Talkers — col-span-2 */}
+            <Link href="/report" className="group col-span-2 block">
+              <div className="relative h-full overflow-hidden rounded-xl border border-[--border-card] bg-white p-8 transition-all hover:shadow-lg" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-red-400 to-red-600" />
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+                  <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                   </svg>
                 </div>
-                <p className="font-mono text-3xl font-bold text-red-500">
-                  {classCounts.Talker > 0 ? `${classCounts.Talker}` : '72'} nations
+                <p className="font-mono text-7xl font-bold text-red-500 leading-none">
+                  {classCounts.Talker > 0 ? classCounts.Talker : '72'}
                 </p>
+                <p className="mt-3 text-xl font-semibold text-[--text-primary]">nations are Talkers</p>
                 <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
-                  signed Paris but show no measurable progress — Talkers, not Doers
+                  Signed Paris but show no measurable progress — rhetoric without results
                 </p>
-                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">See Talkers →</p>
+                <p className="mt-4 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">See all Talkers →</p>
               </div>
             </Link>
 
-            <Link href="/insights" className="group block">
-              <div className="h-full rounded-xl border border-[--border-card] bg-white p-6 transition-shadow hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
+            {/* 414× gap — col-span-1 */}
+            <Link href="/insights" className="group col-span-1 block">
+              <div className="relative h-full overflow-hidden rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:shadow-lg" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-blue-400 to-blue-600" />
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
                   <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
                   </svg>
                 </div>
-                <p className="font-mono text-3xl font-bold text-[--accent-primary]">
-                  {co2Insight ? `${co2Insight.ratio}×` : '280×'}
+                <p className="font-mono text-5xl font-bold text-[--accent-primary] leading-none">
+                  {co2Insight ? `${co2Insight.ratio}×` : '414×'}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
-                  {co2Insight
-                    ? 'gap between highest and lowest per-capita emitters among large nations'
-                    : 'CO₂ inequality between highest and lowest per-capita emitters'}
+                <p className="mt-3 text-sm font-semibold text-[--text-primary]">CO₂ inequality</p>
+                <p className="mt-1 text-xs leading-relaxed text-[--text-muted]">
+                  Gap between top and bottom emitters
                 </p>
-                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">View analysis →</p>
+                <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">View →</p>
               </div>
             </Link>
 
-            <Link href="/insights" className="group block">
-              <div className="h-full rounded-xl border border-[--border-card] bg-white p-6 transition-shadow hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
-                  <svg className="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                  </svg>
+            {/* 53.3% renewable — col-span-3 with progress bar */}
+            <Link href="/insights" className="group col-span-3 block">
+              <div className="relative h-full overflow-hidden rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:shadow-lg" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-amber-600" />
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
+                      <svg className="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm leading-relaxed text-[--text-muted]">
+                      Germany leads renewable electricity at{' '}
+                      <span className="font-bold text-amber-500">
+                        {renewableInsight?.deuVal != null ? `${renewableInsight.deuVal}%` : '53.3%'}
+                      </span>
+                      {renewableInsight?.korVal != null && ` — Korea trails at ${renewableInsight.korVal}%`}
+                    </p>
+                    <div className="mt-4">
+                      <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all"
+                          style={{ width: renewableInsight?.deuVal != null ? `${renewableInsight.deuVal}%` : '53.3%' }}
+                        />
+                      </div>
+                      <div className="mt-1 flex justify-between text-xs text-[--text-muted]">
+                        <span>0%</span>
+                        <span>100% renewable</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <p className="font-mono text-3xl font-bold text-amber-500">
-                  {renewableInsight?.deuVal != null ? `${renewableInsight.deuVal}%` : '53%'}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-[--text-muted]">
-                  Germany leads renewable electricity
-                  {renewableInsight?.korVal != null
-                    ? ` — Korea trails at ${renewableInsight.korVal}%`
-                    : ' — while others still lag below 10%'}
-                </p>
                 <p className="mt-3 text-xs font-medium text-[--accent-primary] opacity-0 transition-opacity group-hover:opacity-100">View analysis →</p>
               </div>
             </Link>
@@ -467,24 +531,32 @@ export default async function HomePage() {
                     <Link
                       key={(c as HomepageCountry).iso3}
                       href={`/report/${(c as HomepageCountry).iso3}`}
-                      className="group flex items-center gap-4 rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[#10B981] hover:shadow-sm"
+                      className="group relative flex items-center gap-4 rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[#10B981] hover:shadow-md"
                       style={{ boxShadow: 'var(--shadow-card)' }}
                     >
-                      <span className="w-6 text-center text-sm font-bold text-[--text-muted]">{i + 1}</span>
-                      <span className="text-2xl">{iso3ToFlag((c as HomepageCountry).iso3)}</span>
+                      {/* Accent line */}
+                      <div className="absolute left-0 top-0 h-full w-1 rounded-l-xl bg-gradient-to-b from-emerald-400 to-emerald-600" />
+
+                      {/* Large rank number */}
+                      <span className="ml-2 w-10 text-center font-mono text-3xl font-bold text-emerald-200 group-hover:text-emerald-300">{i + 1}</span>
+
+                      <span className="text-3xl">{iso3ToFlag((c as HomepageCountry).iso3)}</span>
+
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-[--text-primary] group-hover:text-[#10B981]">{(c as HomepageCountry).name}</p>
                         <p className="text-xs text-[--text-muted]">{(c as HomepageCountry).region}</p>
                       </div>
+
                       <div className="flex items-center gap-2">
-                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[(c as HomepageCountry).cls], color: CLASS_COLOR[(c as HomepageCountry).cls] }}>{(c as HomepageCountry).cls}</span>
+                        {/* Grade badge - larger and more prominent */}
                         {(c as HomepageCountry).grade && (
-                          <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: GRADE_BG[(c as HomepageCountry).grade] ?? '#F3F4F6', color: GRADE_COLOR[(c as HomepageCountry).grade] ?? '#6B7280' }}>{(c as HomepageCountry).grade}</span>
+                          <span className="rounded-lg px-3 py-1.5 text-base font-bold shadow-sm" style={{ background: GRADE_BG[(c as HomepageCountry).grade] ?? '#F3F4F6', color: GRADE_COLOR[(c as HomepageCountry).grade] ?? '#6B7280' }}>{(c as HomepageCountry).grade}</span>
                         )}
+                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[(c as HomepageCountry).cls], color: CLASS_COLOR[(c as HomepageCountry).cls] }}>{(c as HomepageCountry).cls}</span>
                       </div>
                     </Link>
                   ) : (
-                    <div key={i} className="h-16 animate-pulse rounded-xl border border-[--border-card] bg-gray-50" />
+                    <div key={i} className="h-20 animate-pulse rounded-xl border border-[--border-card] bg-gray-50" />
                   )
                 )}
               </div>
@@ -505,24 +577,32 @@ export default async function HomePage() {
                     <Link
                       key={(c as HomepageCountry).iso3}
                       href={`/report/${(c as HomepageCountry).iso3}`}
-                      className="group flex items-center gap-4 rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[#EF4444] hover:shadow-sm"
+                      className="group relative flex items-center gap-4 rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[#EF4444] hover:shadow-md"
                       style={{ boxShadow: 'var(--shadow-card)' }}
                     >
-                      <span className="w-6 text-center text-sm font-bold text-[--text-muted]">{i + 1}</span>
-                      <span className="text-2xl">{iso3ToFlag((c as HomepageCountry).iso3)}</span>
+                      {/* Accent line */}
+                      <div className="absolute left-0 top-0 h-full w-1 rounded-l-xl bg-gradient-to-b from-red-400 to-red-600" />
+
+                      {/* Large rank number */}
+                      <span className="ml-2 w-10 text-center font-mono text-3xl font-bold text-red-200 group-hover:text-red-300">{i + 1}</span>
+
+                      <span className="text-3xl">{iso3ToFlag((c as HomepageCountry).iso3)}</span>
+
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-[--text-primary] group-hover:text-[#EF4444]">{(c as HomepageCountry).name}</p>
                         <p className="text-xs text-[--text-muted]">{(c as HomepageCountry).region}</p>
                       </div>
+
                       <div className="flex items-center gap-2">
-                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[(c as HomepageCountry).cls], color: CLASS_COLOR[(c as HomepageCountry).cls] }}>{(c as HomepageCountry).cls}</span>
+                        {/* Grade badge - larger and more prominent */}
                         {(c as HomepageCountry).grade && (
-                          <span className="rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: GRADE_BG[(c as HomepageCountry).grade] ?? '#F3F4F6', color: GRADE_COLOR[(c as HomepageCountry).grade] ?? '#6B7280' }}>{(c as HomepageCountry).grade}</span>
+                          <span className="rounded-lg px-3 py-1.5 text-base font-bold shadow-sm" style={{ background: GRADE_BG[(c as HomepageCountry).grade] ?? '#F3F4F6', color: GRADE_COLOR[(c as HomepageCountry).grade] ?? '#6B7280' }}>{(c as HomepageCountry).grade}</span>
                         )}
+                        <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[(c as HomepageCountry).cls], color: CLASS_COLOR[(c as HomepageCountry).cls] }}>{(c as HomepageCountry).cls}</span>
                       </div>
                     </Link>
                   ) : (
-                    <div key={i} className="h-16 animate-pulse rounded-xl border border-[--border-card] bg-gray-50" />
+                    <div key={i} className="h-20 animate-pulse rounded-xl border border-[--border-card] bg-gray-50" />
                   )
                 )}
               </div>

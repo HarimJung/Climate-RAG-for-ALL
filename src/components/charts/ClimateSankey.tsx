@@ -93,28 +93,41 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         <rect width={900} height={500} fill="#FAFAF9" />
 
         <defs>
-          {/* grad-fossil: #EF4444 → #F97316 */}
+          {/* Enhanced gradients with glow */}
+          <filter id={`${gid}-glow`}>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+          {/* grad-fossil: #EF4444 → #F97316 with enhanced stops */}
           <linearGradient id={`${gid}-fossil`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor="#EF4444" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#F97316" stopOpacity="0.7" />
+            <stop offset="0%"   stopColor="#EF4444" stopOpacity="0.95" />
+            <stop offset="50%"  stopColor="#F87171" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#F97316" stopOpacity="0.75" />
           </linearGradient>
           {/* grad-renewable: #10B981 → #34D399 */}
           <linearGradient id={`${gid}-renewable`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor="#10B981" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#34D399" stopOpacity="0.7" />
+            <stop offset="0%"   stopColor="#10B981" stopOpacity="0.95" />
+            <stop offset="50%"  stopColor="#34D399" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#6EE7B7" stopOpacity="0.75" />
           </linearGradient>
           {/* grad-nuclear: #8B5CF6 → #A78BFA */}
           <linearGradient id={`${gid}-nuclear`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor="#8B5CF6" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.7" />
+            <stop offset="0%"   stopColor="#8B5CF6" stopOpacity="0.95" />
+            <stop offset="50%"  stopColor="#A78BFA" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#C4B5FD" stopOpacity="0.75" />
           </linearGradient>
           <linearGradient id={`${gid}-co2`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor={C.electricity}  stopOpacity="0.6" />
-            <stop offset="100%" stopColor={C.co2}          stopOpacity="0.9" />
+            <stop offset="0%"   stopColor={C.electricity}  stopOpacity="0.7" />
+            <stop offset="50%"  stopColor="#F97316" stopOpacity="0.8" />
+            <stop offset="100%" stopColor={C.co2}          stopOpacity="0.95" />
           </linearGradient>
           <linearGradient id={`${gid}-clean`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stopColor={C.electricity}  stopOpacity="0.6" />
-            <stop offset="100%" stopColor={C.clean}        stopOpacity="0.9" />
+            <stop offset="0%"   stopColor={C.electricity}  stopOpacity="0.7" />
+            <stop offset="50%"  stopColor="#22D3EE" stopOpacity="0.8" />
+            <stop offset="100%" stopColor={C.clean}        stopOpacity="0.95" />
           </linearGradient>
         </defs>
 
@@ -196,27 +209,27 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
 
         {/* ── LEFT NODES ── */}
 
-        {/* Fossil */}
-        <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={8} fill={C.fossil}
-          opacity={no('nd-fossil')} {...bind('nd-fossil')} />
+        {/* Fossil — rounded with shadow */}
+        <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={12} fill={C.fossil}
+          opacity={no('nd-fossil')} filter={hovered === 'nd-fossil' ? `url(#${gid}-glow)` : undefined} {...bind('nd-fossil')} />
         <text x={LX - 12} y={cy(fossilY, fossilH) - 7} textAnchor="end" fontSize={13}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Fossil</text>
         <text x={LX - 12} y={cy(fossilY, fossilH) + 9} textAnchor="end" fontSize={12}
           fontFamily="monospace" fontWeight="700" fill={C.fossil}>{fossil.toFixed(1)}%</text>
 
-        {/* Renewable */}
-        <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={8} fill={C.renewable}
-          opacity={no('nd-renewable')} {...bind('nd-renewable')} />
+        {/* Renewable — rounded with shadow */}
+        <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={12} fill={C.renewable}
+          opacity={no('nd-renewable')} filter={hovered === 'nd-renewable' ? `url(#${gid}-glow)` : undefined} {...bind('nd-renewable')} />
         <text x={LX - 12} y={cy(renewableY, renewableH) - 7} textAnchor="end" fontSize={13}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Renewable</text>
         <text x={LX - 12} y={cy(renewableY, renewableH) + 9} textAnchor="end" fontSize={12}
           fontFamily="monospace" fontWeight="700" fill={C.renewable}>{renewable.toFixed(1)}%</text>
 
-        {/* Nuclear (only when > 0) */}
+        {/* Nuclear (only when > 0) — rounded with shadow */}
         {nuclear > 0 && (
           <>
-            <rect x={LX} y={nuclearY} width={NW} height={nuclearH} rx={8} fill={C.nuclear}
-              opacity={no('nd-nuclear')} {...bind('nd-nuclear')} />
+            <rect x={LX} y={nuclearY} width={NW} height={nuclearH} rx={12} fill={C.nuclear}
+              opacity={no('nd-nuclear')} filter={hovered === 'nd-nuclear' ? `url(#${gid}-glow)` : undefined} {...bind('nd-nuclear')} />
             <text x={LX - 12} y={cy(nuclearY, nuclearH) - 7} textAnchor="end" fontSize={13}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Nuclear</text>
             <text x={LX - 12} y={cy(nuclearY, nuclearH) + 9} textAnchor="end" fontSize={12}
@@ -224,26 +237,27 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           </>
         )}
 
-        {/* ── MIDDLE NODE ── */}
-        <rect x={MX} y={elecY} width={NW} height={elecH} rx={8} fill={C.electricity} />
+        {/* ── MIDDLE NODE ── rounded with gradient */}
+        <rect x={MX} y={elecY} width={NW} height={elecH} rx={12} fill={C.electricity}
+          style={{ filter: 'drop-shadow(0 2px 8px rgba(59,130,246,0.3))' }} />
         <text x={MX + NW / 2} y={elecY - 10} textAnchor="middle" fontSize={12}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Electricity</text>
 
         {/* ── RIGHT NODES ── */}
 
-        {/* CO2 Output */}
-        <rect x={RX} y={co2Y} width={NW} height={co2H} rx={8} fill={C.co2}
-          opacity={no('nd-co2')} {...bind('nd-co2')} />
+        {/* CO2 Output — rounded with shadow */}
+        <rect x={RX} y={co2Y} width={NW} height={co2H} rx={12} fill={C.co2}
+          opacity={no('nd-co2')} filter={hovered === 'nd-co2' ? `url(#${gid}-glow)` : undefined} {...bind('nd-co2')} />
         <text x={RX + NW + 12} y={cy(co2Y, co2H) - 7} fontSize={13}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">CO2 Output</text>
         <text x={RX + NW + 12} y={cy(co2Y, co2H) + 9} fontSize={12}
           fontFamily="monospace" fontWeight="700" fill={C.co2}>{fossil.toFixed(1)}%</text>
 
-        {/* Clean Output */}
+        {/* Clean Output — rounded with shadow */}
         {(renewable + nuclear) > 0 && (
           <>
-            <rect x={RX} y={cleanY} width={NW} height={cleanH} rx={8} fill={C.clean}
-              opacity={no('nd-clean')} {...bind('nd-clean')} />
+            <rect x={RX} y={cleanY} width={NW} height={cleanH} rx={12} fill={C.clean}
+              opacity={no('nd-clean')} filter={hovered === 'nd-clean' ? `url(#${gid}-glow)` : undefined} {...bind('nd-clean')} />
             <text x={RX + NW + 12} y={cy(cleanY, cleanH) - 7} fontSize={13}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Clean Output</text>
             <text x={RX + NW + 12} y={cy(cleanY, cleanH) + 9} fontSize={12}

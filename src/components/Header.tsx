@@ -17,8 +17,14 @@ export function Header() {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-[--border-card] bg-white/80 backdrop-blur-xl">
             <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                {/* Logo with 3-circle SVG */}
                 <Link href="/" className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-[--text-primary]">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="16" r="6" fill="#0066FF" opacity="0.8" />
+                        <circle cx="16" cy="10" r="6" fill="#00A67E" opacity="0.8" />
+                        <circle cx="22" cy="16" r="6" fill="#0066FF" opacity="0.6" />
+                    </svg>
+                    <span className="text-xl font-bold text-[--text-primary]">
                         Visual<span className="text-[--accent-primary]">Climate</span>
                     </span>
                 </Link>
@@ -34,6 +40,12 @@ export function Header() {
                             {link.label}
                         </Link>
                     ))}
+                    <Link
+                        href="/report"
+                        className="rounded-lg bg-[--accent-primary] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[#0052cc] hover:shadow-md"
+                    >
+                        Get Started
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -55,7 +67,7 @@ export function Header() {
 
             {/* Mobile Menu */}
             {mobileMenuOpen && (
-                <div className="border-t border-[--border-card] md:hidden">
+                <div className="border-t border-[--border-card] bg-white/95 backdrop-blur-xl md:hidden">
                     <div className="space-y-1 px-4 py-3">
                         {NAV_LINKS.map((link) => (
                             <Link
@@ -67,6 +79,13 @@ export function Header() {
                                 {link.label}
                             </Link>
                         ))}
+                        <Link
+                            href="/report"
+                            className="mt-2 block rounded-lg bg-[--accent-primary] px-3 py-2 text-center text-base font-semibold text-white"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            Get Started
+                        </Link>
                     </div>
                 </div>
             )}

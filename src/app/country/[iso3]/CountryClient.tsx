@@ -200,27 +200,36 @@ function EmissionsLineChart({
     <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label={`${countryName} CO₂ per capita`}>
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#EF4444" stopOpacity={0.12} />
+          <stop offset="0%" stopColor="#EF4444" stopOpacity={0.18} />
+          <stop offset="60%" stopColor="#EF4444" stopOpacity={0.08} />
           <stop offset="100%" stopColor="#EF4444" stopOpacity={0} />
         </linearGradient>
+        <filter id={`glow-${gradId}`}>
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
       </defs>
       {yTickVals.map(v => <line key={v} x1={ML} y1={ys(v)} x2={VW - MR} y2={ys(v)} stroke="#E8E8ED" strokeWidth={1} />)}
       {yTickVals.map(v => <text key={v} x={ML - 6} y={ys(v)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#4A4A6A">{v % 1 === 0 ? v : v.toFixed(1)}</text>)}
       {xtick.map(y => <text key={y} x={xs(y)} y={VH - 10} textAnchor="middle" fontSize={11} fill="#4A4A6A">{y}</text>)}
       <text x={12} y={MT + H / 2} textAnchor="middle" fontSize={10} fill="#6B7280" transform={`rotate(-90,12,${MT + H / 2})`}>t CO₂e/capita</text>
       {minYear <= 2015 && maxYear >= 2015 && <>
-        <line x1={xs(2015)} y1={MT} x2={xs(2015)} y2={MT + H} stroke="#94A3B8" strokeWidth={1.5} strokeDasharray="6,4" />
-        <text x={xs(2015) + 5} y={MT + 14} fontSize={10} fill="#94A3B8" fontWeight="600">Paris</text>
+        <line x1={xs(2015)} y1={MT} x2={xs(2015)} y2={MT + H} stroke="#94A3B8" strokeWidth={2} strokeDasharray="6,4" />
+        <rect x={xs(2015) - 30} y={MT + 4} width={60} height={18} rx={4} fill="#F1F5F9" opacity={0.9} />
+        <text x={xs(2015)} y={MT + 16} textAnchor="middle" fontSize={10} fill="#64748B" fontWeight="700">Paris 2015</text>
       </>}
       <path d={areaPath} fill={`url(#${gradId})`} />
-      <path d={prodPath} fill="none" stroke="#EF4444" strokeWidth={2.5} strokeLinejoin="round" />
+      <path d={prodPath} fill="none" stroke="#EF4444" strokeWidth={2.5} strokeLinejoin="round" filter={`url(#glow-${gradId})`} />
       {/* End-of-line dot + label */}
       {sorted.length > 0 && (() => {
         const last = sorted[sorted.length - 1];
         return (
           <>
-            <circle cx={xs(last.year)} cy={ys(last.value)} r={4} fill="#EF4444" stroke="white" strokeWidth={1.5} />
-            <text x={xs(last.year) - 5} y={ys(last.value) - 8} textAnchor="end" fontSize={10} fontWeight="600" fill="#EF4444" fontFamily="monospace">
+            <circle cx={xs(last.year)} cy={ys(last.value)} r={5} fill="#EF4444" stroke="white" strokeWidth={2} filter={`url(#glow-${gradId})`} />
+            <text x={xs(last.year) - 5} y={ys(last.value) - 10} textAnchor="end" fontSize={11} fontWeight="700" fill="#EF4444" fontFamily="monospace">
               {last.value.toFixed(1)}t
             </text>
           </>
@@ -370,12 +379,22 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
     <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
       <svg viewBox="0 0 240 240" width={240} height={240}>
         <defs>
+          {/* Enhanced radial gradients with deeper colors */}
           {paths.map(p => p.gradColors ? (
-            <radialGradient key={p.gradId} id={p.gradId} cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stopColor={p.gradColors[0]} />
-              <stop offset="100%" stopColor={p.gradColors[1]} />
+            <radialGradient key={p.gradId} id={p.gradId} cx="50%" cy="50%" r="70%">
+              <stop offset="0%"   stopColor={p.gradColors[0]} stopOpacity="1" />
+              <stop offset="70%"  stopColor={p.gradColors[1]} stopOpacity="0.95" />
+              <stop offset="100%" stopColor={p.gradColors[1]} stopOpacity="0.85" />
             </radialGradient>
           ) : null)}
+          {/* Glow filter */}
+          <filter id="donut-glow">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
         {paths.map(p => (
           <path
@@ -384,7 +403,8 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
             fill={p.gradColors ? `url(#${p.gradId})` : p.color}
             stroke="white"
             strokeWidth={3}
-            style={{ filter: `drop-shadow(0 0 6px ${p.color}50)` }}
+            filter="url(#donut-glow)"
+            style={{ filter: `drop-shadow(0 3px 12px ${p.color}60)` }}
           />
         ))}
         {/* Outer segment labels */}
@@ -398,6 +418,7 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
             fontWeight="700"
             fill={p.color}
             fontFamily="monospace"
+            style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
           >
             {p.value.toFixed(0)}%
           </text>
@@ -406,7 +427,8 @@ function DonutChart({ segments }: { segments: { label: string; value: number; co
         <text x={CX} y={CY - 8} textAnchor="middle" fontSize={12} fontWeight="600" fill="#4A4A6A"
           fontFamily="var(--font-jetbrains-mono), monospace">{largest.label.split(' ')[0]}</text>
         <text x={CX} y={CY + 14} textAnchor="middle" fontSize={22} fontWeight="700" fill={largest.color}
-          fontFamily="var(--font-jetbrains-mono), monospace">{largest.value.toFixed(0)}%</text>
+          fontFamily="var(--font-jetbrains-mono), monospace"
+          style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))' }}>{largest.value.toFixed(0)}%</text>
       </svg>
       <ul className="flex flex-col gap-2.5">
         {segments.map(s => (
@@ -429,14 +451,23 @@ function HorizontalBarChart({ bars }: { bars: { label: string; value: number; co
   const VH = bars.length * ROW + PAD * 2;
   return (
     <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Emissions by sector">
+      <defs>
+        {bars.map((b, i) => (
+          <linearGradient key={`bar-grad-${i}`} id={`bar-grad-${i}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={b.color} stopOpacity="0.9" />
+            <stop offset="100%" stopColor={b.color} stopOpacity="0.7" />
+          </linearGradient>
+        ))}
+      </defs>
       {bars.map((b, i) => {
         const y = PAD + i * ROW;
         const bw = maxVal > 0 ? (b.value / maxVal) * BMAX : 0;
         return (
           <g key={b.label}>
             <text x={LBL - 8} y={y + ROW / 2} textAnchor="end" dominantBaseline="middle" fontSize={12} fill="#4A4A6A">{b.label}</text>
-            <rect x={LBL} y={y + 7} width={BMAX} height={ROW - 14} rx={3} fill="#F1F5F9" />
-            <rect x={LBL} y={y + 7} width={bw} height={ROW - 14} rx={3} fill={b.color} opacity={0.85} />
+            <rect x={LBL} y={y + 7} width={BMAX} height={ROW - 14} rx={8} fill="#F1F5F9" />
+            <rect x={LBL} y={y + 7} width={bw} height={ROW - 14} rx={8} fill={`url(#bar-grad-${i})`}
+              style={{ filter: `drop-shadow(0 2px 4px ${b.color}30)` }} />
             <text x={LBL + bw + 6} y={y + ROW / 2} dominantBaseline="middle" fontSize={11} fill={b.color} fontWeight="600">
               {b.value >= 1 ? b.value.toFixed(1) : b.value.toFixed(3)} Mt · {b.pct.toFixed(1)}%
             </text>
@@ -547,6 +578,22 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
   const rt = [minR, (minR + maxR) / 2, maxR].map(v => Math.round(v * 1000) / 1000);
   return (
     <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full">
+      <defs>
+        <filter id="scatter-glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="scatter-highlight">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
       {[0.33, 0.66].map(f => {
         const v = minV + f * (maxV - minV), r = minR + f * (maxR - minR);
         return <g key={f}>
@@ -563,10 +610,16 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
         const isHL = d.iso3 === highlightIso3;
         return (
           <g key={d.iso3}>
+            {isHL && (
+              <circle cx={xs(d.vulnerability)} cy={ys(d.readiness)} r={16}
+                fill={color} opacity={0.15} filter="url(#scatter-highlight)" />
+            )}
             <circle cx={xs(d.vulnerability)} cy={ys(d.readiness)} r={isHL ? 10 : 7}
-              fill={color} stroke={isHL ? '#1A1A2E' : 'white'} strokeWidth={isHL ? 2.5 : 1.5} opacity={isHL ? 1 : 0.8} />
-            <text x={xs(d.vulnerability)} y={ys(d.readiness) - 14} textAnchor="middle"
-              fontSize={isHL ? 12 : 11} fill={isHL ? '#1A1A2E' : '#4A4A6A'} fontWeight={isHL ? '600' : '400'}>{d.name}</text>
+              fill={color} stroke={isHL ? '#1A1A2E' : 'white'} strokeWidth={isHL ? 3 : 1.5}
+              opacity={isHL ? 1 : 0.8} filter={isHL ? 'url(#scatter-glow)' : undefined}
+              style={isHL ? { filter: `drop-shadow(0 2px 8px ${color}60)` } : undefined} />
+            <text x={xs(d.vulnerability)} y={ys(d.readiness) - (isHL ? 16 : 14)} textAnchor="middle"
+              fontSize={isHL ? 13 : 11} fill={isHL ? '#1A1A2E' : '#4A4A6A'} fontWeight={isHL ? '700' : '500'}>{d.name}</text>
           </g>
         );
       })}

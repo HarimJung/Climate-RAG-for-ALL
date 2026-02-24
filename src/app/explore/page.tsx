@@ -1,30 +1,24 @@
 import { createServiceClient } from '@/lib/supabase/server';
 import { createMetaTags } from '@/components/seo/MetaTags';
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { DashboardClient } from '@/app/dashboard/DashboardClient';
-import { CompareClient } from '@/app/compare/CompareClient';
+import { ExploreClient } from './ExploreClient';
 import type { CountryCard } from '@/app/dashboard/page';
-import type { CountryCompareData } from '@/app/compare/page';
-import { CLIMATE_INDICATORS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 
 const CLASS_NAME_MAP: Record<number, CountryCard['climateClass']> = { 1: 'Changer', 2: 'Starter', 3: 'Talker' };
 
-export async function generateMetadata({ searchParams }: { searchParams: Promise<{ tab?: string }> }): Promise<Metadata> {
-  const { tab = 'dashboard' } = await searchParams;
-  const tabLabel = tab === 'compare' ? 'Compare' : 'Dashboard';
+export async function generateMetadata(): Promise<Metadata> {
   return createMetaTags({
-    title: `Explore — ${tabLabel} · VisualClimate`,
-    description: 'Explore climate data: country dashboard and side-by-side comparison.',
-    path: `/explore?tab=${tab}`,
+    title: 'Explore Countries · VisualClimate',
+    description: 'Browse 200+ countries by climate action. Filter Changers, Starters, and Talkers by emissions and renewable energy.',
+    path: '/explore',
   });
 }
 
-// ── Data fetchers ─────────────────────────────────────────────────────────────
+// ── Data fetcher ──────────────────────────────────────────────────────────────
 
-async function fetchDashboardCountries(): Promise<CountryCard[]> {
+async function fetchAllCountries(): Promise<CountryCard[]> {
   try {
     const supabase = createServiceClient();
     const [countriesRes, co2Res, renewableRes, gdpRes, classRes, gradeRes] = await Promise.all([
@@ -67,104 +61,23 @@ async function fetchDashboardCountries(): Promise<CountryCard[]> {
   } catch { return []; }
 }
 
-async function fetchCompareData(isos: string[]): Promise<{ initialData: CountryCompareData[]; allCountries: { iso3: string; name: string; region: string }[] }> {
-  try {
-    const supabase = createServiceClient();
-    const codes = CLIMATE_INDICATORS.map(i => i.code);
-    const [rowsRes, allRes] = await Promise.all([
-      supabase.from('country_data').select('country_iso3, indicator_code, year, value')
-        .in('country_iso3', isos).in('indicator_code', codes).order('year', { ascending: false }),
-      supabase.from('countries').select('iso3, name, region').order('name'),
-    ]);
-    const rows = rowsRes.data ?? [];
-    const allCountries = (allRes.data ?? []).map((c: { iso3: string; name: string; region: string }) => ({
-      iso3: c.iso3.trim(), name: c.name, region: c.region,
-    }));
-    const initialData: CountryCompareData[] = isos.map(iso3 => {
-      const countryRows = rows.filter(r => r.country_iso3 === iso3);
-      const indicators: Record<string, { value: number; year: number } | null> = {};
-      for (const code of codes) {
-        const row = countryRows.find(r => r.indicator_code === code && r.value != null);
-        indicators[code] = row ? { value: Number(row.value), year: row.year } : null;
-      }
-      const cname = allCountries.find(c => c.iso3 === iso3)?.name ?? iso3;
-      return { iso3, name: cname, indicators };
-    });
-    return { initialData, allCountries };
-  } catch { return { initialData: [], allCountries: [] }; }
-}
-
-// ── Tab bar (shared UI) ───────────────────────────────────────────────────────
-
-function TabBar({ active }: { active: string }) {
-  const tabs = [
-    { key: 'dashboard', label: 'Dashboard' },
-    { key: 'compare',   label: 'Compare' },
-  ];
-  return (
-    <div className="mb-8 flex gap-1 rounded-xl border border-[--border-card] bg-[--bg-section] p-1 w-fit">
-      {tabs.map(t => (
-        <Link
-          key={t.key}
-          href={`/explore?tab=${t.key}`}
-          className={`rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
-            active === t.key
-              ? 'bg-white text-[--text-primary] shadow-sm'
-              : 'text-[--text-secondary] hover:text-[--text-primary]'
-          }`}
-        >
-          {t.label}
-        </Link>
-      ))}
-    </div>
-  );
-}
-
 // ── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ tab?: string; countries?: string }> }) {
-  const { tab: rawTab = 'dashboard', countries: countriesParam } = await searchParams;
-  const tab = rawTab === 'compare' ? 'compare' : 'dashboard';
-
-  let dashboardCountries: CountryCard[] = [];
-  let compareData: { initialData: CountryCompareData[]; allCountries: { iso3: string; name: string; region: string }[] } = { initialData: [], allCountries: [] };
-
-  if (tab === 'dashboard') {
-    dashboardCountries = await fetchDashboardCountries();
-  } else if (tab === 'compare') {
-    const selected = countriesParam ? countriesParam.split(',').slice(0, 5) : ['KOR', 'USA', 'DEU'];
-    compareData = await fetchCompareData(selected);
-  }
-
-  const withData = dashboardCountries.filter(c => c.co2 != null || c.renewable != null || c.climateClass != null).length;
+export default async function ExplorePage() {
+  const countries = await fetchAllCountries();
+  const withData = countries.filter(c => c.co2 != null || c.renewable != null || c.climateClass != null).length;
 
   return (
     <div className="bg-[--bg-primary] px-4 py-12">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-[--text-primary]">Explore</h1>
-          <p className="mt-1 text-[--text-secondary]">Country data explorer and side-by-side comparison.</p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">Explore Countries</h1>
+          <p className="mt-2 text-lg text-[--text-secondary]">
+            {withData > 0 ? `${withData}` : '200'}+ countries tracked across climate action, emissions, and renewable energy
+          </p>
         </div>
 
-        <TabBar active={tab} />
-
-        {tab === 'dashboard' && (
-          <div>
-            <p className="mb-6 text-sm text-[--text-muted]">
-              {withData > 0 ? `${withData}+` : '200+'} countries tracked across climate action, emissions, and renewable energy
-            </p>
-            <DashboardClient countries={dashboardCountries} />
-          </div>
-        )}
-
-        {tab === 'compare' && (
-          <CompareClient
-            initialData={compareData.initialData}
-            allCountries={compareData.allCountries}
-            selectedIso3={countriesParam ? countriesParam.split(',').slice(0, 5) : ['KOR', 'USA', 'DEU']}
-          />
-        )}
-
+        <ExploreClient countries={countries} />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import type { ReportCardData } from './page';
 
 // ── Grade helpers ─────────────────────────────────────────────────────────────
@@ -27,6 +28,26 @@ const DOMAIN_META = [
   { key: 'responsibility', label: 'Responsibility',  weight: '15%', color: '#F59E0B', description: 'Share of global cumulative CO₂ emissions' },
   { key: 'resilience',     label: 'Resilience',      weight: '15%', color: '#00A67E', description: 'ND-GAIN readiness and vulnerability' },
 ] as const;
+
+// ── CountUp Hook ──────────────────────────────────────────────────────────────
+function useCountUp(end: number, duration = 1500) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(start);
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [end, duration]);
+  return count;
+}
 
 // ── Pentagon (Radar) Chart ────────────────────────────────────────────────────
 
@@ -69,11 +90,15 @@ function PentagonChart({ data }: { data: ReportCardData }) {
   }).join(' ');
 
   return (
-    <svg viewBox="0 0 300 300" className="w-full max-w-xs mx-auto" aria-label="Radar chart of domain scores">
+    <svg viewBox="0 0 300 300" className="w-full max-w-md mx-auto" aria-label="Radar chart of domain scores">
       <defs>
         <radialGradient id="radar-bg" cx="50%" cy="50%" r="50%">
           <stop offset="0%"   stopColor="#f8fafc" />
           <stop offset="100%" stopColor="#f1f5f9" />
+        </radialGradient>
+        <radialGradient id="score-gradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor="#0066FF" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#0066FF" stopOpacity="0.05" />
         </radialGradient>
       </defs>
       {/* Radial gradient background */}
@@ -88,21 +113,20 @@ function PentagonChart({ data }: { data: ReportCardData }) {
       ))}
       {/* Outer pentagon */}
       <polygon points={outerPts} fill="none" stroke="#D1D5DB" strokeWidth="1.5" />
-      {/* Score area */}
-      <polygon points={scorePts} fill="#0066FF" fillOpacity="0.12" stroke="#0066FF" strokeWidth="2" />
-      {/* Score dots */}
+      {/* Score area with gradient fill */}
+      <polygon points={scorePts} fill="url(#score-gradient)" stroke="#0066FF" strokeWidth="2.5" />
+      {/* Score dots with colored glow */}
       {DOMAIN_META.map((d, i) => {
         const frac = scoreValues[d.key] / 100;
+        const dotX = cx + r * frac * axes[i].cos;
+        const dotY = cy + r * frac * axes[i].sin;
         return (
-          <circle
-            key={i}
-            cx={cx + r * frac * axes[i].cos}
-            cy={cy + r * frac * axes[i].sin}
-            r={6}
-            fill={d.color}
-            stroke="white"
-            strokeWidth={2}
-          />
+          <g key={i}>
+            {/* Glow effect */}
+            <circle cx={dotX} cy={dotY} r={10} fill={d.color} opacity="0.2" />
+            {/* Main dot */}
+            <circle cx={dotX} cy={dotY} r={6} fill={d.color} stroke="white" strokeWidth={2.5} />
+          </g>
         );
       })}
       {/* Domain labels with score */}
@@ -110,10 +134,10 @@ function PentagonChart({ data }: { data: ReportCardData }) {
         const score = scoreValues[DOMAIN_META[i].key];
         return (
           <text key={i} textAnchor="middle" dominantBaseline="middle">
-            <tspan x={a.labelX} dy="-6" fontSize="10" fontWeight="600" fill={DOMAIN_META[i].color}>
+            <tspan x={a.labelX} dy="-6" fontSize="11" fontWeight="600" fill={DOMAIN_META[i].color}>
               {DOMAIN_META[i].label}
             </tspan>
-            <tspan x={a.labelX} dy="14" fontSize="9" fontWeight="700" fill={DOMAIN_META[i].color}
+            <tspan x={a.labelX} dy="16" fontSize="10" fontWeight="700" fill={DOMAIN_META[i].color}
               fontFamily="monospace">
               {score != null ? score.toFixed(1) : '—'}
             </tspan>
@@ -128,125 +152,140 @@ function PentagonChart({ data }: { data: ReportCardData }) {
 
 export function ReportCardClient({ data }: { data: ReportCardData }) {
   const handlePrint = () => window.print();
+  const countUpValue = useCountUp(data.total);
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8 flex items-start justify-between gap-4">
+      {/* Header with Grade Badge (120px glow circle) */}
+      <div className="mb-12 flex flex-col items-center gap-6">
         <div className="flex items-center gap-4">
-          <span className="text-5xl leading-none">{iso3ToFlag(data.iso3)}</span>
+          <span className="text-6xl leading-none">{iso3ToFlag(data.iso3)}</span>
           <div>
-            <h1 className="text-2xl font-bold text-[--text-primary] sm:text-3xl">{data.name}</h1>
-            <p className="text-[--text-muted]">{data.region} · {data.iso3}</p>
+            <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">{data.name}</h1>
+            <p className="text-lg text-[--text-muted]">{data.region} · {data.iso3}</p>
           </div>
         </div>
-        {/* Grade badge */}
-        <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-xl font-black"
-          style={{ backgroundColor: GRADE_BG[data.grade], color: GRADE_COLOR[data.grade] }}
-        >
-          {data.grade}
-        </div>
-      </div>
 
-      {/* Score summary */}
-      <div className="mb-8 rounded-2xl border border-[--border-card] bg-white p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-[--text-muted]">Total Climate Score</p>
-            <p className="text-4xl font-black text-[--text-primary]">{data.total.toFixed(1)}<span className="text-xl font-medium text-[--text-muted]">/100</span></p>
+        {/* Grade badge 120px with glow */}
+        <div className="relative">
+          {/* Glow layers */}
+          <div
+            className="absolute inset-0 rounded-full blur-2xl opacity-40"
+            style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.3)' }}
+          />
+          <div
+            className="absolute inset-0 rounded-full blur-xl opacity-30"
+            style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.15)' }}
+          />
+          {/* Main badge */}
+          <div
+            className="relative flex h-[120px] w-[120px] items-center justify-center rounded-full text-5xl font-black shadow-2xl"
+            style={{ backgroundColor: GRADE_BG[data.grade], color: GRADE_COLOR[data.grade] }}
+          >
+            {data.grade}
           </div>
+        </div>
+
+        {/* Total score 72px mono with CountUp */}
+        <div className="text-center">
+          <p className="mb-2 text-sm font-medium uppercase tracking-wider text-[--text-muted]">Total Climate Score</p>
+          <p className="font-mono text-[72px] font-bold leading-none text-[--text-primary]">
+            {countUpValue.toFixed(1)}
+            <span className="text-3xl font-medium text-[--text-muted]">/100</span>
+          </p>
           <button
             onClick={handlePrint}
-            className="rounded-lg border border-[--border-card] px-4 py-2 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+            className="mt-4 rounded-lg border border-[--border-card] px-5 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
           >
             Print / Save PDF
           </button>
         </div>
-        <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-gray-100">
-          <div
-            className="h-full rounded-full"
-            style={{ width: `${data.total}%`, backgroundColor: GRADE_COLOR[data.grade] }}
-          />
-        </div>
-        <p className="mt-2 text-xs text-[--text-muted]">Score ranges from 0 (worst) to 100 (best). Relative to all countries with available data.</p>
       </div>
 
-      {/* Pentagon + Domain cards */}
-      <div className="mb-8 grid gap-6 md:grid-cols-2">
-        {/* Pentagon */}
-        <div className="flex items-center justify-center rounded-2xl border border-[--border-card] bg-white p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
-          <PentagonChart data={data} />
-        </div>
+      {/* Radar Chart */}
+      <div className="mb-10 flex items-center justify-center rounded-2xl border border-[--border-card] bg-white p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <PentagonChart data={data} />
+      </div>
 
-        {/* Domain score cards */}
-        <div className="flex flex-col gap-3">
-          {DOMAIN_META.map(d => {
-            const score = (data as unknown as Record<string, number | null>)[d.key] as number | null;
-            return (
-              <div
-                key={d.key}
-                className="rounded-xl border border-[--border-card] bg-white p-4"
-                style={{ boxShadow: 'var(--shadow-card)' }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
-                    <span className="text-sm font-semibold text-[--text-primary]">{d.label}</span>
-                    <span className="text-xs text-[--text-muted]">{d.weight}</span>
-                  </div>
-                  <span className="text-lg font-bold text-[--text-primary]">
-                    {score !== null ? score.toFixed(1) : '—'}
-                  </span>
-                </div>
-                {score !== null && (
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                    <div className="h-full rounded-full" style={{ width: `${score}%`, backgroundColor: d.color }} />
-                  </div>
-                )}
-                <p className="mt-1 text-xs text-[--text-muted]">{d.description}</p>
+      {/* 5 Domain Cards with Color + Progress Bar */}
+      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {DOMAIN_META.map(d => {
+          const score = (data as unknown as Record<string, number | null>)[d.key] as number | null;
+          return (
+            <div
+              key={d.key}
+              className="rounded-xl border border-[--border-card] bg-white p-5"
+              style={{ boxShadow: 'var(--shadow-card)' }}
+            >
+              {/* Domain header */}
+              <div className="mb-3 flex items-center gap-2">
+                <div className="h-4 w-4 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-sm font-semibold text-[--text-primary]">{d.label}</span>
               </div>
-            );
-          })}
-        </div>
+              {/* Score */}
+              <p className="mb-1 font-mono text-3xl font-bold" style={{ color: d.color }}>
+                {score !== null ? score.toFixed(1) : '—'}
+              </p>
+              <p className="mb-3 text-xs text-[--text-muted]">{d.weight} weight</p>
+              {/* Progress bar */}
+              {score !== null && (
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                  <div
+                    className="h-full rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${score}%`, backgroundColor: d.color }}
+                  />
+                </div>
+              )}
+              <p className="mt-2 text-xs leading-tight text-[--text-muted]">{d.description}</p>
+            </div>
+          );
+        })}
       </div>
 
-      {/* CTA cards */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2">
+      {/* CTA Cards — Large 2-column */}
+      <div className="mb-8 grid gap-6 sm:grid-cols-2">
         {/* Full country profile */}
-        <div className="rounded-xl p-6" style={{ backgroundColor: '#F0FDF4' }}>
-          <div className="mb-3 flex items-center gap-3">
-            <span className="text-3xl leading-none">{iso3ToFlag(data.iso3)}</span>
-            <span className="font-semibold text-[--text-primary]">{data.name}</span>
+        <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#F0FDF4' }}>
+          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-green-400 opacity-10 blur-3xl" />
+          <div className="relative">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="text-5xl leading-none">{iso3ToFlag(data.iso3)}</span>
+              <span className="text-xl font-bold text-[--text-primary]">{data.name}</span>
+            </div>
+            <p className="mb-6 text-base leading-relaxed text-[--text-secondary]">
+              Explore the full data profile with 9 sections, 44+ indicators, and 23 years of trends.
+            </p>
+            <Link
+              href={`/country/${data.iso3}`}
+              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
+              style={{ backgroundColor: '#10B981' }}
+            >
+              View Full Country Profile
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
           </div>
-          <p className="mb-4 text-sm text-[--text-secondary]">
-            Explore the full data profile with 9 sections, 44+ indicators, and 23 years of trends.
-          </p>
-          <Link
-            href={`/country/${data.iso3}`}
-            className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#10B981' }}
-          >
-            View Full Country Profile →
-          </Link>
         </div>
 
         {/* Methodology */}
-        <div className="rounded-xl p-6" style={{ backgroundColor: '#F0F9FF' }}>
-          <div className="mb-3 flex items-center gap-2">
-            <span className="text-2xl">📊</span>
-            <span className="font-semibold text-[--text-primary]">How We Score</span>
+        <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#F0F9FF' }}>
+          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-blue-400 opacity-10 blur-3xl" />
+          <div className="relative">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="text-5xl">📊</span>
+              <span className="text-xl font-bold text-[--text-primary]">How We Score</span>
+            </div>
+            <p className="mb-6 text-base leading-relaxed text-[--text-secondary]">
+              Our methodology uses 5 domains, 11 indicators, and min-max normalization across 200+ countries.
+            </p>
+            <Link
+              href="/methodology"
+              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
+              style={{ backgroundColor: '#3B82F6' }}
+            >
+              Read Methodology
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
           </div>
-          <p className="mb-4 text-sm text-[--text-secondary]">
-            Our methodology uses 5 domains, 11 indicators, and min-max normalization across 200+ countries.
-          </p>
-          <Link
-            href="/methodology"
-            className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#3B82F6' }}
-          >
-            Read Methodology →
-          </Link>
         </div>
       </div>
 
