@@ -29,7 +29,7 @@ export function NDCGapChart({ iso3 }: { iso3: string }) {
   }, [iso3]);
 
   if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3B82F6] border-t-transparent" /></div>;
-  if (!data) return null;
+  if (!data || !data.historical || data.historical.length === 0) return null;
 
   const VW = 760, VH = 320, ML = 54, MR = 20, MT = 24, MB = 40;
   const W = VW - ML - MR, H = VH - MT - MB;

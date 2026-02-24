@@ -1,12 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ClimateSankey } from '@/components/charts/ClimateSankey';
 import { ClimateGap } from '@/components/charts/ClimateGap';
 import { NDCGapChart } from '@/components/charts/NDCGapChart';
 import { KayaWaterfall } from '@/components/charts/KayaWaterfall';
 import { EquityScatter } from '@/components/charts/EquityScatter';
+
+class ChartErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 import riskProfileKOR from '../../../../data/analysis/risk-profile-KOR.json';
 import riskProfileUSA from '../../../../data/analysis/risk-profile-USA.json';
@@ -896,7 +913,7 @@ export function CountryClient({
             <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
               {countryName} — CO&#x2082; per capita projection vs NDC target
             </h3>
-            <NDCGapChart iso3={iso3} />
+            <ChartErrorBoundary><NDCGapChart iso3={iso3} /></ChartErrorBoundary>
             <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
           </Card>
         </div>
@@ -1190,7 +1207,7 @@ export function CountryClient({
             <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
               {countryName} — LMDI Factor Decomposition
             </h3>
-            <KayaWaterfall iso3={iso3} />
+            <ChartErrorBoundary><KayaWaterfall iso3={iso3} /></ChartErrorBoundary>
             <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
           </Card>
         </div>
@@ -1218,7 +1235,7 @@ export function CountryClient({
             <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
               Climate Equity: Who Polluted vs Who Suffers
             </h3>
-            <EquityScatter highlightIso3={iso3} />
+            <ChartErrorBoundary><EquityScatter highlightIso3={iso3} /></ChartErrorBoundary>
             <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
           </Card>
 
