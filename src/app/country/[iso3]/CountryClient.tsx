@@ -78,6 +78,7 @@ export interface CountryClientProps {
   decouplingSeries: { year: number; value: number }[];
   decouplingScore: number | null;
   pm25?: number | null;
+  carbonIntensity?: number | null;
 }
 
 // ── UI Primitives ─────────────────────────────────────────────────────────────
@@ -579,6 +580,7 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
 export function CountryClient({
   countryName, iso3, wbCo2Series, co2Comparison, gdpVsCo2,
   emberMix, renewableChange, scatterData, decouplingSeries, decouplingScore, pm25 = null,
+  carbonIntensity = null,
 }: CountryClientProps) {
 
   const [extra, setExtra] = useState<ExtraData>(EMPTY_EXTRA);
@@ -804,6 +806,7 @@ export function CountryClient({
                     { label: 'Renewable Share', value: `${emberMix.renewable.toFixed(1)}%`, sub: renewableChange != null ? `${renewableChange > 0 ? '↑ +' : '↓ '}${renewableChange.toFixed(1)}pp over 5 years` : undefined, subColor: renewableChange != null ? (renewableChange > 0 ? 'text-[--accent-positive]' : 'text-[--accent-negative]') : '' },
                     { label: 'Fossil Fuel Share', value: `${emberMix.fossil.toFixed(1)}%` },
                     { label: 'Nuclear & Other', value: `${emberMix.other.toFixed(1)}%` },
+                    ...(carbonIntensity != null ? [{ label: 'Carbon Intensity', value: `${carbonIntensity.toFixed(0)} gCO₂/kWh`, sub: carbonIntensity < 100 ? 'Low-carbon grid' : carbonIntensity < 300 ? 'Moderate carbon grid' : 'High-carbon grid', subColor: carbonIntensity < 100 ? 'text-[--accent-positive]' : carbonIntensity < 300 ? 'text-amber-600' : 'text-[--accent-negative]' }] : []),
                   ].map(row => (
                     <div key={row.label} className="rounded-lg bg-[--bg-section] p-4">
                       <p className="text-sm text-[--text-secondary]">{row.label}</p>

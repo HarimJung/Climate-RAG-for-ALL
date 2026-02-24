@@ -216,6 +216,9 @@ async function getCountryData(iso3: string) {
       });
     }
 
+    // Carbon intensity of electricity (gCO2/kWh)
+    const carbonIntensityLatest = latestByCode['EMBER.CARBON.INTENSITY'];
+
     return {
       country,
       latestByCode,
@@ -228,6 +231,7 @@ async function getCountryData(iso3: string) {
       renewableChange,
       decouplingSeries: decouplingSeries.map(d => ({ year: d.year, value: d.value })),
       sourcesUsed,
+      carbonIntensity: carbonIntensityLatest?.value ?? null,
     };
   } catch {
     return null;
@@ -243,7 +247,7 @@ export default async function CountryPage({ params }: Props) {
   const {
     country, latestByCode, wbCo2Series, co2Comparison, gdpVsCo2,
     vulnerability, emberMix, scatterData, renewableChange,
-    decouplingSeries, sourcesUsed,
+    decouplingSeries, sourcesUsed, carbonIntensity,
   } = data;
 
   // Key stats for header cards
@@ -372,12 +376,40 @@ export default async function CountryPage({ params }: Props) {
         decouplingSeries={decouplingSeries}
         decouplingScore={decoupling?.value ?? null}
         pm25={pm25?.value ?? null}
+        carbonIntensity={carbonIntensity}
       />
 
       {/* Data Sources (accordion by category) */}
       <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-12">
         <div className="mx-auto max-w-[1200px]">
           <h2 className="mb-6 text-xl font-semibold text-[--text-primary]">Data Sources</h2>
+          {/* Derived Indicators Methodology */}
+          <details className="group mb-4 rounded-xl border border-[--border-card] bg-white overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-[--text-primary] hover:bg-gray-50">
+              <span>Derived Indicators — Methodology</span>
+              <svg className="h-4 w-4 text-[--text-muted] transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="border-t border-[--border-card] px-5 py-4 space-y-4 text-sm text-[--text-secondary]">
+              <div>
+                <p className="font-semibold text-[--text-primary] mb-1">Carbon Intensity of GDP <span className="font-mono text-xs text-[--text-muted]">(DERIVED.CO2_PER_GDP)</span></p>
+                <p className="font-mono text-xs bg-[--bg-section] rounded px-3 py-1.5">CO₂_per_capita ÷ GDP_per_capita × 1,000</p>
+                <p className="mt-1 text-xs text-[--text-muted]">Unit: tCO₂ per $1,000 GDP. Lower = cleaner economy. 2023 range: DEU 0.13 → KOR 0.32.</p>
+              </div>
+              <div>
+                <p className="font-semibold text-[--text-primary] mb-1">Decoupling Index <span className="font-mono text-xs text-[--text-muted]">(DERIVED.DECOUPLING)</span></p>
+                <p className="font-mono text-xs bg-[--bg-section] rounded px-3 py-1.5">GDP_growth_rate(%) − CO₂_growth_rate(%)</p>
+                <p className="mt-1 text-xs text-[--text-muted]">Unit: percentage points. Positive = economy growing faster than emissions.</p>
+              </div>
+              <div>
+                <p className="font-semibold text-[--text-primary] mb-1">Energy Transition Momentum <span className="font-mono text-xs text-[--text-muted]">(DERIVED.ENERGY_TRANSITION)</span></p>
+                <p className="font-mono text-xs bg-[--bg-section] rounded px-3 py-1.5">RENEWABLE_PCT(t) − RENEWABLE_PCT(t−5)</p>
+                <p className="mt-1 text-xs text-[--text-muted]">Unit: pp over 5 years. 2023: DEU +19.2pp, BRA +6.6pp, USA +5.2pp, KOR +4.9pp.</p>
+              </div>
+            </div>
+          </details>
+
           {(() => {
             const CATEGORY_CODES: Record<string, string[]> = {
               'Emissions':    ['EN.GHG.CO2.PC.CE.AR5', 'CT.GHG.TOTAL', 'DERIVED.DECOUPLING', 'DERIVED.CO2_PER_GDP', 'DERIVED.EMISSIONS_INTENSITY'],
@@ -386,7 +418,6 @@ export default async function CountryPage({ params }: Props) {
               'Climate Risk': ['NDGAIN.VULNERABILITY', 'NDGAIN.READINESS', 'EN.ATM.PM25.MC.M3', 'AG.LND.FRST.ZS'],
               'Derived':      [],
             };
-            const assigned = new Set(Object.values(CATEGORY_CODES).flat());
             // Group sourcesUsed by category
             const categorized: Record<string, typeof sourcesUsed> = {};
             for (const cat of Object.keys(CATEGORY_CODES)) categorized[cat] = [];
