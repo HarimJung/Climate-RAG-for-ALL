@@ -721,11 +721,10 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
   const W = VW - ML - MR, H = VH - MT - MB;
   if (data.length === 0) return null;
   const vulns = data.map(d => d.vulnerability), reads = data.map(d => d.readiness);
-  const minV = Math.min(...vulns) * 0.9, maxV = Math.max(...vulns) * 1.1;
-  const minR = Math.min(...reads) * 0.88, maxR = Math.max(...reads) * 1.08;
+  const minV = Math.min(...vulns) * 0.95, maxV = Math.max(...vulns) * 1.05;
+  const minR = Math.min(...reads) * 0.95, maxR = Math.max(...reads) * 1.05;
   const xs = (v: number) => ML + ((v - minV) / (maxV - minV)) * W;
   const ys = (r: number) => MT + H - ((r - minR) / (maxR - minR)) * H;
-  const COLORS: Record<string, string> = { KOR: '#0066FF', USA: '#E5484D', DEU: '#F59E0B', BRA: '#00A67E', NGA: '#8B5CF6', BGD: '#EC4899' };
   const vt = [minV, (minV + maxV) / 2, maxV].map(v => Math.round(v * 1000) / 1000);
   const rt = [minR, (minR + maxR) / 2, maxR].map(v => Math.round(v * 1000) / 1000);
 
@@ -734,13 +733,6 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
       <defs>
         <filter id="scatter-glow">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge>
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-        <filter id="scatter-highlight">
-          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>
@@ -756,33 +748,50 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
       })}
       {vt.map(v => <text key={v} x={xs(v)} y={MT + H + 16} textAnchor="middle" fontSize={11} fill="#4A4A6A">{v}</text>)}
       {rt.map(r => <text key={r} x={ML - 6} y={ys(r)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#4A4A6A">{r}</text>)}
-      <text x={VW / 2} y={VH - 8} textAnchor="middle" fontSize={12} fill="#4A4A6A">Vulnerability →</text>
-      <text x={14} y={MT + H / 2} textAnchor="middle" fontSize={12} fill="#4A4A6A" transform={`rotate(-90,14,${MT + H / 2})`}>Readiness →</text>
-      {data.map(d => {
-        const color = COLORS[d.iso3] || '#64748B';
-        const isHL = d.iso3 === highlightIso3;
-        const isHov = hover?.iso3 === d.iso3;
+      <text x={VW / 2} y={VH - 8} textAnchor="middle" fontSize={12} fill="#4A4A6A">Vulnerability &#x2192;</text>
+      <text x={14} y={MT + H / 2} textAnchor="middle" fontSize={12} fill="#4A4A6A" transform={`rotate(-90,14,${MT + H / 2})`}>Readiness &#x2192;</text>
+
+      {/* Non-highlighted countries: small gray dots */}
+      {data.filter(d => d.iso3 !== highlightIso3).map(d => {
         const cx = xs(d.vulnerability), cy = ys(d.readiness);
+        const isHov = hover?.iso3 === d.iso3;
         return (
           <g key={d.iso3} style={{ cursor: 'pointer' }}
-            onMouseEnter={() => setHover({ iso3: d.iso3, name: d.name, vuln: d.vulnerability, ready: d.readiness, color, x: cx, y: cy })}
+            onMouseEnter={() => setHover({ iso3: d.iso3, name: d.name, vuln: d.vulnerability, ready: d.readiness, color: '#94A3B8', x: cx, y: cy })}
             onMouseLeave={() => setHover(null)}
           >
-            {/* Invisible hit area */}
-            <circle cx={cx} cy={cy} r={20} fill="transparent" />
-            {isHL && (
-              <circle cx={cx} cy={cy} r={16}
-                fill={color} opacity={0.15} filter="url(#scatter-highlight)" />
+            <circle cx={cx} cy={cy} r={16} fill="transparent" />
+            <circle cx={cx} cy={cy} r={isHov ? 6 : 4}
+              fill="#94A3B8" stroke={isHov ? '#1A1A2E' : 'white'} strokeWidth={isHov ? 2 : 1}
+              opacity={isHov ? 1 : 0.6} />
+            {isHov && (
+              <text x={cx} y={cy - 10} textAnchor="middle"
+                fontSize={11} fill="#1A1A2E" fontWeight="600">{d.name}</text>
             )}
-            <circle cx={cx} cy={cy} r={isHL ? 10 : (isHov ? 9 : 7)}
-              fill={color} stroke={isHL || isHov ? '#1A1A2E' : 'white'} strokeWidth={isHL ? 3 : (isHov ? 2.5 : 1.5)}
-              opacity={isHL || isHov ? 1 : 0.8} filter={isHL ? 'url(#scatter-glow)' : undefined}
-              style={isHL ? { filter: `drop-shadow(0 2px 8px ${color}60)` } : isHov ? { filter: `drop-shadow(0 2px 6px ${color}50)`, transition: 'r 0.15s ease' } : undefined} />
-            <text x={cx} y={cy - (isHL ? 16 : 14)} textAnchor="middle"
-              fontSize={isHL || isHov ? 13 : 11} fill={isHL || isHov ? '#1A1A2E' : '#4A4A6A'} fontWeight={isHL || isHov ? '700' : '500'}>{d.name}</text>
           </g>
         );
       })}
+
+      {/* Highlighted country: large colored dot */}
+      {data.filter(d => d.iso3 === highlightIso3).map(d => {
+        const cx = xs(d.vulnerability), cy = ys(d.readiness);
+        const color = '#0066FF';
+        return (
+          <g key={d.iso3}
+            onMouseEnter={() => setHover({ iso3: d.iso3, name: d.name, vuln: d.vulnerability, ready: d.readiness, color, x: cx, y: cy })}
+            onMouseLeave={() => setHover(null)}
+          >
+            <circle cx={cx} cy={cy} r={16}
+              fill={color} opacity={0.15} filter="url(#scatter-glow)" />
+            <circle cx={cx} cy={cy} r={8}
+              fill={color} stroke="#1A1A2E" strokeWidth={3}
+              style={{ filter: `drop-shadow(0 2px 8px ${color}60)` }} />
+            <text x={cx} y={cy - 16} textAnchor="middle"
+              fontSize={13} fill="#1A1A2E" fontWeight="700">{d.name}</text>
+          </g>
+        );
+      })}
+
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       {/* Hover tooltip */}
@@ -1543,7 +1552,7 @@ export function CountryClient({
           {/* Vulnerability Scatter */}
           <Card className="mb-6">
             <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
-              Vulnerability vs Readiness (Pilot Countries, 2023)
+              Vulnerability vs Readiness (All Countries, 2023)
             </h3>
             {scatterData.length > 0 ? (
               <SafeChart name="Vulnerability Scatter">
@@ -1600,7 +1609,7 @@ export function CountryClient({
           {myScatter && (
             <InsightText>
               <strong>{countryName} ranks {ordinal(readinessRank!)} in climate readiness (score: {myScatter.readiness.toFixed(3)})</strong>{' '}
-              among pilot countries.{' '}
+              among tracked countries.{' '}
               Vulnerability stands at <strong>{myScatter.vulnerability.toFixed(3)}</strong> —{' '}
               {myScatter.vulnerability < 0.35
                 ? 'in the lower range, indicating relatively stronger resilience.'

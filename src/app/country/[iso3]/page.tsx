@@ -51,10 +51,7 @@ const GRADE_BG_COUNTRY: Record<string, string> = {
   'C+': '#FFFBEB', 'C': '#FFFBEB', 'D': '#FEF2F2', 'F': '#FFF1F2',
 };
 
-const PILOT_NAMES: Record<string, string> = {
-  KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
-  BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
-};
+// Country names fetched from DB for scatter (no hardcoded pilot list)
 
 async function getCountryData(iso3: string) {
   try {
@@ -156,14 +153,13 @@ async function getCountryData(iso3: string) {
       }
     }
 
-    // ND-GAIN scatter data for all 6 pilots
-    const pilots = ['KOR', 'USA', 'DEU', 'BRA', 'NGA', 'BGD'];
+    // ND-GAIN scatter data for ALL countries
     const { data: ndgainRows } = await supabase
       .from('country_data')
       .select('country_iso3, indicator_code, value')
-      .in('country_iso3', pilots)
       .in('indicator_code', ['NDGAIN.VULNERABILITY', 'NDGAIN.READINESS'])
-      .eq('year', 2023);
+      .eq('year', 2023)
+      .limit(2000);
 
     const scatterData: { iso3: string; name: string; vulnerability: number; readiness: number }[] = [];
     const ndMap: Record<string, { vulnerability?: number; readiness?: number }> = {};
@@ -172,10 +168,16 @@ async function getCountryData(iso3: string) {
       if (r.indicator_code === 'NDGAIN.VULNERABILITY') ndMap[r.country_iso3].vulnerability = Number(r.value);
       if (r.indicator_code === 'NDGAIN.READINESS') ndMap[r.country_iso3].readiness = Number(r.value);
     }
-    for (const p of pilots) {
-      const d = ndMap[p];
+    const { data: allCountryNames } = await supabase
+      .from('countries')
+      .select('iso3, name')
+      .limit(500);
+    const ndNameMap: Record<string, string> = {};
+    for (const c of allCountryNames || []) ndNameMap[c.iso3] = c.name;
+    for (const iso of Object.keys(ndMap)) {
+      const d = ndMap[iso];
       if (d?.vulnerability != null && d?.readiness != null) {
-        scatterData.push({ iso3: p, name: PILOT_NAMES[p] || p, vulnerability: d.vulnerability, readiness: d.readiness });
+        scatterData.push({ iso3: iso, name: ndNameMap[iso] || iso, vulnerability: d.vulnerability, readiness: d.readiness });
       }
     }
 
