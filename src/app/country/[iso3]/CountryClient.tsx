@@ -210,11 +210,12 @@ function xTicks(minY: number, maxY: number): number[] {
 
 // ── Chart: Emissions Line (production + optional consumption) ─────────────────
 function EmissionsLineChart({
-  production, consumption, countryName,
+  production, consumption, countryName, strokeW = 2.5,
 }: {
   production: { year: number; value: number }[];
   consumption?: { year: number; value: number }[];
   countryName: string;
+  strokeW?: number;
 }) {
   const [hover, setHover] = useState<{ year: number; prodVal: number; consVal: number | null; x: number; y: number } | null>(null);
 
@@ -288,7 +289,7 @@ function EmissionsLineChart({
         <text x={xs(2015)} y={MT + 16} textAnchor="middle" fontSize={10} fill="#64748B" fontWeight="700">Paris 2015</text>
       </>}
       <path d={areaPath} fill={`url(#${gradId})`} />
-      <path d={prodPath} fill="none" stroke="#EF4444" strokeWidth={2.5} strokeLinejoin="round" filter={`url(#glow-${gradId})`} />
+      <path d={prodPath} fill="none" stroke="#EF4444" strokeWidth={strokeW} strokeLinejoin="round" filter={`url(#glow-${gradId})`} />
       {/* End-of-line dot + label */}
       {sorted.length > 0 && (() => {
         const last = sorted[sorted.length - 1];
@@ -473,29 +474,17 @@ function IndexedTripleLineChart({
 
 // ── Chart: Horizontal Bar (CTRACE sectors) ────────────────────────────────────
 function HorizontalBarChart({ bars }: { bars: { label: string; value: number; color: string; pct: number }[] }) {
-  const [hover, setHover] = useState<{ label: string; value: number; pct: number; y: number } | null>(null);
+  const [hover, setHover] = useState<{ idx: number; label: string; value: number; pct: number; color: string; bx: number; by: number } | null>(null);
 
   if (bars.length === 0) return null;
   const maxVal = bars[0].value;
   const ROW = 32, PAD = 12, LBL = 140, VW = 620, BMAX = VW - LBL - PAD - 90;
   const VH = bars.length * ROW + PAD * 2;
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
-    const rect = svg.getBoundingClientRect();
-    const my = ((e.clientY - rect.top) / rect.height) * VH;
-    const idx = Math.floor((my - PAD) / ROW);
-    if (idx >= 0 && idx < bars.length) {
-      const b = bars[idx];
-      setHover({ label: b.label, value: b.value, pct: b.pct, y: PAD + idx * ROW + ROW / 2 });
-    } else {
-      setHover(null);
-    }
-  }, [bars]); // eslint-disable-line react-hooks/exhaustive-deps
+  const TW = 140, TH = 52;
 
   return (
     <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Emissions by sector"
-      onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
+      onMouseLeave={() => setHover(null)} style={{ cursor: 'default' }}>
       <defs>
         {bars.map((b, i) => (
           <linearGradient key={`bar-grad-${i}`} id={`bar-grad-${i}`} x1="0" y1="0" x2="1" y2="0">
@@ -507,12 +496,19 @@ function HorizontalBarChart({ bars }: { bars: { label: string; value: number; co
       {bars.map((b, i) => {
         const y = PAD + i * ROW;
         const bw = maxVal > 0 ? (b.value / maxVal) * BMAX : 0;
+        const isHovered = hover?.idx === i;
         return (
-          <g key={b.label}>
-            <text x={LBL - 8} y={y + ROW / 2} textAnchor="end" dominantBaseline="middle" fontSize={12} fill="#4A4A6A">{b.label}</text>
+          <g key={b.label}
+            onMouseEnter={() => setHover({ idx: i, label: b.label, value: b.value, pct: b.pct, color: b.color, bx: LBL + bw, by: y + ROW / 2 })}
+            onMouseLeave={() => setHover(null)}
+            style={{ cursor: 'pointer' }}
+          >
+            <rect x={LBL - 8} y={y} width={VW - LBL + 8} height={ROW} fill="transparent" />
+            <text x={LBL - 8} y={y + ROW / 2} textAnchor="end" dominantBaseline="middle" fontSize={12} fill={isHovered ? '#1A1A2E' : '#4A4A6A'} fontWeight={isHovered ? '600' : '400'}>{b.label}</text>
             <rect x={LBL} y={y + 7} width={BMAX} height={ROW - 14} rx={8} fill="#F1F5F9" />
             <rect x={LBL} y={y + 7} width={bw} height={ROW - 14} rx={8} fill={`url(#bar-grad-${i})`}
-              style={{ filter: `drop-shadow(0 2px 4px ${b.color}30)` }} />
+              style={{ filter: `drop-shadow(0 2px 4px ${b.color}${isHovered ? '60' : '30'})`, transition: 'filter 0.15s ease' }}
+              opacity={isHovered ? 1 : 0.85} />
             <text x={LBL + bw + 6} y={y + ROW / 2} dominantBaseline="middle" fontSize={11} fill={b.color} fontWeight="600">
               {b.value >= 1 ? b.value.toFixed(1) : b.value.toFixed(3)} Mt · {b.pct.toFixed(1)}%
             </text>
@@ -520,14 +516,20 @@ function HorizontalBarChart({ bars }: { bars: { label: string; value: number; co
         );
       })}
       {/* Hover tooltip */}
-      {hover && (
-        <g style={{ pointerEvents: 'none' }}>
-          <rect x={10} y={hover.y - 28} width={120} height={48} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
-          <text x={18} y={hover.y - 14} fontSize={11} fontWeight="700" fill="#1A1A2E">{hover.label}</text>
-          <text x={18} y={hover.y} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{hover.value.toFixed(2)} Mt</text>
-          <text x={18} y={hover.y + 14} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{hover.pct.toFixed(1)}% of total</text>
-        </g>
-      )}
+      {hover && (() => {
+        const tx = hover.bx + 8 + TW < VW ? hover.bx + 8 : hover.bx - TW - 8;
+        const ty = hover.by - TH / 2;
+        const tyClamp = Math.max(2, Math.min(VH - TH - 2, ty));
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <line x1={LBL} y1={hover.by} x2={hover.bx} y2={hover.by} stroke={hover.color} strokeWidth={1.5} strokeOpacity={0.3} strokeDasharray="4,3" />
+            <rect x={tx} y={tyClamp} width={TW} height={TH} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }} />
+            <text x={tx + 10} y={tyClamp + 16} fontSize={11} fontWeight="700" fill="#1A1A2E">{hover.label}</text>
+            <text x={tx + 10} y={tyClamp + 32} fontSize={10} fill={hover.color} fontFamily="monospace">{hover.value.toFixed(2)} Mt CO₂e</text>
+            <text x={tx + 10} y={tyClamp + 46} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{hover.pct.toFixed(1)}% of total</text>
+          </g>
+        );
+      })()}
     </svg>
   );
 }
@@ -587,19 +589,30 @@ function StackedAreaChart({
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       {/* Hover tooltip */}
       {hover && (() => {
-        const entries = Object.entries(hover.values).filter(([, v]) => v > 0);
-        const th = 18 + entries.length * 14;
-        const tx = hover.x + 8 + 100 < VW - MR ? hover.x + 8 : hover.x - 108;
+        const entries = seriesDef.map(s => ({ label: s.label, color: s.color, value: hover.values[s.label] ?? 0 })).filter(e => e.value > 0);
+        const total = entries.reduce((s, e) => s + e.value, 0);
+        const TW = 150, lineH = 15;
+        const th = 22 + entries.length * lineH + (entries.length > 0 ? lineH + 4 : 0);
+        const tx = hover.x + 10 + TW < VW - MR ? hover.x + 10 : hover.x - TW - 10;
         return (
           <g style={{ pointerEvents: 'none' }}>
-            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
-            <rect x={tx} y={MT + 4} width={100} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
-            <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
-            {entries.map(([label, value], i) => (
-              <text key={label} x={tx + 8} y={MT + 32 + i * 14} fontSize={9} fill="#4A4A6A" fontFamily="monospace">
-                {label}: {value.toFixed(1)}
-              </text>
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#94A3B8" strokeWidth={1} strokeDasharray="4,3" />
+            <rect x={tx} y={MT + 4} width={TW} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }} />
+            <text x={tx + 10} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
+            {entries.map((e, i) => (
+              <g key={e.label}>
+                <rect x={tx + 10} y={MT + 26 + i * lineH} width={8} height={8} rx={2} fill={e.color} opacity={0.85} />
+                <text x={tx + 22} y={MT + 33 + i * lineH} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{e.label}</text>
+                <text x={tx + TW - 10} y={MT + 33 + i * lineH} textAnchor="end" fontSize={10} fill="#1A1A2E" fontWeight="600" fontFamily="monospace">{e.value.toFixed(1)}</text>
+              </g>
             ))}
+            {entries.length > 0 && (
+              <>
+                <line x1={tx + 10} y1={MT + 26 + entries.length * lineH + 1} x2={tx + TW - 10} y2={MT + 26 + entries.length * lineH + 1} stroke="#E2E8F0" strokeWidth={1} />
+                <text x={tx + 22} y={MT + 33 + entries.length * lineH + 6} fontSize={10} fill="#4A4A6A" fontWeight="600" fontFamily="monospace">Total</text>
+                <text x={tx + TW - 10} y={MT + 33 + entries.length * lineH + 6} textAnchor="end" fontSize={10} fill="#1A1A2E" fontWeight="700" fontFamily="monospace">{total.toFixed(1)}</text>
+              </>
+            )}
           </g>
         );
       })()}
@@ -665,17 +678,31 @@ function DualYLineChart({
       {hover && (() => {
         const hasLeft = hover.left != null;
         const hasRight = hover.right != null;
-        const th = 18 + (hasLeft ? 14 : 0) + (hasRight ? 14 : 0);
-        const tx = hover.x + 8 + 110 < VW - MR ? hover.x + 8 : hover.x - 118;
+        const TW = 150, lineH = 15;
+        const rows = (hasLeft ? 1 : 0) + (hasRight ? 1 : 0);
+        const th = 22 + rows * lineH;
+        const tx = hover.x + 10 + TW < VW - MR ? hover.x + 10 : hover.x - TW - 10;
         return (
           <g style={{ pointerEvents: 'none' }}>
-            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
-            {hasLeft && <circle cx={hover.x} cy={lys(hover.left!)} r={3} fill={leftColor} stroke="white" strokeWidth={1.5} />}
-            {hasRight && <circle cx={hover.x} cy={rys(hover.right!)} r={3} fill={rightColor} stroke="white" strokeWidth={1.5} />}
-            <rect x={tx} y={MT + 4} width={110} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
-            <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
-            {hasLeft && <text x={tx + 8} y={MT + 32} fontSize={10} fill={leftColor} fontFamily="monospace">CH₄: {hover.left!.toFixed(1)}</text>}
-            {hasRight && <text x={tx + 8} y={MT + (hasLeft ? 46 : 32)} fontSize={10} fill={rightColor} fontFamily="monospace">N₂O: {hover.right!.toFixed(1)}</text>}
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#94A3B8" strokeWidth={1} strokeDasharray="4,3" />
+            {hasLeft && <circle cx={hover.x} cy={lys(hover.left!)} r={4} fill={leftColor} stroke="white" strokeWidth={2} />}
+            {hasRight && <circle cx={hover.x} cy={rys(hover.right!)} r={4} fill={rightColor} stroke="white" strokeWidth={2} />}
+            <rect x={tx} y={MT + 4} width={TW} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }} />
+            <text x={tx + 10} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
+            {hasLeft && (
+              <g>
+                <rect x={tx + 10} y={MT + 25} width={8} height={8} rx={2} fill={leftColor} />
+                <text x={tx + 22} y={MT + 33} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{leftUnit}</text>
+                <text x={tx + TW - 10} y={MT + 33} textAnchor="end" fontSize={10} fill={leftColor} fontWeight="600" fontFamily="monospace">{hover.left!.toFixed(1)}</text>
+              </g>
+            )}
+            {hasRight && (
+              <g>
+                <rect x={tx + 10} y={MT + 25 + (hasLeft ? lineH : 0)} width={8} height={8} rx={2} fill={rightColor} />
+                <text x={tx + 22} y={MT + 33 + (hasLeft ? lineH : 0)} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{rightUnit}</text>
+                <text x={tx + TW - 10} y={MT + 33 + (hasLeft ? lineH : 0)} textAnchor="end" fontSize={10} fill={rightColor} fontWeight="600" fontFamily="monospace">{hover.right!.toFixed(1)}</text>
+              </g>
+            )}
           </g>
         );
       })()}
@@ -688,7 +715,7 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
   data: { iso3: string; name: string; vulnerability: number; readiness: number }[];
   highlightIso3: string;
 }) {
-  const [hover, setHover] = useState<{ name: string; vuln: number; ready: number; x: number; y: number } | null>(null);
+  const [hover, setHover] = useState<{ iso3: string; name: string; vuln: number; ready: number; color: string; x: number; y: number } | null>(null);
 
   const VW = 640, VH = 320, ML = 60, MR = 20, MT = 16, MB = 50;
   const W = VW - ML - MR, H = VH - MT - MB;
@@ -702,28 +729,8 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
   const vt = [minV, (minV + maxV) / 2, maxV].map(v => Math.round(v * 1000) / 1000);
   const rt = [minR, (minR + maxR) / 2, maxR].map(v => Math.round(v * 1000) / 1000);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
-    const rect = svg.getBoundingClientRect();
-    const mx = ((e.clientX - rect.left) / rect.width) * VW;
-    const my = ((e.clientY - rect.top) / rect.height) * VH;
-    let closest = data[0];
-    let minDist = Infinity;
-    for (const d of data) {
-      const dx = xs(d.vulnerability) - mx;
-      const dy = ys(d.readiness) - my;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < minDist) { minDist = dist; closest = d; }
-    }
-    if (minDist < 40) {
-      setHover({ name: closest.name, vuln: closest.vulnerability, ready: closest.readiness, x: xs(closest.vulnerability), y: ys(closest.readiness) });
-    } else {
-      setHover(null);
-    }
-  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" onMouseLeave={() => setHover(null)} style={{ cursor: 'default' }}>
       <defs>
         <filter id="scatter-glow">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -754,18 +761,25 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
       {data.map(d => {
         const color = COLORS[d.iso3] || '#64748B';
         const isHL = d.iso3 === highlightIso3;
+        const isHov = hover?.iso3 === d.iso3;
+        const cx = xs(d.vulnerability), cy = ys(d.readiness);
         return (
-          <g key={d.iso3}>
+          <g key={d.iso3} style={{ cursor: 'pointer' }}
+            onMouseEnter={() => setHover({ iso3: d.iso3, name: d.name, vuln: d.vulnerability, ready: d.readiness, color, x: cx, y: cy })}
+            onMouseLeave={() => setHover(null)}
+          >
+            {/* Invisible hit area */}
+            <circle cx={cx} cy={cy} r={20} fill="transparent" />
             {isHL && (
-              <circle cx={xs(d.vulnerability)} cy={ys(d.readiness)} r={16}
+              <circle cx={cx} cy={cy} r={16}
                 fill={color} opacity={0.15} filter="url(#scatter-highlight)" />
             )}
-            <circle cx={xs(d.vulnerability)} cy={ys(d.readiness)} r={isHL ? 10 : 7}
-              fill={color} stroke={isHL ? '#1A1A2E' : 'white'} strokeWidth={isHL ? 3 : 1.5}
-              opacity={isHL ? 1 : 0.8} filter={isHL ? 'url(#scatter-glow)' : undefined}
-              style={isHL ? { filter: `drop-shadow(0 2px 8px ${color}60)` } : undefined} />
-            <text x={xs(d.vulnerability)} y={ys(d.readiness) - (isHL ? 16 : 14)} textAnchor="middle"
-              fontSize={isHL ? 13 : 11} fill={isHL ? '#1A1A2E' : '#4A4A6A'} fontWeight={isHL ? '700' : '500'}>{d.name}</text>
+            <circle cx={cx} cy={cy} r={isHL ? 10 : (isHov ? 9 : 7)}
+              fill={color} stroke={isHL || isHov ? '#1A1A2E' : 'white'} strokeWidth={isHL ? 3 : (isHov ? 2.5 : 1.5)}
+              opacity={isHL || isHov ? 1 : 0.8} filter={isHL ? 'url(#scatter-glow)' : undefined}
+              style={isHL ? { filter: `drop-shadow(0 2px 8px ${color}60)` } : isHov ? { filter: `drop-shadow(0 2px 6px ${color}50)`, transition: 'r 0.15s ease' } : undefined} />
+            <text x={cx} y={cy - (isHL ? 16 : 14)} textAnchor="middle"
+              fontSize={isHL || isHov ? 13 : 11} fill={isHL || isHov ? '#1A1A2E' : '#4A4A6A'} fontWeight={isHL || isHov ? '700' : '500'}>{d.name}</text>
           </g>
         );
       })}
@@ -773,13 +787,23 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       {/* Hover tooltip */}
       {hover && (() => {
-        const tx = hover.x + 8 + 130 < VW - MR ? hover.x + 8 : hover.x - 138;
+        const TW = 160, TH = 52;
+        const tx = hover.x + 12 + TW < VW - MR ? hover.x + 12 : hover.x - TW - 12;
+        const ty = Math.max(MT + 2, Math.min(MT + H - TH - 2, hover.y - TH / 2));
         return (
           <g style={{ pointerEvents: 'none' }}>
-            <rect x={tx} y={hover.y - 28} width={130} height={48} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
-            <text x={tx + 8} y={hover.y - 14} fontSize={11} fontWeight="700" fill="#1A1A2E">{hover.name}</text>
-            <text x={tx + 8} y={hover.y} fontSize={10} fill="#8B5CF6" fontFamily="monospace">Vuln: {hover.vuln.toFixed(3)}</text>
-            <text x={tx + 8} y={hover.y + 14} fontSize={10} fill="#10B981" fontFamily="monospace">Ready: {hover.ready.toFixed(3)}</text>
+            <line x1={ML} y1={hover.y} x2={VW - MR} y2={hover.y} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
+            <rect x={tx} y={ty} width={TW} height={TH} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }} />
+            <circle cx={tx + 14} cy={ty + 14} r={5} fill={hover.color} />
+            <text x={tx + 24} y={ty + 18} fontSize={11} fontWeight="700" fill="#1A1A2E">{hover.name}</text>
+            <text x={tx + 10} y={ty + 34} fontSize={10} fill="#4A4A6A" fontFamily="monospace">Vuln</text>
+            <text x={tx + TW / 2 - 4} y={ty + 34} textAnchor="end" fontSize={10} fill="#8B5CF6" fontWeight="600" fontFamily="monospace">{hover.vuln.toFixed(3)}</text>
+            <text x={tx + TW / 2 + 4} y={ty + 34} fontSize={10} fill="#4A4A6A" fontFamily="monospace">Ready</text>
+            <text x={tx + TW - 10} y={ty + 34} textAnchor="end" fontSize={10} fill="#10B981" fontWeight="600" fontFamily="monospace">{hover.ready.toFixed(3)}</text>
+            <text x={tx + 10} y={ty + 47} fontSize={9} fill="#94A3B8" fontFamily="monospace">
+              {hover.vuln < 0.35 ? 'Low vulnerability' : hover.vuln < 0.45 ? 'Moderate vulnerability' : 'High vulnerability'}
+            </text>
           </g>
         );
       })()}
@@ -813,14 +837,22 @@ export function CountryClient({
       'OWID.CO2_PER_GDP',
     ];
 
-    supabase
-      .from('country_data')
-      .select('indicator_code, year, value')
-      .eq('country_iso3', iso3)
-      .in('indicator_code', codes)
-      .order('year', { ascending: true })
-      .then(({ data: rows }) => {
-        if (!rows) return;
+    (async () => {
+      try {
+        const { data: rows, error } = await supabase
+          .from('country_data')
+          .select('indicator_code, year, value')
+          .eq('country_iso3', iso3)
+          .in('indicator_code', codes)
+          .order('year', { ascending: true });
+        if (error) {
+          console.error('[Supabase extra fetch] API error:', error.message, error);
+          return;
+        }
+        if (!rows || rows.length === 0) {
+          console.warn('[Supabase extra fetch] no rows for', iso3);
+          return;
+        }
         const grouped: Record<string, { year: number; value: number }[]> = {};
         const latest: Record<string, { year: number; value: number }> = {};
         for (const r of rows) {
@@ -855,7 +887,10 @@ export function CountryClient({
           ghgPerCapitaLatest: latest['OWID.GHG_PER_CAPITA']?.value ?? null,
           co2PerGdpSeries: grouped['OWID.CO2_PER_GDP'] ?? [],
         });
-      }, (err) => console.error('[Supabase extra fetch]', err));
+      } catch (err) {
+        console.error('[Supabase extra fetch] caught:', err);
+      }
+    })();
 
     // Check for NDC Gap data
     fetch(`/data/ndc-gap/${iso3}.json`)
@@ -951,10 +986,10 @@ export function CountryClient({
         className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white px-4"
       >
         {/* Background decorative chart */}
-        <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.3, pointerEvents: 'none' }}>
+        <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.25, pointerEvents: 'none' }}>
           <div className="w-full max-w-[1400px]">
             <SafeChart name="Emissions">
-              <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
+              <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} strokeW={3} />
             </SafeChart>
           </div>
         </div>
