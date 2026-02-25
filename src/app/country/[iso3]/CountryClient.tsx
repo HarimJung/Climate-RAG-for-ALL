@@ -791,7 +791,7 @@ export function CountryClient({
       </section>
 
       {/* ── Section: NDC Gap Tracker ── */}
-      <div style={!showNdcGap ? { display: 'none' } : undefined}>
+      {showNdcGap && (
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>NDC Gap Tracker</SectionTitle>
@@ -799,12 +799,13 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 {countryName} — CO&#x2082; per capita projection vs NDC target
               </h3>
-              <NDCGapChart iso3={iso3} onLoad={setShowNdcGap} />
+              <NDCGapChart iso3={iso3} />
               <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
             </Card>
           </div>
         </section>
-      </div>
+      )}
+      {!showNdcGap && <NDCGapChart iso3={iso3} onLoad={(hasData) => { if (hasData) setShowNdcGap(true); }} />}
 
       {/* ── Section 2: Energy Transition ── */}
       {emberMix && (
@@ -1077,7 +1078,7 @@ export function CountryClient({
       )}
 
       {/* ── Section: Kaya Decomposition ── */}
-      <div style={!showKaya ? { display: 'none' } : undefined}>
+      {showKaya && (
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Why Did Emissions Change? (Kaya Decomposition)</SectionTitle>
@@ -1085,12 +1086,13 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 {countryName} — LMDI Factor Decomposition
               </h3>
-              <KayaWaterfall iso3={iso3} onLoad={setShowKaya} />
+              <KayaWaterfall iso3={iso3} />
               <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
             </Card>
           </div>
         </section>
-      </div>
+      )}
+      {!showKaya && <KayaWaterfall iso3={iso3} onLoad={(hasData) => { if (hasData) setShowKaya(true); }} />}
 
       {/* ── Section 8: Climate Vulnerability ── */}
       <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
@@ -1110,15 +1112,16 @@ export function CountryClient({
             <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
           </Card>
 
-          <div style={!showEquity ? { display: 'none' } : undefined}>
+          {showEquity && (
             <Card className="mt-6">
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 Climate Equity: Who Polluted vs Who Suffers
               </h3>
-              <EquityScatter highlightIso3={iso3} onLoad={setShowEquity} />
+              <EquityScatter highlightIso3={iso3} />
               <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
             </Card>
-          </div>
+          )}
+          {!showEquity && <EquityScatter highlightIso3={iso3} onLoad={(hasData) => { if (hasData) setShowEquity(true); }} />}
 
             {myScatter && (
               <InsightText>
