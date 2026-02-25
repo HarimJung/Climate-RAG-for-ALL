@@ -148,20 +148,6 @@ function signed(n: number, d = 2): string {
 }
 
 // ── SVG Helpers ───────────────────────────────────────────────────────────────
-function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
-  const a = (angleDeg - 90) * Math.PI / 180;
-  return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
-}
-
-function arcPath(cx: number, cy: number, outerR: number, innerR: number, start: number, end: number) {
-  const o1 = polarToCartesian(cx, cy, outerR, start);
-  const o2 = polarToCartesian(cx, cy, outerR, end);
-  const i1 = polarToCartesian(cx, cy, innerR, end);
-  const i2 = polarToCartesian(cx, cy, innerR, start);
-  const large = end - start > 180 ? 1 : 0;
-  return `M${o1.x} ${o1.y} A${outerR} ${outerR} 0 ${large} 1 ${o2.x} ${o2.y} L${i1.x} ${i1.y} A${innerR} ${innerR} 0 ${large} 0 ${i2.x} ${i2.y}Z`;
-}
-
 function niceMax(val: number, ticks = 5): number[] {
   if (val <= 0) return [0, 1, 2, 3, 4, 5];
   const raw = val / ticks;
@@ -350,19 +336,23 @@ function IndexedTripleLineChart({
   const cpgBase = co2PerGdp.find(d => d.year === baseYear)?.value;
   const cpgIndexed = cpgBase ? co2PerGdp.map(d => ({ year: d.year, value: (d.value / cpgBase) * 100 })) : [];
 
-  const allVals = [
+  const allValsRaw = [
     ...gdpCo2.flatMap(d => [d.gdp, d.co2]),
     ...cpgIndexed.map(d => d.value),
   ].filter(v => v != null);
+  const rawMax = Math.max(...allValsRaw);
+  const isCapped = rawMax > 500;
+  const allVals = isCapped ? allValsRaw.map(v => Math.min(v, 500)) : allValsRaw;
   const minVal = Math.min(...allVals) * 0.9;
   const yTickVals = niceMax(Math.max(...allVals) * 1.05);
   const maxVal = yTickVals[yTickVals.length - 1];
   const minYear = gdpCo2[0].year, maxYear = gdpCo2[gdpCo2.length - 1].year;
   const xs = (y: number) => ML + ((y - minYear) / Math.max(maxYear - minYear, 1)) * W;
   const ys = (v: number) => MT + H - ((v - minVal) / (maxVal - minVal)) * H;
-  const gdpPath = gdpCo2.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(d.gdp).toFixed(1)}`).join(' ');
-  const co2Path = gdpCo2.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(d.co2).toFixed(1)}`).join(' ');
-  const cpgPath = cpgIndexed.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(d.value).toFixed(1)}`).join(' ');
+  const cap = (v: number) => isCapped ? Math.min(v, 500) : v;
+  const gdpPath = gdpCo2.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(cap(d.gdp)).toFixed(1)}`).join(' ');
+  const co2Path = gdpCo2.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(cap(d.co2)).toFixed(1)}`).join(' ');
+  const cpgPath = cpgIndexed.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${ys(cap(d.value)).toFixed(1)}`).join(' ');
   const xt = xTicks(minYear, maxYear);
   const ytv = yTickVals.filter(v => v >= minVal);
   const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
@@ -403,10 +393,10 @@ function IndexedTripleLineChart({
         const lastD = gdpCo2[gdpCo2.length - 1];
         return (
           <>
-            <circle cx={xs(lastD.year)} cy={ys(lastD.gdp)} r={4} fill="#10B981" stroke="white" strokeWidth={1.5} />
-            <text x={xs(lastD.year) + 6} y={ys(lastD.gdp) + 4} fontSize={10} fontWeight="600" fill="#10B981" fontFamily="monospace">{lastD.gdp.toFixed(0)}</text>
-            <circle cx={xs(lastD.year)} cy={ys(lastD.co2)} r={4} fill="#E5484D" stroke="white" strokeWidth={1.5} />
-            <text x={xs(lastD.year) + 6} y={ys(lastD.co2) + 4} fontSize={10} fontWeight="600" fill="#E5484D" fontFamily="monospace">{lastD.co2.toFixed(0)}</text>
+            <circle cx={xs(lastD.year)} cy={ys(cap(lastD.gdp))} r={4} fill="#10B981" stroke="white" strokeWidth={1.5} />
+            <text x={xs(lastD.year) + 6} y={ys(cap(lastD.gdp)) + 4} fontSize={10} fontWeight="600" fill="#10B981" fontFamily="monospace">{cap(lastD.gdp).toFixed(0)}</text>
+            <circle cx={xs(lastD.year)} cy={ys(cap(lastD.co2))} r={4} fill="#E5484D" stroke="white" strokeWidth={1.5} />
+            <text x={xs(lastD.year) + 6} y={ys(cap(lastD.co2)) + 4} fontSize={10} fontWeight="600" fill="#E5484D" fontFamily="monospace">{cap(lastD.co2).toFixed(0)}</text>
           </>
         );
       })()}
@@ -420,8 +410,8 @@ function IndexedTripleLineChart({
         return (
           <g style={{ pointerEvents: 'none' }}>
             <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
-            <circle cx={hover.x} cy={ys(hover.gdp)} r={3} fill="#10B981" stroke="white" strokeWidth={1.5} />
-            <circle cx={hover.x} cy={ys(hover.co2)} r={3} fill="#E5484D" stroke="white" strokeWidth={1.5} />
+            <circle cx={hover.x} cy={ys(cap(hover.gdp))} r={3} fill="#10B981" stroke="white" strokeWidth={1.5} />
+            <circle cx={hover.x} cy={ys(cap(hover.co2))} r={3} fill="#E5484D" stroke="white" strokeWidth={1.5} />
             <rect x={tx} y={MT + 4} width={118} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
             <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
             <text x={tx + 8} y={MT + 32} fontSize={10} fill="#10B981" fontFamily="monospace">GDP: {hover.gdp.toFixed(1)}</text>
@@ -431,97 +421,6 @@ function IndexedTripleLineChart({
         );
       })()}
     </svg>
-  );
-}
-
-// ── Chart: Donut (Energy Mix) ─────────────────────────────────────────────────
-const DONUT_GRAD: Record<string, [string, string]> = {
-  'Fossil':          ['#EF4444', '#DC2626'],
-  'Renewable':       ['#10B981', '#059669'],
-  'Nuclear':         ['#8B5CF6', '#7C3AED'],
-  'Nuclear & Other': ['#8B5CF6', '#7C3AED'],
-};
-
-function DonutChart({ segments }: { segments: { label: string; value: number; color: string }[] }) {
-  const total = segments.reduce((s, d) => s + d.value, 0);
-  if (total === 0) return null;
-  const CX = 120, CY = 120, OR = 88, IR = 52;
-  const largest = segments.reduce((a, b) => a.value > b.value ? a : b);
-  let angle = -90;
-  const paths = segments.map((seg, idx) => {
-    const sweep = (seg.value / total) * 360;
-    const midAngle = angle + sweep / 2;
-    const d = arcPath(CX, CY, OR, IR, angle, angle + Math.max(sweep - 0.5, 0));
-    const labelPos = polarToCartesian(CX, CY, OR + 18, midAngle);
-    angle += sweep;
-    const gradColors = DONUT_GRAD[seg.label];
-    return { ...seg, d, midAngle, labelPos, gradId: `dnt-${idx}`, gradColors };
-  });
-  return (
-    <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-      <svg viewBox="0 0 240 240" width={240} height={240}>
-        <defs>
-          {/* Enhanced radial gradients with deeper colors */}
-          {paths.map(p => p.gradColors ? (
-            <radialGradient key={p.gradId} id={p.gradId} cx="50%" cy="50%" r="70%">
-              <stop offset="0%"   stopColor={p.gradColors[0]} stopOpacity="1" />
-              <stop offset="70%"  stopColor={p.gradColors[1]} stopOpacity="0.95" />
-              <stop offset="100%" stopColor={p.gradColors[1]} stopOpacity="0.85" />
-            </radialGradient>
-          ) : null)}
-          {/* Glow filter */}
-          <filter id="donut-glow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        {paths.map(p => (
-          <path
-            key={p.label}
-            d={p.d}
-            fill={p.gradColors ? `url(#${p.gradId})` : p.color}
-            stroke="white"
-            strokeWidth={3}
-            filter="url(#donut-glow)"
-            style={{ filter: `drop-shadow(0 3px 12px ${p.color}60)` }}
-          />
-        ))}
-        {/* Outer segment labels */}
-        {paths.map(p => p.value > 4 ? (
-          <text
-            key={`lbl-${p.label}`}
-            x={p.labelPos.x}
-            y={p.labelPos.y + 4}
-            textAnchor="middle"
-            fontSize={10}
-            fontWeight="700"
-            fill={p.color}
-            fontFamily="monospace"
-            style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
-          >
-            {p.value.toFixed(0)}%
-          </text>
-        ) : null)}
-        {/* Center text: largest source name + % */}
-        <text x={CX} y={CY - 8} textAnchor="middle" fontSize={12} fontWeight="600" fill="#4A4A6A"
-          fontFamily="var(--font-jetbrains-mono), monospace">{largest.label.split(' ')[0]}</text>
-        <text x={CX} y={CY + 14} textAnchor="middle" fontSize={22} fontWeight="700" fill={largest.color}
-          fontFamily="var(--font-jetbrains-mono), monospace"
-          style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))' }}>{largest.value.toFixed(0)}%</text>
-      </svg>
-      <ul className="flex flex-col gap-2.5">
-        {segments.map(s => (
-          <li key={s.label} className="flex items-center gap-2 text-sm">
-            <span className="h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: s.color }} />
-            <span className="text-[--text-secondary]">{s.label}</span>
-            <span className="ml-2 font-mono font-medium text-[--text-primary]">{s.value.toFixed(1)}%</span>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
 
@@ -719,6 +618,9 @@ export function CountryClient({
 }: CountryClientProps) {
 
   const [extra, setExtra] = useState<ExtraData>(EMPTY_EXTRA);
+  const [ndcHasData, setNdcHasData] = useState<boolean | null>(null);
+  const [kayaHasData, setKayaHasData] = useState<boolean | null>(null);
+  const [equityHasData, setEquityHasData] = useState<boolean | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -906,18 +808,20 @@ export function CountryClient({
       </section>
 
       {/* ── Section: NDC Gap Tracker ── */}
-      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
-        <div className="mx-auto max-w-[1200px]">
-          <SectionTitle>NDC Gap Tracker</SectionTitle>
-          <Card>
-            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
-              {countryName} — CO&#x2082; per capita projection vs NDC target
-            </h3>
-            <ChartErrorBoundary><NDCGapChart iso3={iso3} /></ChartErrorBoundary>
-            <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
-          </Card>
-        </div>
-      </section>
+      {ndcHasData !== false && (
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <SectionTitle>NDC Gap Tracker</SectionTitle>
+            <Card>
+              <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+                {countryName} — CO&#x2082; per capita projection vs NDC target
+              </h3>
+              <ChartErrorBoundary><NDCGapChart iso3={iso3} onLoad={setNdcHasData} /></ChartErrorBoundary>
+              <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* ── Section 2: Energy Transition ── */}
       {emberMix && (
@@ -935,16 +839,6 @@ export function CountryClient({
                   renewable={emberMix.renewable}
                   nuclear={emberMix.other}
                 />
-                <details className="mt-3">
-                  <summary className="cursor-pointer text-xs text-[--text-muted] hover:text-[--text-secondary]">Donut view</summary>
-                  <div className="mt-2">
-                    <DonutChart segments={[
-                      { label: 'Renewable', value: emberMix.renewable, color: '#10B981' },
-                      { label: 'Fossil', value: emberMix.fossil, color: '#78716C' },
-                      { label: 'Nuclear & Other', value: emberMix.other, color: '#8B5CF6' },
-                    ]} />
-                  </div>
-                </details>
                 <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
               </Card>
 
@@ -1169,7 +1063,7 @@ export function CountryClient({
                 </div>
                 {decouplingScore != null && (
                   <span className="ml-auto rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-[--accent-positive]">
-                    Decoupling Score: +{decouplingScore.toFixed(2)}
+                    Decoupling Score: {decouplingScore >= 0 ? '+' : ''}{decouplingScore.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -1200,18 +1094,20 @@ export function CountryClient({
       )}
 
       {/* ── Section: Kaya Decomposition ── */}
-      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
-        <div className="mx-auto max-w-[1200px]">
-          <SectionTitle>Why Did Emissions Change? (Kaya Decomposition)</SectionTitle>
-          <Card>
-            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
-              {countryName} — LMDI Factor Decomposition
-            </h3>
-            <ChartErrorBoundary><KayaWaterfall iso3={iso3} /></ChartErrorBoundary>
-            <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
-          </Card>
-        </div>
-      </section>
+      {kayaHasData !== false && (
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <SectionTitle>Why Did Emissions Change? (Kaya Decomposition)</SectionTitle>
+            <Card>
+              <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+                {countryName} — LMDI Factor Decomposition
+              </h3>
+              <ChartErrorBoundary><KayaWaterfall iso3={iso3} onLoad={setKayaHasData} /></ChartErrorBoundary>
+              <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* ── Section 8: Climate Vulnerability ── */}
       <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
@@ -1231,13 +1127,15 @@ export function CountryClient({
             <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
           </Card>
 
-          <Card className="mt-6">
-            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
-              Climate Equity: Who Polluted vs Who Suffers
-            </h3>
-            <ChartErrorBoundary><EquityScatter highlightIso3={iso3} /></ChartErrorBoundary>
-            <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
-          </Card>
+          {equityHasData !== false && (
+            <Card className="mt-6">
+              <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+                Climate Equity: Who Polluted vs Who Suffers
+              </h3>
+              <ChartErrorBoundary><EquityScatter highlightIso3={iso3} onLoad={setEquityHasData} /></ChartErrorBoundary>
+              <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
+            </Card>
+          )}
 
             {myScatter && (
               <InsightText>

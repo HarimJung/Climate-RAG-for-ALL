@@ -36,7 +36,7 @@ const BAR_COLORS: Record<string, string> = {
   decrease: '#10B981',
 };
 
-export function KayaWaterfall({ iso3 }: { iso3: string }) {
+export function KayaWaterfall({ iso3, onLoad }: { iso3: string; onLoad?: (hasData: boolean) => void }) {
   const [data, setData] = useState<KayaData | null>(null);
   const [loading, setLoading] = useState(true);
   const [hover, setHover] = useState<number | null>(null);
@@ -44,9 +44,13 @@ export function KayaWaterfall({ iso3 }: { iso3: string }) {
   useEffect(() => {
     fetch(`/data/kaya/${iso3}.json`)
       .then(r => r.ok ? r.json() : null)
-      .then(d => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [iso3]);
+      .then(d => {
+        setData(d);
+        setLoading(false);
+        onLoad?.(d != null && d.waterfall?.length > 0);
+      })
+      .catch(() => { setLoading(false); onLoad?.(false); });
+  }, [iso3]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3B82F6] border-t-transparent" /></div>;
   if (!data || !data.waterfall || data.waterfall.length === 0) return null;

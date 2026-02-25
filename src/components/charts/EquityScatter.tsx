@@ -28,7 +28,7 @@ const QUADRANT_COLORS: Record<string, string> = {
   'Low Impact': '#10B981',
 };
 
-export function EquityScatter({ highlightIso3 }: { highlightIso3: string }) {
+export function EquityScatter({ highlightIso3, onLoad }: { highlightIso3: string; onLoad?: (hasData: boolean) => void }) {
   const [data, setData] = useState<EquityData | null>(null);
   const [loading, setLoading] = useState(true);
   const [hover, setHover] = useState<string | null>(null);
@@ -36,9 +36,13 @@ export function EquityScatter({ highlightIso3 }: { highlightIso3: string }) {
   useEffect(() => {
     fetch('/data/equity-scatter.json')
       .then(r => r.ok ? r.json() : null)
-      .then(d => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
+      .then(d => {
+        setData(d);
+        setLoading(false);
+        onLoad?.(d != null && d.countries?.length > 0);
+      })
+      .catch(() => { setLoading(false); onLoad?.(false); });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3B82F6] border-t-transparent" /></div>;
   if (!data || !data.countries || data.countries.length === 0) return null;

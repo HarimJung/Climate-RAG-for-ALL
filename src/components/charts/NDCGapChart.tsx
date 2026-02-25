@@ -16,7 +16,7 @@ interface NDCData {
   status: 'on_track' | 'off_track' | 'no_target';
 }
 
-export function NDCGapChart({ iso3 }: { iso3: string }) {
+export function NDCGapChart({ iso3, onLoad }: { iso3: string; onLoad?: (hasData: boolean) => void }) {
   const [data, setData] = useState<NDCData | null>(null);
   const [loading, setLoading] = useState(true);
   const [hover, setHover] = useState<{ year: number; value: number; x: number; y: number; type: string } | null>(null);
@@ -24,9 +24,13 @@ export function NDCGapChart({ iso3 }: { iso3: string }) {
   useEffect(() => {
     fetch(`/data/ndc-gap/${iso3}.json`)
       .then(r => r.ok ? r.json() : null)
-      .then(d => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [iso3]);
+      .then(d => {
+        setData(d);
+        setLoading(false);
+        onLoad?.(d != null && d.historical?.length > 0);
+      })
+      .catch(() => { setLoading(false); onLoad?.(false); });
+  }, [iso3]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <div className="flex h-64 items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3B82F6] border-t-transparent" /></div>;
   if (!data || !data.historical || data.historical.length === 0) return null;
