@@ -1,12 +1,49 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Component, type ErrorInfo, type ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ClimateSankey } from '@/components/charts/ClimateSankey';
 import { ClimateGap } from '@/components/charts/ClimateGap';
 import { NDCGapChart } from '@/components/charts/NDCGapChart';
 import { KayaWaterfall } from '@/components/charts/KayaWaterfall';
 import { EquityScatter } from '@/components/charts/EquityScatter';
+
+// ── Chart Error Boundary ─────────────────────────────────────────────────────
+class ChartErrorBoundary extends Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback?: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('[ChartError]', error, info.componentStack);
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback ?? null;
+    }
+    return this.props.children;
+  }
+}
+
+function SafeChart({ children, name }: { children: ReactNode; name?: string }) {
+  return (
+    <ChartErrorBoundary
+      fallback={
+        <div className="flex h-40 items-center justify-center rounded-lg bg-[--bg-section]">
+          <p className="text-sm text-[--text-muted]">{name ? `${name} chart` : 'Chart'} unavailable</p>
+        </div>
+      }
+    >
+      {children}
+    </ChartErrorBoundary>
+  );
+}
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 import riskProfileKOR from '../../../../data/analysis/risk-profile-KOR.json';
 import riskProfileUSA from '../../../../data/analysis/risk-profile-USA.json';
@@ -26,6 +63,9 @@ function useInView(options = {}) {
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setIsInView(true);
@@ -33,14 +73,10 @@ function useInView(options = {}) {
       }
     }, { threshold: 0.1, ...options });
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    observer.observe(el);
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
+      observer.unobserve(el);
     };
   }, []);
 
@@ -789,6 +825,7 @@ export function CountryClient({
         for (const r of rows) {
           if (r.value == null) continue;
           const v = Number(r.value);
+          if (isNaN(v)) continue;
           if (!grouped[r.indicator_code]) grouped[r.indicator_code] = [];
           grouped[r.indicator_code].push({ year: r.year, value: v });
           if (!latest[r.indicator_code] || r.year > latest[r.indicator_code].year) {
@@ -817,37 +854,25 @@ export function CountryClient({
           ghgPerCapitaLatest: latest['OWID.GHG_PER_CAPITA']?.value ?? null,
           co2PerGdpSeries: grouped['OWID.CO2_PER_GDP'] ?? [],
         });
-      });
+      }, (err) => console.error('[Supabase extra fetch]', err));
 
     // Check for NDC Gap data
     fetch(`/data/ndc-gap/${iso3}.json`)
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data && data.historical && data.historical.length > 0) {
-          setShowNdcGap(true);
-        }
-      })
-      .catch(() => setShowNdcGap(false));
+      .then(d => { if (d?.historical?.length > 0) setShowNdcGap(true); })
+      .catch(() => { /* no NDC data */ });
 
     // Check for Kaya data
     fetch(`/data/kaya/${iso3}.json`)
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data && data.waterfall && data.waterfall.length > 0) {
-          setShowKaya(true);
-        }
-      })
-      .catch(() => setShowKaya(false));
+      .then(d => { if (d?.waterfall?.length > 0) setShowKaya(true); })
+      .catch(() => { /* no Kaya data */ });
 
     // Check for Equity data
     fetch('/data/equity-scatter.json')
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data && data.countries && data.countries.length > 0) {
-          setShowEquity(true);
-        }
-      })
-      .catch(() => setShowEquity(false));
+      .then(d => { if (d?.countries?.length > 0) setShowEquity(true); })
+      .catch(() => { /* no equity data */ });
   }, [iso3]);
 
   // ── Derived: emissions-trend JSON ───────────────────────────────────────────
@@ -933,7 +958,9 @@ export function CountryClient({
         {/* Background decorative chart */}
         <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.08, pointerEvents: 'none' }}>
           <div className="w-full max-w-[1400px]">
-            <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
+            <SafeChart name="Emissions">
+              <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
+            </SafeChart>
           </div>
         </div>
 
@@ -1026,14 +1053,18 @@ export function CountryClient({
                 </span>
               )}
             </div>
-            <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
+            <SafeChart name="Emissions">
+              <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
+            </SafeChart>
             <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5{extra.consumptionCo2.length > 0 ? ' + OWID Consumption' : ''}</SourceLabel>
           </Card>
 
           {/* Climate Gap */}
           <Card className="mb-6">
             <h3 className="mb-1 text-sm font-semibold text-[--text-primary]">Pre-Paris vs Post-Paris CAGR</h3>
-            <ClimateGap highlightIso3={iso3} />
+            <SafeChart name="Climate Gap">
+              <ClimateGap highlightIso3={iso3} />
+            </SafeChart>
             <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</SourceLabel>
           </Card>
 
@@ -1043,7 +1074,9 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 {countryName} — CO&#x2082; per capita projection vs NDC target
               </h3>
-              <NDCGapChart iso3={iso3} />
+              <SafeChart name="NDC Gap">
+                <NDCGapChart iso3={iso3} />
+              </SafeChart>
               <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
             </Card>
           )}
@@ -1072,12 +1105,14 @@ export function CountryClient({
               <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
                 Electricity Generation Mix ({emberMix.year})
               </h3>
-              <ClimateSankey
-                country={countryName}
-                fossil={emberMix.fossil}
-                renewable={emberMix.renewable}
-                nuclear={emberMix.other}
-              />
+              <SafeChart name="Sankey">
+                <ClimateSankey
+                  country={countryName}
+                  fossil={emberMix.fossil}
+                  renewable={emberMix.renewable}
+                  nuclear={emberMix.other}
+                />
+              </SafeChart>
               <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
             </Card>
 
@@ -1162,7 +1197,9 @@ export function CountryClient({
                       </span>
                     )}
                   </div>
-                  <HorizontalBarChart bars={ctraceBarsWithPct} />
+                  <SafeChart name="Sector Emissions">
+                    <HorizontalBarChart bars={ctraceBarsWithPct} />
+                  </SafeChart>
                   <SourceLabel>Source: Climate TRACE v7 ({extra.ctraceYear ?? 'latest'})</SourceLabel>
                 </Card>
               )}
@@ -1178,7 +1215,9 @@ export function CountryClient({
                       </span>
                     ))}
                   </div>
-                  <StackedAreaChart years={fuelYears} seriesDef={FUEL_SERIES} data={fuelData} />
+                  <SafeChart name="Fuel Breakdown">
+                    <StackedAreaChart years={fuelYears} seriesDef={FUEL_SERIES} data={fuelData} />
+                  </SafeChart>
                   <SourceLabel>Source: Our World in Data (OWID) · OWID.COAL_CO2, OWID.OIL_CO2, OWID.GAS_CO2, OWID.CEMENT_CO2, OWID.FLARING_CO2</SourceLabel>
                 </Card>
               )}
@@ -1285,11 +1324,13 @@ export function CountryClient({
                     <span className="text-[--text-secondary]">Nitrous Oxide (right axis)</span>
                   </span>
                 </div>
-                <DualYLineChart
-                  leftData={extra.methaneSeries} rightData={extra.n2oSeries}
-                  leftColor="#F59E0B" rightColor="#8B5CF6"
-                  leftUnit="CH₄ Mt" rightUnit="N₂O Mt"
-                />
+                <SafeChart name="Methane & N₂O">
+                  <DualYLineChart
+                    leftData={extra.methaneSeries} rightData={extra.n2oSeries}
+                    leftColor="#F59E0B" rightColor="#8B5CF6"
+                    leftUnit="CH₄ Mt" rightUnit="N₂O Mt"
+                  />
+                </SafeChart>
                 <SourceLabel>Source: Our World in Data · OWID.METHANE, OWID.NITROUS_OXIDE</SourceLabel>
               </Card>
             )}
@@ -1338,11 +1379,13 @@ export function CountryClient({
                   </span>
                 )}
               </div>
-              <IndexedTripleLineChart
-                gdpCo2={gdpVsCo2}
-                co2PerGdp={extra.co2PerGdpSeries}
-                baseYear={gdpVsCo2[0].year}
-              />
+              <SafeChart name="GDP vs CO₂">
+                <IndexedTripleLineChart
+                  gdpCo2={gdpVsCo2}
+                  co2PerGdp={extra.co2PerGdpSeries}
+                  baseYear={gdpVsCo2[0]?.year ?? 2000}
+                />
+              </SafeChart>
               <SourceLabel>Source: World Bank WDI (GDP + CO₂ per capita){extra.co2PerGdpSeries.length > 0 ? ' + OWID CO₂/GDP' : ''}, indexed to {gdpVsCo2[0].year}=100</SourceLabel>
             </Card>
 
@@ -1386,7 +1429,9 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 Why Did Emissions Change? — {countryName} LMDI Factor Decomposition
               </h3>
-              <KayaWaterfall iso3={iso3} />
+              <SafeChart name="Kaya Waterfall">
+                <KayaWaterfall iso3={iso3} />
+              </SafeChart>
               <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
             </Card>
           )}
@@ -1397,7 +1442,9 @@ export function CountryClient({
               Vulnerability vs Readiness (Pilot Countries, 2023)
             </h3>
             {scatterData.length > 0 ? (
-              <VulnerabilityScatter data={scatterData} highlightIso3={iso3} />
+              <SafeChart name="Vulnerability Scatter">
+                <VulnerabilityScatter data={scatterData} highlightIso3={iso3} />
+              </SafeChart>
             ) : (
               <div className="flex h-40 items-center justify-center rounded-lg bg-[--bg-section]">
                 <p className="text-sm text-[--text-muted]">Data not available</p>
@@ -1412,7 +1459,9 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 Climate Equity: Who Polluted vs Who Suffers
               </h3>
-              <EquityScatter highlightIso3={iso3} />
+              <SafeChart name="Equity Scatter">
+                <EquityScatter highlightIso3={iso3} />
+              </SafeChart>
               <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
             </Card>
           )}
