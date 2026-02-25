@@ -7,23 +7,6 @@ import { ClimateGap } from '@/components/charts/ClimateGap';
 import { NDCGapChart } from '@/components/charts/NDCGapChart';
 import { KayaWaterfall } from '@/components/charts/KayaWaterfall';
 import { EquityScatter } from '@/components/charts/EquityScatter';
-
-class ChartErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  render() {
-    if (this.state.hasError) return null;
-    return this.props.children;
-  }
-}
 import emissionsTrend from '../../../../data/analysis/emissions-trend-6countries.json';
 import riskProfileKOR from '../../../../data/analysis/risk-profile-KOR.json';
 import riskProfileUSA from '../../../../data/analysis/risk-profile-USA.json';
@@ -618,9 +601,9 @@ export function CountryClient({
 }: CountryClientProps) {
 
   const [extra, setExtra] = useState<ExtraData>(EMPTY_EXTRA);
-  const [ndcHasData, setNdcHasData] = useState<boolean | null>(null);
-  const [kayaHasData, setKayaHasData] = useState<boolean | null>(null);
-  const [equityHasData, setEquityHasData] = useState<boolean | null>(null);
+  const [showNdcGap, setShowNdcGap] = useState(false);
+  const [showKaya, setShowKaya] = useState(false);
+  const [showEquity, setShowEquity] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -808,7 +791,7 @@ export function CountryClient({
       </section>
 
       {/* ── Section: NDC Gap Tracker ── */}
-      {ndcHasData !== false && (
+      <div style={!showNdcGap ? { display: 'none' } : undefined}>
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>NDC Gap Tracker</SectionTitle>
@@ -816,12 +799,12 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 {countryName} — CO&#x2082; per capita projection vs NDC target
               </h3>
-              <ChartErrorBoundary><NDCGapChart iso3={iso3} onLoad={setNdcHasData} /></ChartErrorBoundary>
+              <NDCGapChart iso3={iso3} onLoad={setShowNdcGap} />
               <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
             </Card>
           </div>
         </section>
-      )}
+      </div>
 
       {/* ── Section 2: Energy Transition ── */}
       {emberMix && (
@@ -1094,7 +1077,7 @@ export function CountryClient({
       )}
 
       {/* ── Section: Kaya Decomposition ── */}
-      {kayaHasData !== false && (
+      <div style={!showKaya ? { display: 'none' } : undefined}>
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Why Did Emissions Change? (Kaya Decomposition)</SectionTitle>
@@ -1102,12 +1085,12 @@ export function CountryClient({
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 {countryName} — LMDI Factor Decomposition
               </h3>
-              <ChartErrorBoundary><KayaWaterfall iso3={iso3} onLoad={setKayaHasData} /></ChartErrorBoundary>
+              <KayaWaterfall iso3={iso3} onLoad={setShowKaya} />
               <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
             </Card>
           </div>
         </section>
-      )}
+      </div>
 
       {/* ── Section 8: Climate Vulnerability ── */}
       <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
@@ -1127,15 +1110,15 @@ export function CountryClient({
             <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
           </Card>
 
-          {equityHasData !== false && (
+          <div style={!showEquity ? { display: 'none' } : undefined}>
             <Card className="mt-6">
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 Climate Equity: Who Polluted vs Who Suffers
               </h3>
-              <ChartErrorBoundary><EquityScatter highlightIso3={iso3} onLoad={setEquityHasData} /></ChartErrorBoundary>
+              <EquityScatter highlightIso3={iso3} onLoad={setShowEquity} />
               <SourceLabel>Source: OWID Cumulative CO₂ + ND-GAIN Vulnerability Index</SourceLabel>
             </Card>
-          )}
+          </div>
 
             {myScatter && (
               <InsightText>
