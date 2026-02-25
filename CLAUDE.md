@@ -1,5 +1,5 @@
 # VisualClimate — CLAUDE.md (Single Source of Truth)
-# 마지막 업데이트: 2026-02-18
+# 마지막 업데이트: 2026-02-25
 # 다른 MD와 충돌 시 이 파일이 우선
 
 ## 1. 프로덕트 정의
@@ -9,14 +9,12 @@
 사이트의 모든 차트가 곧 LinkedIn 콘텐츠. 별도 콘텐츠 제작 없음.
 
 ### 무엇인가
-- 6개 파일럿 국가의 기후 프로필을 차트 + "So what?" 분석 텍스트로 보여준다
+- 200+ countries via Supabase — 기후 프로필을 12 sections + "So what?" 분석 텍스트로 보여준다
 - 국가 간 비교가 가능하다
 - 차트를 PNG로 다운로드해서 LinkedIn에 바로 올릴 수 있다
 
 ### 무엇이 아닌가 (지금은)
-- $79 SaaS가 아니다 (유료화는 트래픽 확보 후)
 - RAG 챗봇이 아니다 (보고서 1개로는 의미 없음)
-- 250개국 플랫폼이 아니다 (6개국 파일럿)
 
 ### 핵심 지표
 사이트에서 뽑은 차트 PNG가 LinkedIn에 올라간 횟수 = 성공 지표
@@ -76,7 +74,7 @@ Next.js 16 App Router | TypeScript strict | Tailwind (라이트 테마) | Supaba
 | 라우트 | 역할 | 데이터 소스 |
 |--------|------|------------|
 | / | Key Findings 3개 + 국가 카드 6개 | 홈페이지만 하드코딩 허용 (갱신 1년) |
-| /country/[iso3] | 핵심 제품: 차트 5개 + 동적 인사이트 | Supabase + analysis JSON |
+| /country/[iso3] | 핵심 제품: 12 sections + 동적 인사이트 | Supabase + analysis JSON |
 | /compare | 국가 비교 테이블 | Supabase |
 | /insights | 횡단 분석 2편 | analysis JSON/MD |
 
@@ -90,27 +88,28 @@ Next.js 16 App Router | TypeScript strict | Tailwind (라이트 테마) | Supaba
 ### 비활성 페이지 (현재 불필요)
 /chat, /pricing, /login, /signup — 유료화 시점까지 보류
 
-## 6. 파일럿 국가
-| ISO3 | Country | 핵심 스토리 |
-|------|---------|------------|
-| KOR | South Korea | 파리 후 감속 -2.85pp, 재생에너지 OECD 최하위 9.6% |
-| USA | United States | 최대 역사적 배출국, 디커플링 선두 +6.35 |
-| DEU | Germany | 재생에너지 54.4%, 에너지 전환 리더 |
-| BRA | Brazil | 재생전력 89%, 산림 벌채 리스크 |
-| NGA | Nigeria | PM2.5 WHO 11배, 아프리카 최대 경제 |
-| BGD | Bangladesh | CO₂ +246%, 1인당 미국의 1/17, 최취약국 |
 
-## 7. 완료된 문제 (2026-02-18)
-1. ✅ CountryClient InsightText 동적화 (emissions-trend JSON import)
-2. ✅ /insights/climate-vulnerability 라이트 테마 전환
-3. ✅ /insights/emissions-trend 차트 라이트 색상
-4. ✅ data/analysis/ JSON import 연결 (CountryClient + emissions-trend/page.tsx)
-5. ✅ 홈페이지 Countries stat → "6" 고정
 
-## 다음 과제
-- Library 리포트 카드 외부 링크 연결 (현재 클릭 무반응)
-- EMBER.CARBON.INTENSITY, DERIVED.CO2_PER_GDP 활용처 추가
-- data/analysis/derived-methodology.md → Methodology 섹션 연결
+## 6. 비즈니스 모델
+| 제품 | 가격 | 설명 |
+|------|------|------|
+| PDF Country Report | $9 | 국가별 기후 프로필 PDF 다운로드 |
+| Embeddable Widget | $99–299/mo | 차트 위젯 iframe embed |
+| API Access | $299–999/mo | 프로그래매틱 데이터 접근 |
+
+## 7. 완료된 작업
+1. ✅ Phase A: CountryClient InsightText 동적화, 라이트 테마, JSON import 연결
+2. ✅ Phase B: 8-scene scrollytelling redesign with fade-in
+3. ✅ ErrorBoundary + SafeChart wrapper + fetch error handling
+4. ✅ 6-country hardcode 제거 — ClimateGap slope chart + VulnerabilityScatter → Supabase 전체 국가
+5. ✅ Hover tooltips (partial — emissions, scatter, sector charts)
+6. ✅ 6개 missing sections 복원 (Emission Sources, Fossil Fuel, Historical, Beyond CO2, Economy, Vulnerability)
+
+## 다음 과제 (우선순위 순)
+1. Scrollytelling 7-scene redesign with framer-motion (scene 전환 애니메이션)
+2. PNG download (차트별 PNG 내보내기 → LinkedIn 공유)
+3. PDF API (국가별 리포트 PDF 생성 엔드포인트)
+4. Stripe 결제 연동 (PDF $9, Widget/API 구독)
 
 ## 8. 작업 규칙
 - 코드 수정 전: cat으로 관련 파일 읽기 → 키 구조 파악 → 코드 작성
