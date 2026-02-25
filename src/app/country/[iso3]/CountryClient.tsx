@@ -7,6 +7,7 @@ import { ClimateGap } from '@/components/charts/ClimateGap';
 import { NDCGapChart } from '@/components/charts/NDCGapChart';
 import { KayaWaterfall } from '@/components/charts/KayaWaterfall';
 import { EquityScatter } from '@/components/charts/EquityScatter';
+import { Scene, SceneHeadline, FanCardSummary } from '@/components/ScrollytellingWrapper';
 
 // ── Chart Error Boundary ─────────────────────────────────────────────────────
 class ChartErrorBoundary extends Component<
@@ -990,6 +991,7 @@ export function CountryClient({
       {/* ══════════════════════════════════════════════════════════════════════════
           SCENE 1 - HERO
       ══════════════════════════════════════════════════════════════════════════ */}
+      <Scene variant="fade">
       <section
         id="scene-hero"
         className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white px-4"
@@ -1039,10 +1041,15 @@ export function CountryClient({
           </svg>
         </div>
       </section>
+      </Scene>
 
       {/* ══════════════════════════════════════════════════════════════════════════
           SCENE 2 - EMISSIONS (Trajectory + Pre/Post Paris + NDC Gap)
       ══════════════════════════════════════════════════════════════════════════ */}
+      <SceneHeadline sub="Is it enough? Tracking trajectory against the Paris Agreement.">
+        Emissions are shifting. But not fast enough.
+      </SceneHeadline>
+      <Scene variant="fade">
       <section
         id="scene-emissions"
         ref={scene2.ref}
@@ -1145,10 +1152,13 @@ export function CountryClient({
         </div>
       </section>
 
+      </Scene>
+
       {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 3 - ENERGY (Sankey + Transition Progress)
+          SCENE 4 - ENERGY (Sankey + Transition Progress)
       ══════════════════════════════════════════════════════════════════════════ */}
       {emberMix && (
+        <Scene variant="fade">
         <section
           id="scene-energy"
           ref={scene3.ref}
@@ -1221,12 +1231,17 @@ export function CountryClient({
             )}
           </div>
         </section>
+        </Scene>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 4 - EMISSION SOURCES (Sector Breakdown)
+          SCENE 3 (WHY?) - EMISSION SOURCES + FOSSIL FUEL
       ══════════════════════════════════════════════════════════════════════════ */}
+      <SceneHeadline sub="Where do emissions come from? Breaking down by sector and fuel.">
+        Why is this happening?
+      </SceneHeadline>
       {ctraceBarsWithPct.length > 0 && (
+      <Scene variant="slide">
         <section
           id="scene-emission-sources"
           ref={scene4.ref}
@@ -1269,12 +1284,14 @@ export function CountryClient({
             </InsightText>
           </div>
         </section>
+      </Scene>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 4b - FOSSIL FUEL BREAKDOWN (Stacked Area)
+          SCENE 3b - FOSSIL FUEL BREAKDOWN (Stacked Area)
       ══════════════════════════════════════════════════════════════════════════ */}
       {hasFuelData && (
+      <Scene variant="slide" delay={0.15}>
         <section
           id="scene-fossil-fuel"
           className="border-b border-[--border-card] bg-white px-4 py-16"
@@ -1314,12 +1331,17 @@ export function CountryClient({
             </InsightText>
           </div>
         </section>
+      </Scene>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 5 - HISTORICAL RESPONSIBILITY (Stat Cards + Temperature Bar)
+          SCENE 5a - HISTORICAL RESPONSIBILITY
       ══════════════════════════════════════════════════════════════════════════ */}
+      <SceneHeadline sub="The bigger picture: economy, history, and the gases beyond CO2.">
+        Context matters.
+      </SceneHeadline>
       {(extra.cumulativeCo2 != null || extra.shareCumulative != null || extra.tempGhg != null) && (
+        <Scene variant="slide">
         <section
           id="scene-historical"
           ref={scene5.ref}
@@ -1384,12 +1406,14 @@ export function CountryClient({
             </InsightText>
           </div>
         </section>
+        </Scene>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
           SCENE 5b - BEYOND CO₂ (Methane + N₂O + Total GHG)
       ══════════════════════════════════════════════════════════════════════════ */}
       {(extra.methaneSeries.length > 0 || extra.n2oSeries.length > 0 || extra.totalGhgLatest != null) && (
+        <Scene variant="slide" delay={0.1}>
         <section
           id="scene-beyond-co2"
           className="border-b border-[--border-card] bg-white px-4 py-16"
@@ -1459,12 +1483,14 @@ export function CountryClient({
             </InsightText>
           </div>
         </section>
+        </Scene>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 6 - ECONOMY (Economic Decoupling)
+          SCENE 5c - ECONOMY (Economic Decoupling)
       ══════════════════════════════════════════════════════════════════════════ */}
       {gdpVsCo2.length > 0 && (
+        <Scene variant="slide" delay={0.15}>
         <section
           id="scene-economy"
           ref={scene6.ref}
@@ -1523,11 +1549,13 @@ export function CountryClient({
             )}
           </div>
         </section>
+        </Scene>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 7 - VULNERABILITY (Kaya + Vulnerability + Equity + Risk Profile)
+          SCENE 6 - VULNERABILITY (Kaya + Vulnerability + Equity + Risk Profile)
       ══════════════════════════════════════════════════════════════════════════ */}
+      <Scene variant="fade">
       <section
         id="scene-vulnerability"
         ref={scene7.ref}
@@ -1622,10 +1650,33 @@ export function CountryClient({
           )}
         </div>
       </section>
+      </Scene>
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          DATA SOURCES (Bottom)
+          SCENE 7 - TAKEAWAY (Fan Cards + Data Sources)
       ══════════════════════════════════════════════════════════════════════════ */}
+      <FanCardSummary cards={[
+        {
+          label: 'Verdict',
+          icon: '\u2696\uFE0F',
+          text: `${countryName} emits ${latestCo2 != null ? latestCo2.toFixed(1) : '\u2014'} t CO\u2082/capita (${latestYear}).${parisData ? ` Post-Paris trajectory: ${signed(parisData.post_paris_cagr_pct)}%/yr.` : ''}`,
+          accent: '#0066FF',
+        },
+        {
+          label: 'Diagnosis',
+          icon: '\uD83D\uDD0D',
+          text: `${emberMix ? `Energy mix: ${emberMix.fossil.toFixed(0)}% fossil, ${emberMix.renewable.toFixed(0)}% renewable.` : 'Energy data pending.'}${decouplingScore != null ? ` Decoupling score: ${signed(decouplingScore)}pp/yr.` : ''}`,
+          accent: '#00A67E',
+        },
+        {
+          label: 'Outlook',
+          icon: '\uD83C\uDF0D',
+          text: `${myScatter ? `Vulnerability: ${myScatter.vulnerability.toFixed(3)} | Readiness: ${myScatter.readiness.toFixed(3)}.` : 'Vulnerability data pending.'}${riskProfile ? ` ${riskProfile.risk_level} risk.` : ''}`,
+          accent: '#E5484D',
+        },
+      ]} />
+
+      <Scene variant="fade">
       <section
         id="scene-data-sources"
         ref={scene8.ref}
@@ -1682,6 +1733,7 @@ export function CountryClient({
           </div>
         </div>
       </section>
+      </Scene>
 
     </div>
   );
