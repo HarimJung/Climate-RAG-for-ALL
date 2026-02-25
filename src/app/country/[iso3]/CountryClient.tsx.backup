@@ -900,99 +900,59 @@ export function CountryClient({
     { label: 'N₂O', value: extra.tempN2o ?? 0, color: '#8B5CF6' },
   ] : [];
 
-  // ── Scene hooks for scrollytelling ──────────────────────────────────────────
-  const scene1 = useInView();
-  const scene2 = useInView();
-  const scene3 = useInView();
-  const scene4 = useInView();
-  const scene5 = useInView();
-  const scene6 = useInView();
-  const scene7 = useInView();
-  const scene8 = useInView();
-
-  const latestCo2 = wbCo2Series.length > 0 ? wbCo2Series[wbCo2Series.length - 1].value : null;
-  const latestYear = wbCo2Series.length > 0 ? wbCo2Series[wbCo2Series.length - 1].year : 2023;
-  const latestRenewable = emberMix?.renewable ?? null;
-
   return (
     <div className="space-y-0">
 
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 1 - HERO
-      ══════════════════════════════════════════════════════════════════════════ */}
-      <section
-        id="scene-hero"
-        ref={scene1.ref}
-        className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white px-4"
-        style={{
-          opacity: scene1.isInView ? 1 : 0,
-          transform: scene1.isInView ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-        }}
-      >
-        {/* Background decorative chart */}
-        <div className="absolute inset-0 flex items-center justify-center" style={{ opacity: 0.08, pointerEvents: 'none' }}>
-          <div className="w-full max-w-[1400px]">
-            <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
-          </div>
-        </div>
-
-        {/* Center content */}
-        <div className="relative z-10 text-center">
-          <h1 className="mb-4 font-mono text-7xl font-bold text-[--text-primary] md:text-8xl">
-            {latestCo2 != null ? latestCo2.toFixed(1) : '—'}
-          </h1>
-          <p className="text-lg text-[--text-secondary]">CO₂ per capita, {latestYear}</p>
-        </div>
-
-        {/* Bottom stat pills */}
-        <div className="absolute bottom-32 flex flex-wrap items-center justify-center gap-4 px-4">
-          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/80 px-5 py-3 shadow-lg backdrop-blur-md">
-            <span className="text-sm text-[--text-secondary]">CO₂/capita</span>
-            <span className="font-mono text-base font-bold text-[--text-primary]">{latestCo2 != null ? `${latestCo2.toFixed(1)}t` : '—'}</span>
-          </div>
-          {latestRenewable != null && (
-            <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/80 px-5 py-3 shadow-lg backdrop-blur-md">
-              <span className="text-sm text-[--text-secondary]">Renewable</span>
-              <span className="font-mono text-base font-bold text-[--accent-positive]">{latestRenewable.toFixed(1)}%</span>
-            </div>
-          )}
-          {decouplingScore != null && (
-            <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/80 px-5 py-3 shadow-lg backdrop-blur-md">
-              <span className="text-sm text-[--text-secondary]">Decoupling</span>
-              <span className="font-mono text-base font-bold text-[--accent-positive]">{signed(decouplingScore)}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Scroll cue */}
-        <div className="absolute bottom-8 flex flex-col items-center gap-2">
-          <p className="text-sm text-[--text-muted]">Scroll to see the full story</p>
-          <svg className="h-6 w-6 animate-bounce text-[--text-muted]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 2 - EMISSIONS (Trajectory + Pre/Post Paris + NDC Gap)
-      ══════════════════════════════════════════════════════════════════════════ */}
-      <section
-        id="scene-emissions"
-        ref={scene2.ref}
-        className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16"
-        style={{
-          opacity: scene2.isInView ? 1 : 0,
-          transform: scene2.isInView ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-        }}
-      >
+      {/* ── Section 1: Emissions Trajectory ── */}
+      <section className="border-b border-[--border-card] bg-white px-4 py-16">
         <div className="mx-auto max-w-[1200px]">
           <SectionTitle>Emissions Trajectory</SectionTitle>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card>
+              <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+                {countryName} — CO&#x2082; per capita (2000–2023)
+              </h3>
+              <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block h-0.5 w-5 rounded bg-[#0066FF]" />
+                  <span className="text-[--text-secondary]">Production-based</span>
+                </span>
+                {extra.consumptionCo2.length > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block h-0.5 w-5 rounded bg-[#8B5CF6]" style={{ borderTop: '2px dashed #8B5CF6', background: 'transparent' }} />
+                    <span className="text-[--text-secondary]">Consumption-based</span>
+                  </span>
+                )}
+              </div>
+              <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
+              <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5{extra.consumptionCo2.length > 0 ? ' + OWID Consumption' : ''}</SourceLabel>
+            </Card>
 
-          {/* Insight text FIRST */}
+            {co2Comparison.length > 0 && (
+              <Card>
+                <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">World Bank vs Climate TRACE (indexed)</h3>
+                <div className="mb-3 flex items-center gap-4 text-xs">
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block h-0.5 w-5 rounded bg-[#0066FF]" />
+                    <span className="text-[--text-secondary]">WB CO₂/capita</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block h-0.5 w-5 rounded bg-[#F59E0B]" />
+                    <span className="text-[--text-secondary]">Climate TRACE GHG</span>
+                  </span>
+                </div>
+                <IndexedDualLineChart
+                  data={co2Comparison.map(d => ({ year: d.year, a: d.wb, b: d.ct }))}
+                  aColor="#0066FF" bColor="#F59E0B"
+                  aLabel="WB CO₂/capita" bLabel="Climate TRACE GHG"
+                />
+                <SourceLabel>Source: World Bank WDI + Climate TRACE (indexed, {co2Comparison[0].year}=100)</SourceLabel>
+              </Card>
+            )}
+          </div>
+
           {parisData ? (
-            <Card className="mb-6 bg-blue-50 p-6 text-lg leading-relaxed">
+            <InsightText>
               <strong>{countryName}&apos;s emissions</strong> grew at {signed(parisData.pre_paris_cagr_pct)}%/yr
               pre-Paris (2000–2014), then{' '}
               <strong className={parisData.post_paris_cagr_pct < 0 ? 'text-[--accent-positive]' : 'text-[--accent-negative]'}>
@@ -1001,44 +961,27 @@ export function CountryClient({
               post-Paris (2015–2023) — a <strong>{signed(parisData.acceleration)}pp shift</strong>.
               {accelRank !== null && ` This ranks ${ordinal(accelRank)} largest deceleration among tracked countries.`}
               {cagrData && ` Per capita emissions reached ${parisData.value_2023.toFixed(1)} t in 2023 (${cagrData.total_change_pct > 0 ? '+' : ''}${cagrData.total_change_pct.toFixed(1)}% vs 2000).`}
-            </Card>
+            </InsightText>
           ) : (
-            <Card className="mb-6 bg-blue-50 p-6 text-lg leading-relaxed">
+            <InsightText>
               <strong>{countryName}&apos;s emissions trajectory</strong> reflects ongoing energy transition dynamics.
               Data sourced from World Bank WDI (2000–2023).
-            </Card>
+            </InsightText>
           )}
 
-          {/* Emissions line chart */}
-          <Card className="mb-6">
-            <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
-              {countryName} — CO&#x2082; per capita (2000–2023)
-            </h3>
-            <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block h-0.5 w-5 rounded bg-[#0066FF]" />
-                <span className="text-[--text-secondary]">Production-based</span>
-              </span>
-              {extra.consumptionCo2.length > 0 && (
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block h-0.5 w-5 rounded bg-[#8B5CF6]" style={{ borderTop: '2px dashed #8B5CF6', background: 'transparent' }} />
-                  <span className="text-[--text-secondary]">Consumption-based</span>
-                </span>
-              )}
-            </div>
-            <EmissionsLineChart production={wbCo2Series} consumption={extra.consumptionCo2} countryName={countryName} />
-            <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5{extra.consumptionCo2.length > 0 ? ' + OWID Consumption' : ''}</SourceLabel>
-          </Card>
-
-          {/* Climate Gap */}
-          <Card className="mb-6">
+          <Card className="mt-6">
             <h3 className="mb-1 text-sm font-semibold text-[--text-primary]">Pre-Paris vs Post-Paris CAGR</h3>
             <ClimateGap highlightIso3={iso3} />
             <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</SourceLabel>
           </Card>
+        </div>
+      </section>
 
-          {/* NDC Gap if available */}
-          {showNdcGap && (
+      {/* ── Section: NDC Gap Tracker ── */}
+      {showNdcGap && (
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <SectionTitle>NDC Gap Tracker</SectionTitle>
             <Card>
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 {countryName} — CO&#x2082; per capita projection vs NDC target
@@ -1046,72 +989,48 @@ export function CountryClient({
               <NDCGapChart iso3={iso3} />
               <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
             </Card>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 3 - ENERGY (Sankey + Transition Progress)
-      ══════════════════════════════════════════════════════════════════════════ */}
+      {/* ── Section 2: Energy Transition ── */}
       {emberMix && (
-        <section
-          id="scene-energy"
-          ref={scene3.ref}
-          className="border-b border-[--border-card] bg-white px-4 py-16"
-          style={{
-            opacity: scene3.isInView ? 1 : 0,
-            transform: scene3.isInView ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-          }}
-        >
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Energy Transition</SectionTitle>
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card>
+                <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
+                  Electricity Generation Mix ({emberMix.year})
+                </h3>
+                <ClimateSankey
+                  country={countryName}
+                  fossil={emberMix.fossil}
+                  renewable={emberMix.renewable}
+                  nuclear={emberMix.other}
+                />
+                <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
+              </Card>
 
-            {/* Sankey chart - large and centered */}
-            <Card className="mb-6">
-              <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
-                Electricity Generation Mix ({emberMix.year})
-              </h3>
-              <ClimateSankey
-                country={countryName}
-                fossil={emberMix.fossil}
-                renewable={emberMix.renewable}
-                nuclear={emberMix.other}
-              />
-              <SourceLabel>Source: Ember Global Electricity Review ({emberMix.year})</SourceLabel>
-            </Card>
-
-            {/* Transition progress as grid */}
-            <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <p className="text-sm text-[--text-secondary]">Renewable Share</p>
-                <p className="mt-2 font-mono text-2xl font-bold text-[--text-primary]">{emberMix.renewable.toFixed(1)}%</p>
-                {renewableChange != null && (
-                  <p className={`mt-1 text-sm font-medium ${renewableChange > 0 ? 'text-[--accent-positive]' : 'text-[--accent-negative]'}`}>
-                    {renewableChange > 0 ? '↑ +' : '↓ '}{renewableChange.toFixed(1)}pp over 5 years
-                  </p>
-                )}
-              </div>
-              <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <p className="text-sm text-[--text-secondary]">Fossil Fuel Share</p>
-                <p className="mt-2 font-mono text-2xl font-bold text-[--text-primary]">{emberMix.fossil.toFixed(1)}%</p>
-              </div>
-              <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <p className="text-sm text-[--text-secondary]">Nuclear & Other</p>
-                <p className="mt-2 font-mono text-2xl font-bold text-[--text-primary]">{emberMix.other.toFixed(1)}%</p>
-              </div>
-              {carbonIntensity != null && (
-                <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-                  <p className="text-sm text-[--text-secondary]">Carbon Intensity</p>
-                  <p className="mt-2 font-mono text-2xl font-bold text-[--text-primary]">{carbonIntensity.toFixed(0)} <span className="text-sm font-normal">gCO₂/kWh</span></p>
-                  <p className={`mt-1 text-sm font-medium ${carbonIntensity < 100 ? 'text-[--accent-positive]' : carbonIntensity < 300 ? 'text-amber-600' : 'text-[--accent-negative]'}`}>
-                    {carbonIntensity < 100 ? 'Low-carbon grid' : carbonIntensity < 300 ? 'Moderate carbon grid' : 'High-carbon grid'}
-                  </p>
+              <Card>
+                <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">Transition Progress</h3>
+                <div className="space-y-4">
+                  {[
+                    { label: 'Renewable Share', value: `${emberMix.renewable.toFixed(1)}%`, sub: renewableChange != null ? `${renewableChange > 0 ? '↑ +' : '↓ '}${renewableChange.toFixed(1)}pp over 5 years` : undefined, subColor: renewableChange != null ? (renewableChange > 0 ? 'text-[--accent-positive]' : 'text-[--accent-negative]') : '' },
+                    { label: 'Fossil Fuel Share', value: `${emberMix.fossil.toFixed(1)}%` },
+                    { label: 'Nuclear & Other', value: `${emberMix.other.toFixed(1)}%` },
+                    ...(carbonIntensity != null ? [{ label: 'Carbon Intensity', value: `${carbonIntensity.toFixed(0)} gCO₂/kWh`, sub: carbonIntensity < 100 ? 'Low-carbon grid' : carbonIntensity < 300 ? 'Moderate carbon grid' : 'High-carbon grid', subColor: carbonIntensity < 100 ? 'text-[--accent-positive]' : carbonIntensity < 300 ? 'text-amber-600' : 'text-[--accent-negative]' }] : []),
+                  ].map(row => (
+                    <div key={row.label} className="rounded-lg bg-[--bg-section] p-4">
+                      <p className="text-sm text-[--text-secondary]">{row.label}</p>
+                      <p className="mt-1 font-mono text-2xl font-bold text-[--text-primary]">{row.value}</p>
+                      {row.sub && <p className={`mt-1 text-sm font-medium ${row.subColor}`}>{row.sub}</p>}
+                    </div>
+                  ))}
                 </div>
-              )}
+              </Card>
             </div>
 
-            {/* Insight */}
             {transitionEntry ? (
               <InsightText>
                 <strong>{countryName}&apos;s renewable share ({emberMix.renewable.toFixed(1)}%)</strong> ranks{' '}
@@ -1131,100 +1050,71 @@ export function CountryClient({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 4 - SOURCES (Emission Sources + Fossil Fuel Breakdown)
-      ══════════════════════════════════════════════════════════════════════════ */}
-      {(ctraceBarsWithPct.length > 0 || hasFuelData) && (
-        <section
-          id="scene-sources"
-          ref={scene4.ref}
-          className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16"
-          style={{
-            opacity: scene4.isInView ? 1 : 0,
-            transform: scene4.isInView ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-          }}
-        >
+      {/* ── Section 3 (NEW): Emission Sources ── */}
+      {ctraceBarsWithPct.length > 0 && (
+        <section className="border-b border-[--border-card] bg-white px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Where Do Emissions Come From?</SectionTitle>
-
-            {/* Grid: Horizontal Bar + Stacked Area */}
-            <div className="grid gap-6 lg:grid-cols-2">
-              {ctraceBarsWithPct.length > 0 && (
-                <Card>
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-[--text-primary]">
-                      Emissions by Sector {extra.ctraceYear ? `(${extra.ctraceYear})` : ''}
-                    </h3>
-                    {ctraceTotal > 0 && (
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-[--text-secondary]">
-                        Total: {ctraceTotal >= 1000 ? `${(ctraceTotal / 1000).toFixed(2)} Gt` : `${ctraceTotal.toFixed(1)} Mt`} CO₂e
-                      </span>
-                    )}
-                  </div>
-                  <HorizontalBarChart bars={ctraceBarsWithPct} />
-                  <SourceLabel>Source: Climate TRACE v7 ({extra.ctraceYear ?? 'latest'})</SourceLabel>
-                </Card>
-              )}
-
-              {hasFuelData && (
-                <Card>
-                  <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">Fossil CO₂ by Fuel Type</h3>
-                  <div className="mb-4 flex flex-wrap items-center gap-4 text-xs">
-                    {FUEL_SERIES.map(f => (
-                      <span key={f.key} className="flex items-center gap-1.5">
-                        <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: f.color }} />
-                        <span className="text-[--text-secondary]">{f.label}</span>
-                      </span>
-                    ))}
-                  </div>
-                  <StackedAreaChart years={fuelYears} seriesDef={FUEL_SERIES} data={fuelData} />
-                  <SourceLabel>Source: Our World in Data (OWID) · OWID.COAL_CO2, OWID.OIL_CO2, OWID.GAS_CO2, OWID.CEMENT_CO2, OWID.FLARING_CO2</SourceLabel>
-                </Card>
-              )}
-            </div>
-
-            {/* Merged insight */}
-            {ctraceBarsWithPct.length > 0 && (
-              <InsightText>
-                {ctraceBarsWithPct[0] && (
-                  <>
-                    <strong>{ctraceBarsWithPct[0].label}</strong> is the largest emissions source at{' '}
-                    <strong>{ctraceBarsWithPct[0].pct.toFixed(1)}%</strong> of total.{' '}
-                  </>
+            <Card>
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-[--text-primary]">
+                  Emissions by Sector {extra.ctraceYear ? `(${extra.ctraceYear})` : ''}
+                </h3>
+                {ctraceTotal > 0 && (
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-[--text-secondary]">
+                    Total: {ctraceTotal >= 1000 ? `${(ctraceTotal / 1000).toFixed(2)} Gt` : `${ctraceTotal.toFixed(1)} Mt`} CO₂e
+                  </span>
                 )}
-                {ctraceBarsWithPct[1] && (
-                  <>
-                    <strong>{ctraceBarsWithPct[1].label}</strong> follows at{' '}
-                    <strong>{ctraceBarsWithPct[1].pct.toFixed(1)}%</strong>.
-                  </>
-                )}
-                {' '}Data from Climate TRACE satellite-based sector analysis.
-              </InsightText>
-            )}
+              </div>
+              <HorizontalBarChart bars={ctraceBarsWithPct} />
+              <SourceLabel>Source: Climate TRACE v7 ({extra.ctraceYear ?? 'latest'})</SourceLabel>
+            </Card>
+            <InsightText>
+              {ctraceBarsWithPct[0] && (
+                <>
+                  <strong>{ctraceBarsWithPct[0].label}</strong> is the largest emissions source at{' '}
+                  <strong>{ctraceBarsWithPct[0].pct.toFixed(1)}%</strong> of total.{' '}
+                </>
+              )}
+              {ctraceBarsWithPct[1] && (
+                <>
+                  <strong>{ctraceBarsWithPct[1].label}</strong> follows at{' '}
+                  <strong>{ctraceBarsWithPct[1].pct.toFixed(1)}%</strong>.
+                </>
+              )}
+              {' '}Data from Climate TRACE satellite-based sector analysis.
+            </InsightText>
           </div>
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 5 - RESPONSIBILITY (Historical Responsibility + Beyond CO₂)
-      ══════════════════════════════════════════════════════════════════════════ */}
-      {(extra.cumulativeCo2 != null || extra.shareCumulative != null || extra.tempGhg != null || extra.methaneSeries.length > 0 || extra.n2oSeries.length > 0) && (
-        <section
-          id="scene-responsibility"
-          ref={scene5.ref}
-          className="border-b border-[--border-card] bg-white px-4 py-16"
-          style={{
-            opacity: scene5.isInView ? 1 : 0,
-            transform: scene5.isInView ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-          }}
-        >
+      {/* ── Section 4 (NEW): Fossil Fuel Breakdown ── */}
+      {hasFuelData && (
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
-            <SectionTitle>Historical Responsibility &amp; Beyond CO₂</SectionTitle>
+            <SectionTitle>What Burns? Fossil CO&#x2082; by Fuel Type</SectionTitle>
+            <Card>
+              <div className="mb-4 flex flex-wrap items-center gap-4 text-xs">
+                {FUEL_SERIES.map(f => (
+                  <span key={f.key} className="flex items-center gap-1.5">
+                    <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: f.color }} />
+                    <span className="text-[--text-secondary]">{f.label}</span>
+                  </span>
+                ))}
+              </div>
+              <StackedAreaChart years={fuelYears} seriesDef={FUEL_SERIES} data={fuelData} />
+              <SourceLabel>Source: Our World in Data (OWID) · OWID.COAL_CO2, OWID.OIL_CO2, OWID.GAS_CO2, OWID.CEMENT_CO2, OWID.FLARING_CO2</SourceLabel>
+            </Card>
+          </div>
+        </section>
+      )}
 
-            {/* 3 stat cards on top */}
-            <div className="mb-6 grid gap-4 sm:grid-cols-3">
+      {/* ── Section 5 (NEW): Historical Responsibility ── */}
+      {(extra.cumulativeCo2 != null || extra.shareCumulative != null || extra.tempGhg != null) && (
+        <section className="border-b border-[--border-card] bg-white px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <SectionTitle>Historical Responsibility</SectionTitle>
+            <div className="grid gap-4 sm:grid-cols-3">
               <StatCard
                 label="Cumulative CO₂"
                 value={extra.cumulativeCo2 != null ? (extra.cumulativeCo2 / 1000).toFixed(1) : null}
@@ -1245,9 +1135,8 @@ export function CountryClient({
               />
             </div>
 
-            {/* Temperature bar if data */}
             {tempBar.length > 0 && (
-              <Card className="mb-6">
+              <Card className="mt-6">
                 <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
                   Temperature Contribution by Gas
                 </h3>
@@ -1270,11 +1159,32 @@ export function CountryClient({
                 <SourceLabel>Source: Our World in Data · OWID.TEMPERATURE_CHANGE_FROM_GHG/CO2/CH4/N2O</SourceLabel>
               </Card>
             )}
+          </div>
+        </section>
+      )}
 
-            {/* Methane + N2O if data */}
+      {/* ── Section 6 (NEW): Beyond CO₂ ── */}
+      {(extra.methaneSeries.length > 0 || extra.n2oSeries.length > 0) && (
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <SectionTitle>Beyond CO&#x2082;: Methane &amp; Nitrous Oxide</SectionTitle>
+            <div className="mb-6 grid gap-4 sm:grid-cols-2">
+              <StatCard
+                label="Total GHG (latest)"
+                value={extra.totalGhgLatest != null ? extra.totalGhgLatest.toFixed(1) : null}
+                unit="Mt CO₂e"
+                sub="All greenhouse gases combined"
+              />
+              <StatCard
+                label="GHG per capita (latest)"
+                value={extra.ghgPerCapitaLatest != null ? extra.ghgPerCapitaLatest.toFixed(2) : null}
+                unit="t CO₂e"
+                sub="Total GHG per person"
+              />
+            </div>
+
             {extra.methaneSeries.length > 0 && extra.n2oSeries.length > 0 && (
               <Card>
-                <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">Beyond CO₂: Methane &amp; Nitrous Oxide</h3>
                 <div className="mb-3 flex flex-wrap items-center gap-4 text-xs">
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block h-3 w-3 rounded-sm bg-[#F59E0B]" />
@@ -1297,20 +1207,9 @@ export function CountryClient({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 6 - ECONOMY (Economic Decoupling)
-      ══════════════════════════════════════════════════════════════════════════ */}
+      {/* ── Section 7: Economic Decoupling (upgraded) ── */}
       {gdpVsCo2.length > 0 && (
-        <section
-          id="scene-economy"
-          ref={scene6.ref}
-          className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16"
-          style={{
-            opacity: scene6.isInView ? 1 : 0,
-            transform: scene6.isInView ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-          }}
-        >
+        <section className="border-b border-[--border-card] bg-white px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
             <SectionTitle>Economic Decoupling</SectionTitle>
             <Card>
@@ -1364,35 +1263,27 @@ export function CountryClient({
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 7 - VULNERABILITY (Kaya + Vulnerability + Equity + Risk Profile)
-      ══════════════════════════════════════════════════════════════════════════ */}
-      <section
-        id="scene-vulnerability"
-        ref={scene7.ref}
-        className="border-b border-[--border-card] bg-white px-4 py-16"
-        style={{
-          opacity: scene7.isInView ? 1 : 0,
-          transform: scene7.isInView ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-        }}
-      >
-        <div className="mx-auto max-w-[1200px]">
-          <SectionTitle>Climate Vulnerability &amp; Resilience</SectionTitle>
-
-          {/* Kaya Waterfall if available */}
-          {showKaya && (
-            <Card className="mb-6">
+      {/* ── Section: Kaya Decomposition ── */}
+      {showKaya && (
+        <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+          <div className="mx-auto max-w-[1200px]">
+            <SectionTitle>Why Did Emissions Change? (Kaya Decomposition)</SectionTitle>
+            <Card>
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
-                Why Did Emissions Change? — {countryName} LMDI Factor Decomposition
+                {countryName} — LMDI Factor Decomposition
               </h3>
               <KayaWaterfall iso3={iso3} />
               <SourceLabel>Source: World Bank WDI + Ember + OWID · LMDI additive decomposition (Kaya Identity)</SourceLabel>
             </Card>
-          )}
+          </div>
+        </section>
+      )}
 
-          {/* Vulnerability Scatter */}
-          <Card className="mb-6">
+      {/* ── Section 8: Climate Vulnerability ── */}
+      <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionTitle>Climate Vulnerability</SectionTitle>
+          <Card>
             <h3 className="mb-4 text-sm font-semibold text-[--text-primary]">
               Vulnerability vs Readiness (Pilot Countries, 2023)
             </h3>
@@ -1406,9 +1297,8 @@ export function CountryClient({
             <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
           </Card>
 
-          {/* Equity Scatter if available */}
           {showEquity && (
-            <Card className="mb-6">
+            <Card className="mt-6">
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
                 Climate Equity: Who Polluted vs Who Suffers
               </h3>
@@ -1417,96 +1307,51 @@ export function CountryClient({
             </Card>
           )}
 
-          {/* Risk Profile cards */}
-          {riskProfile && (
-            <div className="mb-6 grid gap-4 md:grid-cols-2">
-              <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <h3 className="mb-3 text-sm font-semibold text-[--text-primary]">Key Vulnerabilities</h3>
-                <ul className="space-y-2">
-                  {riskProfile.key_vulnerabilities.map((v, i) => (
-                    <li key={i} className="flex gap-2 text-sm text-[--text-secondary]">
-                      <span className="mt-0.5 shrink-0 text-[--accent-negative]">▸</span>{v}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-                <h3 className="mb-3 text-sm font-semibold text-[--text-primary]">Strengths</h3>
-                <ul className="space-y-2">
-                  {riskProfile.strengths.map((s, i) => (
-                    <li key={i} className="flex gap-2 text-sm text-[--text-secondary]">
-                      <span className="mt-0.5 shrink-0 text-[--accent-positive]">▸</span>{s}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+            {myScatter && (
+              <InsightText>
+                <strong>{countryName} ranks {ordinal(readinessRank!)} in climate readiness (score: {myScatter.readiness.toFixed(3)})</strong>{' '}
+                among pilot countries.{' '}
+                Vulnerability stands at <strong>{myScatter.vulnerability.toFixed(3)}</strong> —{' '}
+                {myScatter.vulnerability < 0.35
+                  ? 'in the lower range, indicating relatively stronger resilience.'
+                  : myScatter.vulnerability < 0.45
+                    ? 'in the medium range, indicating moderate climate exposure.'
+                    : 'in the higher range, reflecting significant climate exposure.'}
+                {emberMix && ` Fossil fuel dependency (${emberMix.fossil.toFixed(1)}%) remains a key driver.`}
+              </InsightText>
+            )}
 
-          {/* Insight sentence */}
-          {myScatter && (
-            <InsightText>
-              <strong>{countryName} ranks {ordinal(readinessRank!)} in climate readiness (score: {myScatter.readiness.toFixed(3)})</strong>{' '}
-              among pilot countries.{' '}
-              Vulnerability stands at <strong>{myScatter.vulnerability.toFixed(3)}</strong> —{' '}
-              {myScatter.vulnerability < 0.35
-                ? 'in the lower range, indicating relatively stronger resilience.'
-                : myScatter.vulnerability < 0.45
-                  ? 'in the medium range, indicating moderate climate exposure.'
-                  : 'in the higher range, reflecting significant climate exposure.'}
-              {emberMix && ` Fossil fuel dependency (${emberMix.fossil.toFixed(1)}%) remains a key driver.`}
-              {riskProfile && ` Assessment: ${riskProfile.risk_level} risk. ${riskProfile.summary}`}
-            </InsightText>
-          )}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════════
-          SCENE 8 - FOOTER (Sources + Download + Compare buttons)
-      ══════════════════════════════════════════════════════════════════════════ */}
-      <section
-        id="scene-footer"
-        ref={scene8.ref}
-        className="bg-[--bg-section] px-4 py-16"
-        style={{
-          opacity: scene8.isInView ? 1 : 0,
-          transform: scene8.isInView ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-        }}
-      >
-        <div className="mx-auto max-w-[1200px]">
-          <div className="rounded-xl border border-[--border-card] bg-white p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
-            <h3 className="mb-4 text-lg font-semibold text-[--text-primary]">Data Sources</h3>
-            <p className="mb-6 text-sm text-[--text-secondary]">
-              Sources: World Bank WDI, Ember, ND-GAIN, OWID, Climate TRACE (2000-2023)
-            </p>
-
-            {/* Action buttons */}
-            <div className="mb-6 flex flex-wrap gap-4">
-              <button className="rounded-lg bg-[#0066FF] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]">
-                Download as PNG
-              </button>
-              <a
-                href="/compare"
-                className="inline-block rounded-lg border border-[--border-card] bg-white px-6 py-3 text-sm font-semibold text-[--text-primary] transition-colors hover:bg-[--bg-section]"
-              >
-                Compare with other countries
-              </a>
-            </div>
-
-            {/* Collapsible details */}
-            <details className="group">
-              <summary className="cursor-pointer text-sm font-medium text-[--text-primary] hover:text-[#0066FF]">
-                View all indicators
-              </summary>
-              <div className="mt-4 rounded-lg bg-[--bg-section] p-4 text-sm text-[--text-secondary]">
-                Full indicator list coming soon
-              </div>
-            </details>
+            {riskProfile && (
+              <>
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
+                    <h3 className="mb-3 text-sm font-semibold text-[--text-primary]">Key Vulnerabilities</h3>
+                    <ul className="space-y-2">
+                      {riskProfile.key_vulnerabilities.map((v, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-[--text-secondary]">
+                          <span className="mt-0.5 shrink-0 text-[--accent-negative]">▸</span>{v}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="rounded-xl border border-[--border-card] bg-white p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
+                    <h3 className="mb-3 text-sm font-semibold text-[--text-primary]">Strengths</h3>
+                    <ul className="space-y-2">
+                      {riskProfile.strengths.map((s, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-[--text-secondary]">
+                          <span className="mt-0.5 shrink-0 text-[--accent-positive]">▸</span>{s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <InsightText>
+                  <strong>Assessment ({riskProfile.risk_level} risk):</strong>{' '}{riskProfile.summary}
+                </InsightText>
+              </>
+            )}
           </div>
-        </div>
-      </section>
-
+        </section>
     </div>
   );
 }
