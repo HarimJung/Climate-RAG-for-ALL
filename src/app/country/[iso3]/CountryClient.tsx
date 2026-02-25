@@ -791,7 +791,6 @@ export function CountryClient({
       </section>
 
       {/* ── Section: NDC Gap Tracker ── */}
-      {!showNdcGap && <div style={{ position: 'absolute', left: '-9999px', visibility: 'hidden' }}><NDCGapChart iso3={iso3} onLoad={(hasData) => { if (hasData) setShowNdcGap(true); }} /></div>}
       {showNdcGap && (
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
@@ -1078,7 +1077,6 @@ export function CountryClient({
       )}
 
       {/* ── Section: Kaya Decomposition ── */}
-      {!showKaya && <div style={{ position: 'absolute', left: '-9999px', visibility: 'hidden' }}><KayaWaterfall iso3={iso3} onLoad={(hasData) => { if (hasData) setShowKaya(true); }} /></div>}
       {showKaya && (
         <section className="border-b border-[--border-card] bg-[--bg-section] px-4 py-16">
           <div className="mx-auto max-w-[1200px]">
@@ -1112,7 +1110,6 @@ export function CountryClient({
             <SourceLabel>Source: ND-GAIN Country Index (2023). Lower-left = ideal (low vulnerability, high readiness)</SourceLabel>
           </Card>
 
-          {!showEquity && <div style={{ position: 'absolute', left: '-9999px', visibility: 'hidden' }}><EquityScatter highlightIso3={iso3} onLoad={(hasData) => { if (hasData) setShowEquity(true); }} /></div>}
           {showEquity && (
             <Card className="mt-6">
               <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
