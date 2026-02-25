@@ -409,12 +409,29 @@ function IndexedTripleLineChart({
 
 // ── Chart: Horizontal Bar (CTRACE sectors) ────────────────────────────────────
 function HorizontalBarChart({ bars }: { bars: { label: string; value: number; color: string; pct: number }[] }) {
+  const [hover, setHover] = useState<{ label: string; value: number; pct: number; y: number } | null>(null);
+
   if (bars.length === 0) return null;
   const maxVal = bars[0].value;
   const ROW = 32, PAD = 12, LBL = 140, VW = 620, BMAX = VW - LBL - PAD - 90;
   const VH = bars.length * ROW + PAD * 2;
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const my = ((e.clientY - rect.top) / rect.height) * VH;
+    const idx = Math.floor((my - PAD) / ROW);
+    if (idx >= 0 && idx < bars.length) {
+      const b = bars[idx];
+      setHover({ label: b.label, value: b.value, pct: b.pct, y: PAD + idx * ROW + ROW / 2 });
+    } else {
+      setHover(null);
+    }
+  }, [bars]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Emissions by sector">
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Emissions by sector"
+      onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
       <defs>
         {bars.map((b, i) => (
           <linearGradient key={`bar-grad-${i}`} id={`bar-grad-${i}`} x1="0" y1="0" x2="1" y2="0">
@@ -438,6 +455,15 @@ function HorizontalBarChart({ bars }: { bars: { label: string; value: number; co
           </g>
         );
       })}
+      {/* Hover tooltip */}
+      {hover && (
+        <g style={{ pointerEvents: 'none' }}>
+          <rect x={10} y={hover.y - 28} width={120} height={48} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
+          <text x={18} y={hover.y - 14} fontSize={11} fontWeight="700" fill="#1A1A2E">{hover.label}</text>
+          <text x={18} y={hover.y} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{hover.value.toFixed(2)} Mt</text>
+          <text x={18} y={hover.y + 14} fontSize={10} fill="#4A4A6A" fontFamily="monospace">{hover.pct.toFixed(1)}% of total</text>
+        </g>
+      )}
     </svg>
   );
 }
@@ -450,6 +476,8 @@ function StackedAreaChart({
   seriesDef: { key: string; label: string; color: string }[];
   data: Record<number, Record<string, number>>;
 }) {
+  const [hover, setHover] = useState<{ year: number; values: Record<string, number>; x: number } | null>(null);
+
   const VW = 760, VH = 280, ML = 54, MR = 16, MT = 18, MB = 36;
   const W = VW - ML - MR, H = VH - MT - MB;
   if (years.length === 0) return null;
@@ -468,9 +496,24 @@ function StackedAreaChart({
     return { color: s.color, label: s.label, d: `${top} ${bot} Z` };
   });
 
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * VW;
+    const rawYear = minYear + ((svgX - ML) / W) * (maxYear - minYear);
+    const clamped = Math.max(minYear, Math.min(maxYear, Math.round(rawYear)));
+    const nearest = years.reduce((a, b) => Math.abs(a - clamped) <= Math.abs(b - clamped) ? a : b);
+    const values: Record<string, number> = {};
+    for (const s of seriesDef) {
+      values[s.label] = data[nearest]?.[s.key] ?? 0;
+    }
+    setHover({ year: nearest, values, x: xs(nearest) });
+  }, [years, seriesDef, data, minYear, maxYear]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const xt = xTicks(minYear, maxYear);
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Fossil fuel CO₂ by fuel type">
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" role="img" aria-label="Fossil fuel CO₂ by fuel type"
+      onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
       {yTickVals.map(v => <line key={v} x1={ML} y1={ys(v)} x2={VW - MR} y2={ys(v)} stroke="#E8E8ED" strokeWidth={1} />)}
       {yTickVals.map(v => <text key={v} x={ML - 6} y={ys(v)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill="#4A4A6A">{v % 1 === 0 ? v : v.toFixed(1)}</text>)}
       {xt.map(y => <text key={y} x={xs(y)} y={VH - 10} textAnchor="middle" fontSize={11} fill="#4A4A6A">{y}</text>)}
@@ -478,6 +521,24 @@ function StackedAreaChart({
       {areaPaths.map(p => <path key={p.label} d={p.d} fill={p.color} opacity={0.82} />)}
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
+      {/* Hover tooltip */}
+      {hover && (() => {
+        const entries = Object.entries(hover.values).filter(([, v]) => v > 0);
+        const th = 18 + entries.length * 14;
+        const tx = hover.x + 8 + 100 < VW - MR ? hover.x + 8 : hover.x - 108;
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
+            <rect x={tx} y={MT + 4} width={100} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
+            <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
+            {entries.map(([label, value], i) => (
+              <text key={label} x={tx + 8} y={MT + 32 + i * 14} fontSize={9} fill="#4A4A6A" fontFamily="monospace">
+                {label}: {value.toFixed(1)}
+              </text>
+            ))}
+          </g>
+        );
+      })()}
     </svg>
   );
 }
@@ -491,6 +552,8 @@ function DualYLineChart({
   leftColor: string; rightColor: string;
   leftUnit: string; rightUnit: string;
 }) {
+  const [hover, setHover] = useState<{ year: number; left: number | null; right: number | null; x: number } | null>(null);
+
   const VW = 760, VH = 260, ML = 56, MR = 56, MT = 18, MB = 36;
   const W = VW - ML - MR, H = VH - MT - MB;
   const allYears = [...new Set([...leftData.map(d => d.year), ...rightData.map(d => d.year)])].sort((a, b) => a - b);
@@ -507,8 +570,22 @@ function DualYLineChart({
   const pathL = sortL.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${lys(d.value).toFixed(1)}`).join(' ');
   const pathR = sortR.map((d, i) => `${i ? 'L' : 'M'}${xs(d.year).toFixed(1)} ${rys(d.value).toFixed(1)}`).join(' ');
   const xt = xTicks(minYear, maxYear);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * VW;
+    const rawYear = minYear + ((svgX - ML) / W) * (maxYear - minYear);
+    const clamped = Math.max(minYear, Math.min(maxYear, Math.round(rawYear)));
+    const nearest = allYears.reduce((a, b) => Math.abs(a - clamped) <= Math.abs(b - clamped) ? a : b);
+    const leftPoint = sortL.find(d => d.year === nearest);
+    const rightPoint = sortR.find(d => d.year === nearest);
+    setHover({ year: nearest, left: leftPoint?.value ?? null, right: rightPoint?.value ?? null, x: xs(nearest) });
+  }, [allYears, sortL, sortR, minYear, maxYear]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full">
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full"
+      onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
       {lMax.map(v => <line key={v} x1={ML} y1={lys(v)} x2={VW - MR} y2={lys(v)} stroke="#E8E8ED" strokeWidth={1} />)}
       {lMax.map(v => <text key={v} x={ML - 6} y={lys(v)} textAnchor="end" dominantBaseline="middle" fontSize={11} fill={leftColor}>{v % 1 === 0 ? v : v.toFixed(1)}</text>)}
       {rMax.map(v => <text key={v} x={VW - MR + 6} y={rys(v)} dominantBaseline="middle" fontSize={11} fill={rightColor}>{v % 1 === 0 ? v : v.toFixed(1)}</text>)}
@@ -520,6 +597,24 @@ function DualYLineChart({
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke={leftColor} strokeWidth={1} strokeOpacity={0.4} />
       <line x1={VW - MR} y1={MT} x2={VW - MR} y2={MT + H} stroke={rightColor} strokeWidth={1} strokeOpacity={0.4} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
+      {/* Hover tooltip */}
+      {hover && (() => {
+        const hasLeft = hover.left != null;
+        const hasRight = hover.right != null;
+        const th = 18 + (hasLeft ? 14 : 0) + (hasRight ? 14 : 0);
+        const tx = hover.x + 8 + 110 < VW - MR ? hover.x + 8 : hover.x - 118;
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <line x1={hover.x} y1={MT} x2={hover.x} y2={MT + H} stroke="#CBD5E1" strokeWidth={1} strokeDasharray="4,3" />
+            {hasLeft && <circle cx={hover.x} cy={lys(hover.left!)} r={3} fill={leftColor} stroke="white" strokeWidth={1.5} />}
+            {hasRight && <circle cx={hover.x} cy={rys(hover.right!)} r={3} fill={rightColor} stroke="white" strokeWidth={1.5} />}
+            <rect x={tx} y={MT + 4} width={110} height={th} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
+            <text x={tx + 8} y={MT + 18} fontSize={11} fontWeight="700" fill="#1A1A2E" fontFamily="monospace">{hover.year}</text>
+            {hasLeft && <text x={tx + 8} y={MT + 32} fontSize={10} fill={leftColor} fontFamily="monospace">CH₄: {hover.left!.toFixed(1)}</text>}
+            {hasRight && <text x={tx + 8} y={MT + (hasLeft ? 46 : 32)} fontSize={10} fill={rightColor} fontFamily="monospace">N₂O: {hover.right!.toFixed(1)}</text>}
+          </g>
+        );
+      })()}
     </svg>
   );
 }
@@ -529,6 +624,8 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
   data: { iso3: string; name: string; vulnerability: number; readiness: number }[];
   highlightIso3: string;
 }) {
+  const [hover, setHover] = useState<{ name: string; vuln: number; ready: number; x: number; y: number } | null>(null);
+
   const VW = 640, VH = 320, ML = 60, MR = 20, MT = 16, MB = 50;
   const W = VW - ML - MR, H = VH - MT - MB;
   if (data.length === 0) return null;
@@ -540,8 +637,29 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
   const COLORS: Record<string, string> = { KOR: '#0066FF', USA: '#E5484D', DEU: '#F59E0B', BRA: '#00A67E', NGA: '#8B5CF6', BGD: '#EC4899' };
   const vt = [minV, (minV + maxV) / 2, maxV].map(v => Math.round(v * 1000) / 1000);
   const rt = [minR, (minR + maxR) / 2, maxR].map(v => Math.round(v * 1000) / 1000);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * VW;
+    const my = ((e.clientY - rect.top) / rect.height) * VH;
+    let closest = data[0];
+    let minDist = Infinity;
+    for (const d of data) {
+      const dx = xs(d.vulnerability) - mx;
+      const dy = ys(d.readiness) - my;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < minDist) { minDist = dist; closest = d; }
+    }
+    if (minDist < 40) {
+      setHover({ name: closest.name, vuln: closest.vulnerability, ready: closest.readiness, x: xs(closest.vulnerability), y: ys(closest.readiness) });
+    } else {
+      setHover(null);
+    }
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full">
+    <svg viewBox={`0 0 ${VW} ${VH}`} className="w-full" onMouseMove={handleMouseMove} onMouseLeave={() => setHover(null)} style={{ cursor: 'crosshair' }}>
       <defs>
         <filter id="scatter-glow">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -589,6 +707,18 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
       })}
       <line x1={ML} y1={MT} x2={ML} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
       <line x1={ML} y1={MT + H} x2={VW - MR} y2={MT + H} stroke="#C8C8D0" strokeWidth={1} />
+      {/* Hover tooltip */}
+      {hover && (() => {
+        const tx = hover.x + 8 + 130 < VW - MR ? hover.x + 8 : hover.x - 138;
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <rect x={tx} y={hover.y - 28} width={130} height={48} rx={6} fill="rgba(255,255,255,0.97)" stroke="#E2E8F0" strokeWidth={1} />
+            <text x={tx + 8} y={hover.y - 14} fontSize={11} fontWeight="700" fill="#1A1A2E">{hover.name}</text>
+            <text x={tx + 8} y={hover.y} fontSize={10} fill="#8B5CF6" fontFamily="monospace">Vuln: {hover.vuln.toFixed(3)}</text>
+            <text x={tx + 8} y={hover.y + 14} fontSize={10} fill="#10B981" fontFamily="monospace">Ready: {hover.ready.toFixed(3)}</text>
+          </g>
+        );
+      })()}
     </svg>
   );
 }
@@ -661,6 +791,36 @@ export function CountryClient({
           co2PerGdpSeries: grouped['OWID.CO2_PER_GDP'] ?? [],
         });
       });
+
+    // Check for NDC Gap data
+    fetch(`/data/ndc-gap/${iso3}.json`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && data.historical && data.historical.length > 0) {
+          setShowNdcGap(true);
+        }
+      })
+      .catch(() => setShowNdcGap(false));
+
+    // Check for Kaya data
+    fetch(`/data/kaya/${iso3}.json`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && data.waterfall && data.waterfall.length > 0) {
+          setShowKaya(true);
+        }
+      })
+      .catch(() => setShowKaya(false));
+
+    // Check for Equity data
+    fetch('/data/equity-scatter.json')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && data.countries && data.countries.length > 0) {
+          setShowEquity(true);
+        }
+      })
+      .catch(() => setShowEquity(false));
   }, [iso3]);
 
   // ── Derived: emissions-trend JSON ───────────────────────────────────────────
