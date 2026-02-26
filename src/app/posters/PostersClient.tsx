@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
 import { ClimateGap } from '@/components/charts/ClimateGap';
 import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldScoreboard';
+
+import { PosterHeroSection } from '@/components/posters/hero-section';
+import { BentoSection, type BentoPoster } from '@/components/posters/bento-section';
+import { PosterLightbox } from '@/components/posters/poster-card';
+import { PosterExplorer, type PosterType, POSTER_DEFS } from '@/components/posters/poster-explorer';
 
 // ── Country registry ──────────────────────────────────────────────────────────
 const COUNTRIES = [
@@ -153,7 +158,6 @@ function PosterShell({ source, children }: { source: string; children: React.Rea
       <div style={{ fontSize: '11px', color: '#CBD5E1', fontFamily: 'Inter, system-ui, sans-serif', marginTop: '14px' }}>
         {source}
       </div>
-      {/* Branding bar */}
       <div style={{
         height: '4px',
         marginTop: '12px',
@@ -222,12 +226,12 @@ function EnergyFlowPoster({ country, metrics }: { country: CountryMeta; metrics:
   const headline = energyHeadline(country.iso3, metrics.fossil, metrics.renewable, country.name);
   const fs = headline.length > 65 ? '22px' : '26px';
   return (
-    <PosterShell source="Source: Ember Climate 2023 · visualclimate.org">
+    <PosterShell source="Source: Ember Climate 2023 \u00b7 visualclimate.org">
       <div style={{ fontSize: fs, fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {country.flag}&nbsp;&nbsp;{headline}
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-        Electricity mix by source · {country.name} · 2023
+        Electricity mix by source \u00b7 {country.name} \u00b7 2023
       </div>
       <div style={{ flex: 1, marginTop: '16px', minHeight: 0 }}>
         <MiniSankey fossil={metrics.fossil} renewable={metrics.renewable} nuclear={metrics.nuclear} />
@@ -266,7 +270,6 @@ function PersonIcon({ size, color, x, y }: { size: number; color: string; x: num
 function CarbonInequalityPoster({
   country, compCountry, metrics, compMetrics,
 }: { country: CountryMeta; compCountry: CountryMeta; metrics: Metrics; compMetrics: Metrics }) {
-  // Always divide larger by smaller so ratio >= 1
   const aCO2 = metrics.co2;
   const bCO2 = compMetrics.co2;
   const bigIsA     = aCO2 >= bCO2;
@@ -290,20 +293,18 @@ function CarbonInequalityPoster({
     : `One ${bigCountry.adj} citizen emits as much CO\u2082 as ${ratio}\u00a0${smallCountry.adj} citizens.`;
 
   return (
-    <PosterShell source="Source: World Bank WDI 2023 · visualclimate.org">
+    <PosterShell source="Source: World Bank WDI 2023 \u00b7 visualclimate.org">
       <div style={{ fontSize: headline.length > 55 ? '21px' : '25px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {headline}
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-        CO\u2082 per capita comparison · 2023
+        CO\u2082 per capita comparison \u00b7 2023
       </div>
       <div style={{ flex: 1, marginTop: '12px', minHeight: 0, overflow: 'hidden' }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '100%', display: 'block' }}>
-          {/* Big emitter — left, red, 120px */}
           <PersonIcon size={bigSz} color="#EF4444" x={bigX} y={bigY} />
           <text x={bigX + bigSz / 2} y={bigY + bigSz + 16} textAnchor="middle" fontSize={12} fontWeight="700" fill="#EF4444" fontFamily="Inter, system-ui, sans-serif">{bigCountry.flag} {bigCO2.toFixed(1)} t</text>
           <text x={163} y={cy + 6} textAnchor="middle" fontSize={24} fill="#CBD5E1" fontFamily="Inter, system-ui, sans-serif">=</text>
-          {/* Small emitters — right, blue, 40px, 4-col grid */}
           {Array.from({ length: show }).map((_, i) => (
             <PersonIcon key={i} size={smSz} color="#3B82F6"
               x={gridX + (i % cols) * (smSz + smGap)}
@@ -312,11 +313,11 @@ function CarbonInequalityPoster({
           {ratio > show && (
             <text x={gridX + gridW / 2} y={gridY + gridH + 18} textAnchor="middle" fontSize={11} fill="#94A3B8" fontFamily="Inter, system-ui, sans-serif">+{ratio - show} more ({ratio} total)</text>
           )}
-          <text x={gridX + gridW / 2} y={gridY + gridH + (ratio > show ? 34 : 18)} textAnchor="middle" fontSize={12} fontWeight="700" fill="#3B82F6" fontFamily="Inter, system-ui, sans-serif">{smallCountry.flag} {smallCO2.toFixed(1)} t × {ratio}</text>
+          <text x={gridX + gridW / 2} y={gridY + gridH + (ratio > show ? 34 : 18)} textAnchor="middle" fontSize={12} fontWeight="700" fill="#3B82F6" fontFamily="Inter, system-ui, sans-serif">{smallCountry.flag} {smallCO2.toFixed(1)} t \u00d7 {ratio}</text>
         </svg>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginTop: '4px' }}>
-        <span style={{ fontSize: '48px', fontWeight: 800, color: '#1A1A2E', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1 }}>{ratio}×</span>
+        <span style={{ fontSize: '48px', fontWeight: 800, color: '#1A1A2E', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1 }}>{ratio}\u00d7</span>
         <span style={{ fontSize: '16px', color: '#64748B', fontFamily: 'Inter, system-ui, sans-serif' }}>{smallCO2.toFixed(1)} t vs {bigCO2.toFixed(1)} t per capita</span>
       </div>
     </PosterShell>
@@ -327,7 +328,7 @@ function CarbonInequalityPoster({
 
 function ParisGapPoster({ country }: { country: CountryMeta }) {
   return (
-    <PosterShell source="Source: World Bank WDI CO\u2082 per capita 2000\u20132023 · visualclimate.org">
+    <PosterShell source="Source: World Bank WDI CO\u2082 per capita 2000\u20132023 \u00b7 visualclimate.org">
       <div style={{ fontSize: '26px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {country.flag}&nbsp;&nbsp;Paris promised change. Here is who delivered.
       </div>
@@ -357,7 +358,7 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
     : `${country.name} breathes air ${ratio}\u00d7 dirtier than WHO allows.`;
 
   return (
-    <PosterShell source="Source: World Bank WDI PM2.5 · WHO guideline: 5 \u00b5g/m\u00b3 annual mean · visualclimate.org">
+    <PosterShell source="Source: World Bank WDI PM2.5 \u00b7 WHO guideline: 5 \u00b5g/m\u00b3 annual mean \u00b7 visualclimate.org">
       <div style={{ fontSize: headline.length > 55 ? '21px' : '25px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {country.flag}&nbsp;&nbsp;{headline}
       </div>
@@ -366,19 +367,12 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
       </div>
       <div style={{ flex: 1, marginTop: '12px', minHeight: 0 }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '100%', display: 'block' }}>
-          {/* Haze fill proportional to PM2.5 */}
           <rect width={W} height={H} fill={`rgba(120,100,80,${Math.min(0.12, pm25 / 100 * 0.15)})`} rx={12} />
-
-          {/* WHO circle */}
           <circle cx={W * 0.27} cy={H / 2} r={whoR} fill="#10B981" opacity={0.18} />
           <circle cx={W * 0.27} cy={H / 2} r={whoR} fill="none" stroke="#10B981" strokeWidth={2} strokeDasharray="5,3" />
           <text x={W * 0.27} y={H / 2 - 5} textAnchor="middle" fontSize={12} fontWeight="700" fill="#059669" fontFamily="Inter, system-ui, sans-serif">WHO</text>
           <text x={W * 0.27} y={H / 2 + 11} textAnchor="middle" fontSize={11} fill="#059669" fontFamily="monospace">5 \u00b5g/m\u00b3</text>
-
-          {/* vs */}
           <text x={W / 2} y={H / 2 + 6} textAnchor="middle" fontSize={20} fill="#94A3B8" fontFamily="Inter, system-ui, sans-serif">vs</text>
-
-          {/* Country circle */}
           <circle cx={W * 0.73} cy={H / 2} r={cntR} fill="#EF4444" opacity={0.1} />
           <circle cx={W * 0.73} cy={H / 2} r={cntR} fill="none" stroke="#EF4444" strokeWidth={2.5} />
           <text x={W * 0.73} y={H / 2 - 8} textAnchor="middle" fontSize={12} fontWeight="700" fill="#DC2626" fontFamily="Inter, system-ui, sans-serif">{country.name}</text>
@@ -404,7 +398,7 @@ interface RaceEntry { iso3: string; name: string; flag: string; renewable: numbe
 function TransitionRacePoster({ raceData, highlightIso3 }: { raceData: RaceEntry[]; highlightIso3: string }) {
   if (raceData.length === 0) {
     return (
-      <PosterShell source="Source: Ember Climate / OWID Energy 2023 · visualclimate.org">
+      <PosterShell source="Source: Ember Climate / OWID Energy 2023 \u00b7 visualclimate.org">
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', fontFamily: 'Inter, system-ui, sans-serif' }}>
           Loading race data&hellip;
         </div>
@@ -426,7 +420,7 @@ function TransitionRacePoster({ raceData, highlightIso3 }: { raceData: RaceEntry
   }
 
   return (
-    <PosterShell source="Source: Ember Climate / OWID Energy 2023 · visualclimate.org">
+    <PosterShell source="Source: Ember Climate / OWID Energy 2023 \u00b7 visualclimate.org">
       <div style={{ fontSize: '26px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         The renewable race: who is winning?
       </div>
@@ -467,14 +461,12 @@ const CLASS_NAME: Record<number, CountryClass['cls']> = { 1: 'Changer', 2: 'Star
 
 async function fetchScoreboardData(): Promise<CountryClass[]> {
   const supabase = createClient();
-  // Load classification values
   const { data: clsRows } = await supabase
     .from('country_data')
     .select('country_iso3, value')
     .eq('indicator_code', 'DERIVED.CLIMATE_CLASS')
     .eq('year', 2023);
 
-  // Load latest CO2 and renewable (year >= 2018)
   const { data: metricRows } = await supabase
     .from('country_data')
     .select('country_iso3, indicator_code, year, value')
@@ -482,7 +474,6 @@ async function fetchScoreboardData(): Promise<CountryClass[]> {
     .gte('year', 2018)
     .order('year', { ascending: false });
 
-  // Load country names
   const { data: cntRows } = await supabase
     .from('countries')
     .select('iso3, name');
@@ -490,7 +481,6 @@ async function fetchScoreboardData(): Promise<CountryClass[]> {
   const nameMap = new Map<string, string>((cntRows ?? []).map((c: { iso3: string; name: string }) => [c.iso3, c.name]));
   const clsMap  = new Map<string, number>((clsRows ?? []).map((r: { country_iso3: string; value: number }) => [r.country_iso3, r.value]));
 
-  // Latest metric per country per indicator
   const co2Map = new Map<string, number>();
   const renMap = new Map<string, number>();
   for (const r of (metricRows ?? []) as { country_iso3: string; indicator_code: string; year: number; value: number }[]) {
@@ -499,7 +489,6 @@ async function fetchScoreboardData(): Promise<CountryClass[]> {
   }
 
   const results: CountryClass[] = [];
-  // Countries with classification
   for (const [iso3, clsVal] of clsMap) {
     results.push({
       iso3,
@@ -509,7 +498,6 @@ async function fetchScoreboardData(): Promise<CountryClass[]> {
       renewable: renMap.get(iso3),
     });
   }
-  // Countries with no classification → NoData
   for (const [iso3, name] of nameMap) {
     if (!clsMap.has(iso3)) results.push({ iso3, name, cls: 'NoData' });
   }
@@ -534,12 +522,12 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
         Who is actually reducing emissions?
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', fontFamily: 'Inter, system-ui, sans-serif', marginBottom: '16px' }}>
-        Climate action classification · CO₂ CAGR 2015–2023 + Renewable growth 2018–2023
+        Climate action classification \u00b7 CO\u2082 CAGR 2015\u20132023 + Renewable growth 2018\u20132023
       </div>
       <WorldScoreboard countries={scoreboardData} width={836} height={428} />
       <div style={{ display: 'flex', gap: '32px', marginTop: '16px' }}>
         {[
-          { label: 'Changers', val: counts.Changer, color: '#10B981', desc: '↓CO₂ + ↑Renewable' },
+          { label: 'Changers', val: counts.Changer, color: '#10B981', desc: '\u2193CO\u2082 + \u2191Renewable' },
           { label: 'Starters', val: counts.Starter, color: '#F59E0B', desc: 'One condition met'  },
           { label: 'Talkers',  val: counts.Talker,  color: '#EF4444', desc: 'Neither condition'  },
         ].map(s => (
@@ -551,9 +539,8 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
         ))}
       </div>
       <div style={{ fontSize: '11px', color: '#CBD5E1', fontFamily: 'Inter, system-ui, sans-serif', marginTop: '16px' }}>
-        Source: World Bank WDI CO₂ / Ember Climate Renewable % · VisualClimate classification · visualclimate.org
+        Source: World Bank WDI CO\u2082 / Ember Climate Renewable % \u00b7 VisualClimate classification \u00b7 visualclimate.org
       </div>
-      {/* Branding bar */}
       <div style={{
         height: '4px',
         marginTop: '16px',
@@ -566,38 +553,7 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
   );
 }
 
-// ── Hover overlay for each card ────────────────────────────────────────────────
-
-function PosterOverlay({ title, downloading, onDownload }: {
-  title: string;
-  downloading: boolean;
-  onDownload: () => void;
-}) {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl bg-black/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-      <p className="px-4 text-center text-sm font-semibold text-white">{title}</p>
-      <button
-        onClick={e => { e.stopPropagation(); onDownload(); }}
-        disabled={downloading}
-        className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-lg transition-all hover:scale-105 hover:bg-gray-100 disabled:opacity-60 disabled:hover:scale-100"
-      >
-        {downloading ? 'Preparing…' : (
-          <>
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-            Download PNG
-          </>
-        )}
-      </button>
-    </div>
-  );
-}
-
 // ── Main PostersClient ────────────────────────────────────────────────────────
-
-type PosterType = 'energy' | 'inequality' | 'gap' | 'air' | 'race' | 'scoreboard';
-type FilterType = 'all' | PosterType;
 
 export function PostersClient() {
   const [iso3,     setIso3]     = useState('KOR');
@@ -609,7 +565,7 @@ export function PostersClient() {
   const [scoreboardData, setScoreboardData] = useState<CountryClass[]>([]);
   const [countriesList,  setCountriesList]  = useState<CountryMeta[]>(COUNTRIES);
   const [downloading,    setDownloading]    = useState<PosterType | null>(null);
-  const [filter,         setFilter]         = useState<FilterType>('all');
+  const [lightbox,       setLightbox]       = useState<PosterType | null>(null);
 
   const refs = useRef<Partial<Record<PosterType, HTMLDivElement | null>>>({});
 
@@ -633,7 +589,7 @@ export function PostersClient() {
   const country     = countriesList.find(c => c.iso3 === iso3)     ?? countriesList[0];
   const compCountry = countriesList.find(c => c.iso3 === compIso3) ?? countriesList[Math.min(5, countriesList.length - 1)];
 
-  async function handleDownload(type: PosterType) {
+  const handleDownload = useCallback(async (type: PosterType) => {
     const el = refs.current[type];
     if (!el) return;
     setDownloading(type);
@@ -646,24 +602,11 @@ export function PostersClient() {
     } finally {
       setDownloading(null);
     }
-  }
-
-  const POSTER_META: { id: PosterType; title: string; size: 'featured' | 'medium' | 'small'; featured?: boolean }[] = [
-    { id: 'scoreboard',  title: 'World Scoreboard',   size: 'featured', featured: true },
-    { id: 'energy',      title: 'Energy Flow',        size: 'medium' },
-    { id: 'gap',         title: 'Paris Gap',          size: 'medium' },
-    { id: 'race',        title: 'Transition Race',    size: 'medium' },
-    { id: 'inequality',  title: 'Carbon Inequality',  size: 'small' },
-    { id: 'air',         title: 'Air Quality',        size: 'small' },
-  ];
-
-  const filteredPosters = filter === 'all'
-    ? POSTER_META
-    : POSTER_META.filter(p => p.id === filter);
+  }, [iso3, compIso3]);
 
   function renderPoster(type: PosterType) {
     if (loading && type !== 'scoreboard' && type !== 'race') {
-      return <div className="flex aspect-square items-center justify-center text-sm text-[--text-muted]">Loading…</div>;
+      return <div className="flex aspect-square items-center justify-center text-sm text-[#8888A0]">Loading\u2026</div>;
     }
     switch (type) {
       case 'energy':     return <EnergyFlowPoster country={country} metrics={metrics} />;
@@ -675,90 +618,147 @@ export function PostersClient() {
     }
   }
 
+  function renderPosterRef(type: PosterType) {
+    return (el: HTMLDivElement | null) => { refs.current[type] = el; };
+  }
+
+  // Build lightbox stats based on type
+  function getLightboxStats(type: PosterType) {
+    switch (type) {
+      case 'energy':
+        return [
+          { label: 'Fossil', value: `${metrics.fossil.toFixed(1)}%`, color: '#EF4444' },
+          { label: 'Renewable', value: `${metrics.renewable.toFixed(1)}%`, color: '#10B981' },
+          ...(metrics.nuclear > 0 ? [{ label: 'Nuclear', value: `${metrics.nuclear.toFixed(1)}%`, color: '#8B5CF6' }] : []),
+        ];
+      case 'inequality':
+        return [
+          { label: `${country.name} CO\u2082/cap`, value: `${metrics.co2.toFixed(1)} t`, color: '#EF4444' },
+          { label: `${compCountry.name} CO\u2082/cap`, value: `${compMet.co2.toFixed(1)} t`, color: '#3B82F6' },
+        ];
+      case 'air':
+        return [
+          { label: 'PM2.5', value: `${metrics.pm25.toFixed(1)} \u00b5g/m\u00b3`, color: metrics.pm25 > 5 ? '#EF4444' : '#10B981' },
+          { label: 'WHO Guideline', value: '5 \u00b5g/m\u00b3', color: '#10B981' },
+        ];
+      default:
+        return [];
+    }
+  }
+
+  const lightboxDef = lightbox ? POSTER_DEFS.find(d => d.id === lightbox) : null;
+
+  // ── Bento section data ──────────────────────────────────────────────────
+  const bentoPosters: BentoPoster[] = [
+    {
+      id: 'scoreboard',
+      title: 'World Scoreboard',
+      subtitle: 'Climate action classification for 100+ countries',
+      badge: 'Global',
+      badgeColor: '#0066FF',
+      content: <WorldScoreboardPoster scoreboardData={scoreboardData} />,
+      onDownload: () => handleDownload('scoreboard'),
+      downloading: downloading === 'scoreboard',
+      refCallback: (el) => { refs.current.scoreboard = el; },
+    },
+    {
+      id: 'energy',
+      title: 'Energy Flow',
+      subtitle: `${country.name} electricity mix`,
+      badge: 'Energy',
+      badgeColor: '#10B981',
+      content: <EnergyFlowPoster country={country} metrics={metrics} />,
+      onDownload: () => handleDownload('energy'),
+      downloading: downloading === 'energy',
+      refCallback: (el) => { refs.current.energy = el; },
+    },
+    {
+      id: 'gap',
+      title: 'Paris Gap',
+      subtitle: 'CO\u2082 CAGR before vs after Paris',
+      badge: 'Emissions',
+      badgeColor: '#F59E0B',
+      content: <ParisGapPoster country={country} />,
+      onDownload: () => handleDownload('gap'),
+      downloading: downloading === 'gap',
+      refCallback: (el) => { refs.current.gap = el; },
+    },
+    {
+      id: 'race',
+      title: 'Transition Race',
+      subtitle: 'Renewable % ranking',
+      badge: 'Energy',
+      badgeColor: '#10B981',
+      content: <TransitionRacePoster raceData={raceData} highlightIso3={iso3} />,
+      onDownload: () => handleDownload('race'),
+      downloading: downloading === 'race',
+      refCallback: (el) => { refs.current.race = el; },
+    },
+    {
+      id: 'inequality',
+      title: 'Carbon Inequality',
+      subtitle: `${country.name} vs ${compCountry.name}`,
+      badge: 'Emissions',
+      badgeColor: '#EF4444',
+      content: <CarbonInequalityPoster country={country} compCountry={compCountry} metrics={metrics} compMetrics={compMet} />,
+      onDownload: () => handleDownload('inequality'),
+      downloading: downloading === 'inequality',
+      refCallback: (el) => { refs.current.inequality = el; },
+    },
+    {
+      id: 'air',
+      title: 'Air Quality',
+      subtitle: `${country.name} PM2.5 vs WHO`,
+      badge: 'Health',
+      badgeColor: '#8B5CF6',
+      content: <AirQualityPoster country={country} metrics={metrics} />,
+      onDownload: () => handleDownload('air'),
+      downloading: downloading === 'air',
+      refCallback: (el) => { refs.current.air = el; },
+    },
+  ];
+
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <>
+      {/* 1. Hero with card fan */}
+      <PosterHeroSection
+        totalPosters={6}
+        totalCountries={countriesList.length}
+      />
 
-      {/* ── Country Selectors ─────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-[--text-secondary]">Country:</label>
-          <select
-            value={iso3}
-            onChange={e => setIso3(e.target.value)}
-            className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {countriesList.map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-[--text-secondary]">Compare:</label>
-          <select
-            value={compIso3}
-            onChange={e => setCompIso3(e.target.value)}
-            className="rounded-lg border border-[--border-card] bg-white px-4 py-2.5 text-sm font-medium text-[--text-primary] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {countriesList.filter(c => c.iso3 !== iso3).map(c => <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>)}
-          </select>
-        </div>
-      </div>
+      {/* 2. Bento grid showcase */}
+      <BentoSection posters={bentoPosters} />
 
-      {/* ── Pill Tabs Filter ──────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-2">
-        {[
-          { id: 'all' as const,         label: 'All Posters' },
-          { id: 'scoreboard' as const,  label: 'Scoreboard' },
-          { id: 'energy' as const,      label: 'Energy' },
-          { id: 'gap' as const,         label: 'Paris Gap' },
-          { id: 'race' as const,        label: 'Transition' },
-          { id: 'inequality' as const,  label: 'Inequality' },
-          { id: 'air' as const,         label: 'Air' },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setFilter(tab.id)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
-              filter === tab.id
-                ? 'bg-[--accent-primary] text-white shadow-md'
-                : 'bg-white text-[--text-secondary] border border-[--border-card] hover:border-[--accent-primary] hover:text-[--accent-primary]'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* 3. Explorer with view modes */}
+      <PosterExplorer
+        countriesList={countriesList}
+        iso3={iso3}
+        setIso3={setIso3}
+        compIso3={compIso3}
+        setCompIso3={setCompIso3}
+        onClickPoster={setLightbox}
+        renderPoster={renderPoster}
+        renderPosterRef={renderPosterRef}
+        downloading={downloading}
+        onDownload={handleDownload}
+      />
 
-      {/* ── Masonry Grid Gallery ──────────────────────────────────────── */}
-      <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-        {filteredPosters.map(poster => {
-          const isFeatured = poster.featured;
-          const spanClass = isFeatured ? 'md:col-span-3 lg:col-span-4' : poster.size === 'medium' ? 'md:col-span-2' : 'md:col-span-1';
-
-          return (
-            <div
-              key={poster.id}
-              className={`group relative overflow-hidden rounded-xl border border-[--border-card] cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${spanClass}`}
-              style={{ boxShadow: 'var(--shadow-card)' }}
-            >
-              <div ref={el => { refs.current[poster.id] = el; }}>
-                {renderPoster(poster.id)}
-              </div>
-              <PosterOverlay
-                title={poster.id === 'inequality'
-                  ? `${poster.title} — ${country.flag} vs ${compCountry.flag}`
-                  : `${poster.title} — ${country.flag} ${country.name}`
-                }
-                downloading={downloading === poster.id}
-                onDownload={() => handleDownload(poster.id)}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      <p className="text-center text-sm text-[--text-muted]">
-        Hover over any poster and click Download PNG to save • All posters update automatically for the selected country
-      </p>
-
-    </div>
+      {/* 4. Lightbox overlay */}
+      <PosterLightbox
+        open={lightbox !== null}
+        onClose={() => setLightbox(null)}
+        title={lightboxDef?.title ?? ''}
+        subtitle={`${country.flag} ${country.name}`}
+        stats={lightbox ? getLightboxStats(lightbox) : []}
+        downloading={downloading === lightbox}
+        onDownload={lightbox ? () => handleDownload(lightbox) : undefined}
+      >
+        {lightbox && (
+          <div ref={renderPosterRef(lightbox)}>
+            {renderPoster(lightbox)}
+          </div>
+        )}
+      </PosterLightbox>
+    </>
   );
 }
