@@ -146,6 +146,8 @@ export interface CountryClientProps {
   decouplingScore: number | null;
   pm25?: number | null;
   carbonIntensity?: number | null;
+  initialExtra?: ExtraData;
+  climateGapData?: { iso3: string; name: string; pre: number; post: number }[];
 }
 
 // ── UI Primitives ─────────────────────────────────────────────────────────────
@@ -825,15 +827,23 @@ function VulnerabilityScatter({ data, highlightIso3 }: {
 export function CountryClient({
   countryName, iso3, wbCo2Series, co2Comparison, gdpVsCo2,
   emberMix, renewableChange, scatterData, decouplingSeries, decouplingScore, pm25 = null,
-  carbonIntensity = null,
+  carbonIntensity = null, initialExtra, climateGapData,
 }: CountryClientProps) {
 
-  const [extra, setExtra] = useState<ExtraData>(EMPTY_EXTRA);
+  const [extra, setExtra] = useState<ExtraData>(initialExtra ?? EMPTY_EXTRA);
   const [showNdcGap, setShowNdcGap] = useState(false);
   const [showKaya, setShowKaya] = useState(false);
   const [showEquity, setShowEquity] = useState(false);
 
   useEffect(() => {
+    // Skip OWID/CTRACE client-side fetch if server provided initial data
+    const hasServerExtra = initialExtra &&
+      (Object.keys(initialExtra.ctraceByCode).length > 0 ||
+       initialExtra.methaneSeries.length > 0 ||
+       initialExtra.cumulativeCo2 != null ||
+       Object.values(initialExtra.fuelSeries).some(s => s.length > 0));
+
+    if (!hasServerExtra) {
     const supabase = createClient();
     const codes = [
       'OWID.CONSUMPTION_CO2_PER_CAPITA',
@@ -901,6 +911,7 @@ export function CountryClient({
         console.error('[Supabase extra fetch] caught:', err);
       }
     })();
+    } // end if (!hasServerExtra)
 
     // Check for NDC Gap data
     fetch(`/data/ndc-gap/${iso3}.json`)
@@ -919,7 +930,7 @@ export function CountryClient({
       .then(res => res.ok ? res.json() : null)
       .then(d => { if (d?.countries?.length > 0) setShowEquity(true); })
       .catch(() => { /* no equity data */ });
-  }, [iso3]);
+  }, [iso3]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Derived: emissions-trend JSON ───────────────────────────────────────────
   const preParisRaw = emissionsTrend.pre_paris_vs_post_paris;
@@ -1159,22 +1170,22 @@ export function CountryClient({
             <Card>
               <h3 className="mb-1 text-sm font-semibold text-[--text-primary]">Pre-Paris vs Post-Paris CAGR</h3>
               <SafeChart name="Climate Gap">
-                <ClimateGap highlightIso3={iso3} />
+                <ClimateGap highlightIso3={iso3} serverData={climateGapData} />
               </SafeChart>
               <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5</SourceLabel>
             </Card>
 
-            {/* NDC Gap if available */}
+            {/* NDC Gap if available — hidden entirely on error */}
             {showNdcGap && (
-              <Card>
-                <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
-                  {countryName} — CO&#x2082; per capita projection vs NDC target
-                </h3>
-                <SafeChart name="NDC Gap">
+              <ChartErrorBoundary fallback={null}>
+                <Card>
+                  <h3 className="mb-2 text-sm font-semibold text-[--text-primary]">
+                    {countryName} — CO&#x2082; per capita projection vs NDC target
+                  </h3>
                   <NDCGapChart iso3={iso3} />
-                </SafeChart>
-                <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
-              </Card>
+                  <SourceLabel>Source: World Bank WDI · EN.GHG.CO2.PC.CE.AR5 + UNFCCC NDC Registry</SourceLabel>
+                </Card>
+              </ChartErrorBoundary>
             )}
           </div>
         )}

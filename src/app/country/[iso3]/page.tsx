@@ -181,6 +181,78 @@ async function getCountryData(iso3: string) {
       }
     }
 
+    // ── ClimateGap: pre/post Paris CAGR for all countries (server-side) ──
+    const { data: allCo2Rows } = await supabase
+      .from('country_data')
+      .select('country_iso3, year, value')
+      .eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5')
+      .gte('year', 1998)
+      .lte('year', 2023)
+      .order('year')
+      .limit(50000);
+
+    const cagrByCountry: Record<string, Record<number, number>> = {};
+    for (const r of allCo2Rows || []) {
+      if (r.value == null) continue;
+      const v = Number(r.value);
+      if (isNaN(v)) continue;
+      if (!cagrByCountry[r.country_iso3]) cagrByCountry[r.country_iso3] = {};
+      cagrByCountry[r.country_iso3][r.year] = v;
+    }
+
+    const climateGapData: { iso3: string; name: string; pre: number; post: number }[] = [];
+    for (const [isoCode, yearData] of Object.entries(cagrByCountry)) {
+      const findVal = (target: number): number | null => {
+        for (const offset of [0, 1, -1, 2, -2]) {
+          const v = yearData[target + offset];
+          if (v != null && v > 0) return v;
+        }
+        return null;
+      };
+      const v2000 = findVal(2000);
+      const v2014 = findVal(2014);
+      const v2015 = findVal(2015);
+      const v2023 = findVal(2023);
+      if (!v2000 || !v2014 || !v2015 || !v2023) continue;
+      const pre = (Math.pow(v2014 / v2000, 1 / 14) - 1) * 100;
+      const post = (Math.pow(v2023 / v2015, 1 / 8) - 1) * 100;
+      if (Math.abs(pre) > 20 || Math.abs(post) > 20) continue;
+      climateGapData.push({ iso3: isoCode, name: ndNameMap[isoCode] || isoCode, pre, post });
+    }
+
+    // ── Extra data for client (OWID + CTRACE indicators) ──────────────────
+    const CTRACE_SERVER = [
+      'CTRACE.POWER','CTRACE.TRANSPORTATION','CTRACE.MANUFACTURING',
+      'CTRACE.AGRICULTURE','CTRACE.FOSSIL-FUEL-OPERATIONS','CTRACE.BUILDINGS',
+      'CTRACE.WASTE','CTRACE.FORESTRY','CTRACE.MINERAL-EXTRACTION',
+    ];
+    const ctraceByCode: Record<string, number> = {};
+    for (const code of CTRACE_SERVER) {
+      if (latestByCode[code]) ctraceByCode[code] = latestByCode[code].value;
+    }
+    const FUEL_KEYS = ['OWID.COAL_CO2','OWID.OIL_CO2','OWID.GAS_CO2','OWID.CEMENT_CO2','OWID.FLARING_CO2'];
+    const fuelSeriesMap: Record<string, { year: number; value: number }[]> = {};
+    for (const key of FUEL_KEYS) {
+      fuelSeriesMap[key] = (seriesByCode[key] ?? []).map(d => ({ year: d.year, value: d.value }));
+    }
+    const extraData = {
+      consumptionCo2: (seriesByCode['OWID.CONSUMPTION_CO2_PER_CAPITA'] ?? []).map(d => ({ year: d.year, value: d.value })),
+      ctraceByCode,
+      ctraceYear: latestByCode['CTRACE.POWER']?.year ?? null,
+      fuelSeries: fuelSeriesMap,
+      cumulativeCo2: latestByCode['OWID.CUMULATIVE_CO2']?.value ?? null,
+      shareCumulative: latestByCode['OWID.SHARE_GLOBAL_CUMULATIVE_CO2']?.value ?? null,
+      tempGhg: latestByCode['OWID.TEMPERATURE_CHANGE_FROM_GHG']?.value ?? null,
+      tempCo2: latestByCode['OWID.TEMPERATURE_CHANGE_FROM_CO2']?.value ?? null,
+      tempCh4: latestByCode['OWID.TEMPERATURE_CHANGE_FROM_CH4']?.value ?? null,
+      tempN2o: latestByCode['OWID.TEMPERATURE_CHANGE_FROM_N2O']?.value ?? null,
+      methaneSeries: (seriesByCode['OWID.METHANE'] ?? []).map(d => ({ year: d.year, value: d.value })),
+      n2oSeries: (seriesByCode['OWID.NITROUS_OXIDE'] ?? []).map(d => ({ year: d.year, value: d.value })),
+      totalGhgLatest: latestByCode['OWID.TOTAL_GHG']?.value ?? null,
+      ghgPerCapitaLatest: latestByCode['OWID.GHG_PER_CAPITA']?.value ?? null,
+      co2PerGdpSeries: (seriesByCode['OWID.CO2_PER_GDP'] ?? []).map(d => ({ year: d.year, value: d.value })),
+    };
+
     // Renewable 5-year change
     const renewableLatest = renewableSeries.length > 0 ? renewableSeries[renewableSeries.length - 1] : null;
     const renewable5yAgo = renewableSeries.find(d => d.year === (renewableLatest?.year ?? 0) - 5);
@@ -234,6 +306,8 @@ async function getCountryData(iso3: string) {
       decouplingSeries: decouplingSeries.map(d => ({ year: d.year, value: d.value })),
       sourcesUsed,
       carbonIntensity: carbonIntensityLatest?.value ?? null,
+      extraData,
+      climateGapData,
     };
   } catch {
     return null;
@@ -250,6 +324,7 @@ export default async function CountryPage({ params }: Props) {
     country, latestByCode, wbCo2Series, co2Comparison, gdpVsCo2,
     vulnerability, emberMix, scatterData, renewableChange,
     decouplingSeries, sourcesUsed, carbonIntensity,
+    extraData, climateGapData,
   } = data;
 
   // Key stats for header cards
@@ -379,6 +454,8 @@ export default async function CountryPage({ params }: Props) {
         decouplingScore={decoupling?.value ?? null}
         pm25={pm25?.value ?? null}
         carbonIntensity={carbonIntensity}
+        initialExtra={extraData}
+        climateGapData={climateGapData}
       />
 
       {/* Data Sources (accordion by category) */}

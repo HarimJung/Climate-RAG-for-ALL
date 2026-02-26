@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 export interface ClimateGapProps {
   highlightIso3?: string;
   className?: string;
+  serverData?: CountryCagr[];
 }
 
 interface CountryCagr {
@@ -15,11 +16,16 @@ interface CountryCagr {
   post: number;
 }
 
-export function ClimateGap({ highlightIso3, className = '' }: ClimateGapProps) {
-  const [countries, setCountries] = useState<CountryCagr[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ClimateGap({ highlightIso3, className = '', serverData }: ClimateGapProps) {
+  const [countries, setCountries] = useState<CountryCagr[]>(serverData ?? []);
+  const [loading, setLoading] = useState(!serverData || serverData.length === 0);
 
   useEffect(() => {
+    // Skip client-side fetch if server provided data
+    if (serverData && serverData.length > 0) {
+      setLoading(false);
+      return;
+    }
     const supabase = createClient();
     (async () => {
       try {
