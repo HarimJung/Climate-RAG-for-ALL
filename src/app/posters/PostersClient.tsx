@@ -8,7 +8,7 @@ import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldSco
 
 import { PosterHeroSection } from '@/components/posters/hero-section';
 import { BentoSection, type BentoPoster } from '@/components/posters/bento-section';
-import { PosterLightbox } from '@/components/posters/poster-card';
+import { PosterLightbox } from '@/components/posters/poster-lightbox';
 import { PosterExplorer, type PosterType, POSTER_DEFS } from '@/components/posters/poster-explorer';
 
 // ── Country registry ──────────────────────────────────────────────────────────
@@ -660,6 +660,7 @@ export function PostersClient() {
       onDownload: () => handleDownload('scoreboard'),
       downloading: downloading === 'scoreboard',
       refCallback: (el) => { refs.current.scoreboard = el; },
+      onClick: () => setLightbox('scoreboard'),
     },
     {
       id: 'energy',
@@ -671,6 +672,7 @@ export function PostersClient() {
       onDownload: () => handleDownload('energy'),
       downloading: downloading === 'energy',
       refCallback: (el) => { refs.current.energy = el; },
+      onClick: () => setLightbox('energy'),
     },
     {
       id: 'gap',
@@ -682,6 +684,7 @@ export function PostersClient() {
       onDownload: () => handleDownload('gap'),
       downloading: downloading === 'gap',
       refCallback: (el) => { refs.current.gap = el; },
+      onClick: () => setLightbox('gap'),
     },
     {
       id: 'race',
@@ -693,6 +696,7 @@ export function PostersClient() {
       onDownload: () => handleDownload('race'),
       downloading: downloading === 'race',
       refCallback: (el) => { refs.current.race = el; },
+      onClick: () => setLightbox('race'),
     },
     {
       id: 'inequality',
@@ -704,6 +708,7 @@ export function PostersClient() {
       onDownload: () => handleDownload('inequality'),
       downloading: downloading === 'inequality',
       refCallback: (el) => { refs.current.inequality = el; },
+      onClick: () => setLightbox('inequality'),
     },
     {
       id: 'air',
@@ -715,6 +720,7 @@ export function PostersClient() {
       onDownload: () => handleDownload('air'),
       downloading: downloading === 'air',
       refCallback: (el) => { refs.current.air = el; },
+      onClick: () => setLightbox('air'),
     },
   ];
 
@@ -746,9 +752,12 @@ export function PostersClient() {
       {/* 4. Lightbox overlay */}
       <PosterLightbox
         open={lightbox !== null}
+        posterId={lightbox ?? undefined}
         onClose={() => setLightbox(null)}
         title={lightboxDef?.title ?? ''}
         subtitle={`${country.flag} ${country.name}`}
+        category={lightboxDef?.category}
+        categoryColor={lightboxDef?.categoryColor}
         stats={lightbox ? getLightboxStats(lightbox) : []}
         downloading={downloading === lightbox}
         onDownload={lightbox ? () => handleDownload(lightbox) : undefined}
