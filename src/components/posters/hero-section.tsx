@@ -14,7 +14,7 @@ interface MiniCardData {
 
 const POSTER_CARDS: MiniCardData[] = [
   { title: 'Energy Flow',        subtitle: 'Electricity mix by source', color: '#10B981', accent: 'bg-emerald-500' },
-  { title: 'Carbon Inequality',  subtitle: 'CO\u2082 per capita gap',  color: '#3B82F6', accent: 'bg-blue-500' },
+  { title: 'Carbon Inequality',  subtitle: 'CO₂ per capita gap',       color: '#3B82F6', accent: 'bg-blue-500' },
   { title: 'Paris Gap',          subtitle: 'Pre vs post-Paris CAGR',   color: '#F59E0B', accent: 'bg-amber-500' },
   { title: 'Air Quality',        subtitle: 'PM2.5 vs WHO guideline',   color: '#EF4444', accent: 'bg-red-500' },
   { title: 'Transition Race',    subtitle: 'Renewable % ranking',      color: '#8B5CF6', accent: 'bg-violet-500' },
@@ -24,6 +24,7 @@ const POSTER_CARDS: MiniCardData[] = [
 const fanAngles  = [-15, -9, -3, 3, 9, 15];
 const fanYShifts = [16, 6, 0, 0, 6, 16];
 
+/* ISSUE 5: Bigger cards w-[200px] h-[280px] */
 function MiniCard({ card, index }: { card: MiniCardData; index: number }) {
   return (
     <motion.div
@@ -39,18 +40,18 @@ function MiniCard({ card, index }: { card: MiniCardData; index: number }) {
       }}
       whileHover={{ y: fanYShifts[index] - 16, rotate: 0, scale: 1.08, zIndex: 30 }}
       className="relative cursor-default"
-      style={{ zIndex: index === 2 || index === 3 ? 20 : 10, marginLeft: index > 0 ? -28 : 0 }}
+      style={{ zIndex: index === 2 || index === 3 ? 20 : 10, marginLeft: index > 0 ? -32 : 0 }}
     >
-      <div className="flex h-44 w-32 flex-col rounded-xl bg-white p-4 shadow-lg ring-1 ring-black/[0.06] transition-shadow duration-300 hover:shadow-2xl md:h-52 md:w-36">
-        <div className={`h-1.5 w-8 rounded-full ${card.accent} mb-3`} />
-        <h3 className="text-xs font-bold text-[#1A1A2E]">{card.title}</h3>
-        <p className="mt-1 text-[10px] leading-snug text-[#4A4A6A]">{card.subtitle}</p>
-        <div className="mt-auto flex items-end gap-1">
-          {[0.4, 0.7, 0.5, 0.9, 0.6].map((h, i) => (
+      <div className="flex h-[280px] w-[200px] flex-col rounded-xl bg-white p-5 shadow-lg ring-1 ring-black/[0.06] transition-shadow duration-300 hover:shadow-2xl">
+        <div className={`h-2 w-10 rounded-full ${card.accent} mb-4`} />
+        <h3 className="text-sm font-bold text-[#1A1A2E]">{card.title}</h3>
+        <p className="mt-1.5 text-xs leading-snug text-[#4A4A6A]">{card.subtitle}</p>
+        <div className="mt-auto flex items-end gap-1.5">
+          {[0.4, 0.7, 0.5, 0.9, 0.6, 0.3, 0.8].map((h, i) => (
             <div
               key={i}
-              className="w-3 rounded-sm"
-              style={{ height: `${h * 32}px`, backgroundColor: card.color, opacity: 0.3 + h * 0.5 }}
+              className="w-4 rounded-sm"
+              style={{ height: `${h * 60}px`, backgroundColor: card.color, opacity: 0.3 + h * 0.5 }}
             />
           ))}
         </div>
@@ -72,37 +73,14 @@ export function PosterHeroSection({ totalPosters, totalCountries }: PosterHeroSe
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-[#F8F9FA] px-4 py-20"
+      className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-[#F8F9FA] px-4 pb-8 pt-20"
     >
-      {/* Floating bg particles */}
-      <motion.div style={{ y: bgY }} className="pointer-events-none absolute inset-0 overflow-hidden">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: 60 + i * 30,
-              height: 60 + i * 30,
-              left: `${10 + i * 18}%`,
-              top: `${15 + (i % 3) * 25}%`,
-              backgroundColor: POSTER_CARDS[i]?.color ?? '#0066FF',
-              opacity: 0.06,
-            }}
-            animate={{
-              y: [0, -15, 0],
-              x: [0, 8 * (i % 2 === 0 ? 1 : -1), 0],
-              scale: [1, 1.08, 1],
-            }}
-            transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 }}
-          />
-        ))}
-      </motion.div>
+      {/* ISSUE 4: Removed floating bg particles */}
 
       <motion.div style={{ opacity }} className="relative z-10 flex flex-col items-center gap-8 text-center">
         {/* Badge */}
@@ -116,14 +94,14 @@ export function PosterHeroSection({ totalPosters, totalCountries }: PosterHeroSe
           Climate Posters
         </motion.div>
 
-        {/* Title */}
+        {/* ISSUE 4: Bigger title text-5xl md:text-7xl */}
         <motion.div
           initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
           className="flex flex-col items-center gap-3"
         >
-          <h1 className="text-4xl font-bold tracking-tight text-[#1A1A2E] md:text-5xl lg:text-6xl">
+          <h1 className="text-5xl font-bold tracking-tight text-[#1A1A2E] md:text-7xl">
             Data tells the story.
           </h1>
           <p className="max-w-lg text-base text-[#4A4A6A]">

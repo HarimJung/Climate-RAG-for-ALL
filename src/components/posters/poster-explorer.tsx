@@ -28,6 +28,7 @@ export const POSTER_DEFS: PosterDef[] = [
 ];
 
 /* ── View mode toggle ────────────────────────────────────────────────────── */
+/* ISSUE 9: Bigger buttons px-4 py-2 text-sm, active bg-[#0066FF] text-white */
 
 const VIEW_MODES: { id: ViewMode; label: string; icon: ReactNode }[] = [
   {
@@ -66,14 +67,14 @@ function ViewModeToggle({ mode, setMode }: { mode: ViewMode; setMode: (m: ViewMo
         <button
           key={vm.id}
           onClick={() => setMode(vm.id)}
-          className={`relative z-10 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-            mode === vm.id ? 'text-[#0066FF]' : 'text-[#8888A0] hover:text-[#4A4A6A]'
+          className={`relative z-10 flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            mode === vm.id ? 'text-white' : 'text-[#8888A0] hover:text-[#4A4A6A]'
           }`}
         >
           {mode === vm.id && (
             <motion.div
               layoutId="viewmode-pill"
-              className="absolute inset-0 rounded-lg bg-white shadow-sm ring-1 ring-black/[0.06]"
+              className="absolute inset-0 rounded-lg bg-[#0066FF] shadow-sm"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}
@@ -86,6 +87,7 @@ function ViewModeToggle({ mode, setMode }: { mode: ViewMode; setMode: (m: ViewMo
 }
 
 /* ── Category filter pills ───────────────────────────────────────────────── */
+/* ISSUE 8: Bigger pills px-5 py-2.5 text-sm font-medium */
 
 const CATEGORIES: { id: FilterType; label: string }[] = [
   { id: 'all',         label: 'All' },
@@ -105,10 +107,10 @@ function CategoryFilter({ active, setActive }: { active: FilterType; setActive: 
           <button
             key={cat.id}
             onClick={() => setActive(cat.id)}
-            className={`relative rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
+            className={`relative rounded-full px-5 py-2.5 text-sm font-medium transition-colors ${
               active === cat.id
                 ? 'text-white'
-                : 'bg-white text-[#4A4A6A] ring-1 ring-[#E8E8ED] hover:ring-[#0066FF] hover:text-[#0066FF]'
+                : 'bg-white text-[#4A4A6A] border border-slate-200 hover:border-[#0066FF] hover:text-[#0066FF]'
             }`}
           >
             {active === cat.id && (
@@ -144,11 +146,11 @@ function CountrySelector({
   const filtered = excludeIso3 ? countries.filter(c => c.iso3 !== excludeIso3) : countries;
   return (
     <div className="flex items-center gap-2">
-      <label className="text-xs font-medium text-[#4A4A6A]">{label}</label>
+      <label className="text-sm font-medium text-[#4A4A6A]">{label}</label>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="rounded-lg border border-[#E8E8ED] bg-white px-3 py-1.5 text-xs font-medium text-[#1A1A2E] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]"
+        className="rounded-lg border border-[#E8E8ED] bg-white px-3 py-2 text-sm font-medium text-[#1A1A2E] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]"
       >
         {filtered.map(c => (
           <option key={c.iso3} value={c.iso3}>{c.flag} {c.name}</option>
@@ -173,6 +175,12 @@ interface PosterExplorerProps {
   onDownload: (type: PosterType) => void;
 }
 
+/* ISSUE 7: Grid col-span pattern for visual variety */
+function gridSpanClass(index: number): string {
+  // Even indices: col-span-2, odd indices: col-span-1
+  return index % 2 === 0 ? 'sm:col-span-2' : 'sm:col-span-1';
+}
+
 export function PosterExplorer({
   countriesList, iso3, setIso3, compIso3, setCompIso3,
   onClickPoster, renderPoster, renderPosterRef,
@@ -187,13 +195,20 @@ export function PosterExplorer({
     : POSTER_DEFS.filter(p => p.id === filter);
 
   return (
-    <section className="bg-white px-4 py-16">
+    /* ISSUE 12: pt-8 instead of py-16 */
+    <section className="bg-white px-4 pb-16 pt-8">
       <div className="mx-auto max-w-6xl">
-        {/* Toolbar */}
+
+        {/* ISSUE 6: Section divider */}
+        <div className="relative mb-10 flex items-center py-4">
+          <div className="flex-1 border-t border-[#E8E8ED]" />
+          <span className="mx-4 text-sm font-semibold text-[#1A1A2E]">Explore All Posters</span>
+          <div className="flex-1 border-t border-[#E8E8ED]" />
+        </div>
+
+        {/* Toolbar — filters left, selectors + toggle right */}
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <CategoryFilter active={filter} setActive={setFilter} />
-          </div>
+          <CategoryFilter active={filter} setActive={setFilter} />
           <div className="flex flex-wrap items-center gap-3">
             <CountrySelector label="Country" value={iso3} onChange={setIso3} countries={countriesList} />
             {viewMode === 'comparison' && (
@@ -212,15 +227,19 @@ export function PosterExplorer({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3 }}
-              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid gap-6 sm:grid-cols-3"
             >
+              {/* ISSUE 7: Alternating col-span-2 / col-span-1 */}
+              {/* ISSUE 10: shadow-md, hover shadow-xl scale-[1.02] */}
+              {/* ISSUE 11: whileInView scroll animation */}
               {filteredDefs.map((p, i) => (
                 <motion.div
                   key={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06, duration: 0.4 }}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ delay: i * 0.06, duration: 0.5, type: 'spring', stiffness: 100, damping: 20 }}
+                  className={`group relative cursor-pointer overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/[0.06] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${gridSpanClass(i)}`}
                   onClick={() => onClickPoster(p.id)}
                 >
                   <div ref={renderPosterRef(p.id)}>
@@ -241,7 +260,7 @@ export function PosterExplorer({
                         disabled={downloading === p.id}
                         className="rounded-lg bg-[#0066FF] px-4 py-2 text-xs font-semibold text-white shadow transition-all hover:scale-105 disabled:opacity-50"
                       >
-                        {downloading === p.id ? 'Saving\u2026' : 'PNG'}
+                        {downloading === p.id ? 'Saving…' : 'PNG'}
                       </button>
                     </div>
                   </div>
@@ -288,7 +307,7 @@ export function PosterExplorer({
                     className="w-full max-w-2xl"
                   >
                     <div
-                      className="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/[0.06]"
+                      className="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/[0.06] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
                       onClick={() => onClickPoster(filteredDefs[focusIndex].id)}
                     >
                       <div ref={renderPosterRef(filteredDefs[focusIndex].id)}>
@@ -307,7 +326,7 @@ export function PosterExplorer({
                         disabled={downloading === filteredDefs[focusIndex].id}
                         className="rounded-xl bg-[#0066FF] px-5 py-2.5 text-sm font-semibold text-white shadow transition-all hover:bg-[#0052CC] disabled:opacity-50"
                       >
-                        {downloading === filteredDefs[focusIndex].id ? 'Saving\u2026' : 'Download PNG'}
+                        {downloading === filteredDefs[focusIndex].id ? 'Saving…' : 'Download PNG'}
                       </button>
                     </div>
                   </motion.div>
@@ -319,14 +338,14 @@ export function PosterExplorer({
                 <button
                   onClick={() => setFocusIndex(Math.max(0, focusIndex - 1))}
                   disabled={focusIndex === 0}
-                  className="rounded-lg bg-[#F8F9FA] px-4 py-2 text-xs font-medium text-[#4A4A6A] ring-1 ring-[#E8E8ED] transition-all hover:ring-[#0066FF] disabled:opacity-30"
+                  className="rounded-lg bg-[#F8F9FA] px-4 py-2 text-sm font-medium text-[#4A4A6A] ring-1 ring-[#E8E8ED] transition-all hover:ring-[#0066FF] disabled:opacity-30"
                 >
                   &larr; Previous
                 </button>
                 <button
                   onClick={() => setFocusIndex(Math.min(filteredDefs.length - 1, focusIndex + 1))}
                   disabled={focusIndex === filteredDefs.length - 1}
-                  className="rounded-lg bg-[#F8F9FA] px-4 py-2 text-xs font-medium text-[#4A4A6A] ring-1 ring-[#E8E8ED] transition-all hover:ring-[#0066FF] disabled:opacity-30"
+                  className="rounded-lg bg-[#F8F9FA] px-4 py-2 text-sm font-medium text-[#4A4A6A] ring-1 ring-[#E8E8ED] transition-all hover:ring-[#0066FF] disabled:opacity-30"
                 >
                   Next &rarr;
                 </button>
@@ -343,13 +362,15 @@ export function PosterExplorer({
               transition={{ duration: 0.3 }}
               className="grid gap-6 md:grid-cols-2"
             >
+              {/* ISSUE 10 + 11: shadow-md, hover scale, whileInView */}
               {filteredDefs.map((p, i) => (
                 <motion.div
                   key={p.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08, duration: 0.4 }}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ delay: i * 0.08, duration: 0.5, type: 'spring', stiffness: 100, damping: 20 }}
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-black/[0.06] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
                   onClick={() => onClickPoster(p.id)}
                 >
                   <div ref={renderPosterRef(p.id)}>
@@ -362,7 +383,7 @@ export function PosterExplorer({
                       disabled={downloading === p.id}
                       className="rounded-lg bg-[#0066FF] px-4 py-2 text-xs font-semibold text-white shadow transition-all hover:scale-105 disabled:opacity-50"
                     >
-                      {downloading === p.id ? 'Saving\u2026' : 'Download PNG'}
+                      {downloading === p.id ? 'Saving…' : 'Download PNG'}
                     </button>
                   </div>
                 </motion.div>
