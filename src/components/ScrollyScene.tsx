@@ -63,7 +63,7 @@ function StepBlock({
     <div
       ref={ref}
       data-step={index}
-      className="flex min-h-[40vh] items-center"
+      className="flex min-h-[35vh] items-center"
     >
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -91,18 +91,21 @@ export function ScrollyScene({
     setActiveStep(i);
   }, []);
 
+  /* Dynamic min-height: number of steps * 50vh */
+  const dynamicMinHeight = `${steps.length * 50}vh`;
+
   return (
     <section
       id={id}
       ref={sectionRef}
       className={`relative ${className}`}
-      style={{ minHeight: '150vh' }}
+      style={{ minHeight: dynamicMinHeight }}
     >
-      <div className="mx-auto max-w-[1200px] px-4">
+      <div className="mx-auto max-w-[1400px] px-4">
         {/* Desktop: side-by-side | Mobile: stacked */}
-        <div className="flex flex-col md:flex-row md:gap-8">
-          {/* Left: scrolling narrative steps (40%) */}
-          <div className="relative w-full md:w-[40%]">
+        <div className="relative flex flex-col md:flex-row md:gap-8">
+          {/* Left: scrolling narrative steps (38%) */}
+          <div className="relative w-full md:w-[38%]">
             {steps.map((step, i) => (
               <StepBlock key={i} index={i} onActive={handleActive}>
                 {step.content}
@@ -110,17 +113,16 @@ export function ScrollyScene({
             ))}
           </div>
 
-          {/* Right: sticky chart area (60%) */}
-          <div className="w-full md:w-[60%]">
+          {/* Right: sticky chart area (62%) */}
+          <div className="w-full md:w-[62%] md:self-start md:sticky" style={{ top: '80px' }}>
             <div
-              className="md:sticky"
               style={{
-                top: '80px',
+                width: '100%',
                 height: 'calc(100vh - 160px)',
                 overflow: 'auto',
               }}
             >
-              <div className="flex h-full flex-col justify-center">
+              <div className="flex h-full w-full flex-col justify-center">
                 {children(activeStep)}
               </div>
             </div>
@@ -173,18 +175,20 @@ export function FanCards({ cards }: { cards: FanCardData[] }) {
 
   return (
     <div ref={containerRef} className="flex items-center justify-center py-12">
-      <div className="relative flex items-center justify-center" style={{ height: 340, width: '100%', maxWidth: 900 }}>
+      <div className="relative flex items-center justify-center" style={{ height: 360, width: '100%', maxWidth: 960 }}>
         {cards.slice(0, 3).map((card, i) => (
           <motion.div
             key={card.label}
-            className="absolute rounded-2xl border border-[--border-card] bg-white p-6"
+            className="absolute rounded-2xl border border-gray-200 bg-white p-6"
             style={{
+              minWidth: 260,
+              maxWidth: 300,
               width: 280,
               rotateZ: rotations[i],
               x: translations[i],
               scale: scales[i],
               zIndex: zIndexes[i],
-              boxShadow: '0 10px 40px rgba(0,0,0,0.08), 0 2px 12px rgba(0,0,0,0.04)',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)',
             }}
           >
             <div className="mb-3 text-3xl">{card.icon}</div>
