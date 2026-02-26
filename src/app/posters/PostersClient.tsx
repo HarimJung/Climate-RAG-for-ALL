@@ -226,12 +226,12 @@ function EnergyFlowPoster({ country, metrics }: { country: CountryMeta; metrics:
   const headline = energyHeadline(country.iso3, metrics.fossil, metrics.renewable, country.name);
   const fs = headline.length > 65 ? '22px' : '26px';
   return (
-    <PosterShell source="Source: Ember Climate 2023 · visualclimate.org">
+    <PosterShell source="Source: Ember Climate 2023 \u00b7 visualclimate.org">
       <div style={{ fontSize: fs, fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {country.flag}&nbsp;&nbsp;{headline}
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-        Electricity mix by source · {country.name} · 2023
+        Electricity mix by source \u00b7 {country.name} \u00b7 2023
       </div>
       <div style={{ flex: 1, marginTop: '16px', minHeight: 0 }}>
         <MiniSankey fossil={metrics.fossil} renewable={metrics.renewable} nuclear={metrics.nuclear} />
@@ -289,16 +289,16 @@ function CarbonInequalityPoster({
   const gridX = 195; const gridY = cy - gridH / 2;
 
   const headline = ratio <= 1
-    ? `${bigCountry.adj} and ${smallCountry.adj} emit nearly the same CO₂.`
-    : `One ${bigCountry.adj} citizen emits as much CO₂ as ${ratio}\u00a0${smallCountry.adj} citizens.`;
+    ? `${bigCountry.adj} and ${smallCountry.adj} emit nearly the same CO\u2082.`
+    : `One ${bigCountry.adj} citizen emits as much CO\u2082 as ${ratio}\u00a0${smallCountry.adj} citizens.`;
 
   return (
-    <PosterShell source="Source: World Bank WDI 2023 · visualclimate.org">
+    <PosterShell source="Source: World Bank WDI 2023 \u00b7 visualclimate.org">
       <div style={{ fontSize: headline.length > 55 ? '21px' : '25px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {headline}
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-        CO₂ per capita comparison · 2023
+        CO\u2082 per capita comparison \u00b7 2023
       </div>
       <div style={{ flex: 1, marginTop: '12px', minHeight: 0, overflow: 'hidden' }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '100%', display: 'block' }}>
@@ -313,11 +313,11 @@ function CarbonInequalityPoster({
           {ratio > show && (
             <text x={gridX + gridW / 2} y={gridY + gridH + 18} textAnchor="middle" fontSize={11} fill="#94A3B8" fontFamily="Inter, system-ui, sans-serif">+{ratio - show} more ({ratio} total)</text>
           )}
-          <text x={gridX + gridW / 2} y={gridY + gridH + (ratio > show ? 34 : 18)} textAnchor="middle" fontSize={12} fontWeight="700" fill="#3B82F6" fontFamily="Inter, system-ui, sans-serif">{smallCountry.flag} {smallCO2.toFixed(1)} t × {ratio}</text>
+          <text x={gridX + gridW / 2} y={gridY + gridH + (ratio > show ? 34 : 18)} textAnchor="middle" fontSize={12} fontWeight="700" fill="#3B82F6" fontFamily="Inter, system-ui, sans-serif">{smallCountry.flag} {smallCO2.toFixed(1)} t \u00d7 {ratio}</text>
         </svg>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginTop: '4px' }}>
-        <span style={{ fontSize: '48px', fontWeight: 800, color: '#1A1A2E', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1 }}>{ratio}×</span>
+        <span style={{ fontSize: '48px', fontWeight: 800, color: '#1A1A2E', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1 }}>{ratio}\u00d7</span>
         <span style={{ fontSize: '16px', color: '#64748B', fontFamily: 'Inter, system-ui, sans-serif' }}>{smallCO2.toFixed(1)} t vs {bigCO2.toFixed(1)} t per capita</span>
       </div>
     </PosterShell>
@@ -328,12 +328,12 @@ function CarbonInequalityPoster({
 
 function ParisGapPoster({ country }: { country: CountryMeta }) {
   return (
-    <PosterShell source="Source: World Bank WDI CO₂ per capita 2000–2023 · visualclimate.org">
+    <PosterShell source="Source: World Bank WDI CO\u2082 per capita 2000\u20132023 \u00b7 visualclimate.org">
       <div style={{ fontSize: '26px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {country.flag}&nbsp;&nbsp;Paris promised change. Here is who delivered.
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-        CO₂ per capita CAGR before vs after the Paris Agreement
+        CO\u2082 per capita CAGR before vs after the Paris Agreement
       </div>
       <div style={{ flex: 1, marginTop: '12px', minHeight: 0 }}>
         <ClimateGap highlightIso3={country.iso3} />
@@ -355,10 +355,10 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
 
   const headline = pm25 <= WHO * 1.1
     ? `${country.name} meets WHO air quality standards.`
-    : `${country.name} breathes air ${ratio}× dirtier than WHO allows.`;
+    : `${country.name} breathes air ${ratio}\u00d7 dirtier than WHO allows.`;
 
   return (
-    <PosterShell source="Source: World Bank WDI PM2.5 · WHO guideline: 5 µg/m³ annual mean · visualclimate.org">
+    <PosterShell source="Source: World Bank WDI PM2.5 \u00b7 WHO guideline: 5 \u00b5g/m\u00b3 annual mean \u00b7 visualclimate.org">
       <div style={{ fontSize: headline.length > 55 ? '21px' : '25px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         {country.flag}&nbsp;&nbsp;{headline}
       </div>
@@ -371,12 +371,12 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
           <circle cx={W * 0.27} cy={H / 2} r={whoR} fill="#10B981" opacity={0.18} />
           <circle cx={W * 0.27} cy={H / 2} r={whoR} fill="none" stroke="#10B981" strokeWidth={2} strokeDasharray="5,3" />
           <text x={W * 0.27} y={H / 2 - 5} textAnchor="middle" fontSize={12} fontWeight="700" fill="#059669" fontFamily="Inter, system-ui, sans-serif">WHO</text>
-          <text x={W * 0.27} y={H / 2 + 11} textAnchor="middle" fontSize={11} fill="#059669" fontFamily="monospace">5 µg/m³</text>
+          <text x={W * 0.27} y={H / 2 + 11} textAnchor="middle" fontSize={11} fill="#059669" fontFamily="monospace">5 \u00b5g/m\u00b3</text>
           <text x={W / 2} y={H / 2 + 6} textAnchor="middle" fontSize={20} fill="#94A3B8" fontFamily="Inter, system-ui, sans-serif">vs</text>
           <circle cx={W * 0.73} cy={H / 2} r={cntR} fill="#EF4444" opacity={0.1} />
           <circle cx={W * 0.73} cy={H / 2} r={cntR} fill="none" stroke="#EF4444" strokeWidth={2.5} />
           <text x={W * 0.73} y={H / 2 - 8} textAnchor="middle" fontSize={12} fontWeight="700" fill="#DC2626" fontFamily="Inter, system-ui, sans-serif">{country.name}</text>
-          <text x={W * 0.73} y={H / 2 + 12} textAnchor="middle" fontSize={15} fontWeight="800" fill="#DC2626" fontFamily="monospace">{pm25.toFixed(1)} µg/m³</text>
+          <text x={W * 0.73} y={H / 2 + 12} textAnchor="middle" fontSize={15} fontWeight="800" fill="#DC2626" fontFamily="monospace">{pm25.toFixed(1)} \u00b5g/m\u00b3</text>
         </svg>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '8px' }}>
@@ -384,7 +384,7 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
           {pm25.toFixed(1)}
         </span>
         <span style={{ fontSize: '15px', color: '#64748B', fontFamily: 'Inter, system-ui, sans-serif' }}>
-          µg/m³ &nbsp;·&nbsp; WHO safe limit: 5 µg/m³
+          \u00b5g/m\u00b3 &nbsp;\u00b7&nbsp; WHO safe limit: 5 \u00b5g/m\u00b3
         </span>
       </div>
     </PosterShell>
@@ -398,7 +398,7 @@ interface RaceEntry { iso3: string; name: string; flag: string; renewable: numbe
 function TransitionRacePoster({ raceData, highlightIso3 }: { raceData: RaceEntry[]; highlightIso3: string }) {
   if (raceData.length === 0) {
     return (
-      <PosterShell source="Source: Ember Climate / OWID Energy 2023 · visualclimate.org">
+      <PosterShell source="Source: Ember Climate / OWID Energy 2023 \u00b7 visualclimate.org">
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8', fontFamily: 'Inter, system-ui, sans-serif' }}>
           Loading race data&hellip;
         </div>
@@ -420,12 +420,12 @@ function TransitionRacePoster({ raceData, highlightIso3 }: { raceData: RaceEntry
   }
 
   return (
-    <PosterShell source="Source: Ember Climate / OWID Energy 2023 · visualclimate.org">
+    <PosterShell source="Source: Ember Climate / OWID Energy 2023 \u00b7 visualclimate.org">
       <div style={{ fontSize: '26px', fontWeight: 700, color: '#1A1A2E', lineHeight: 1.25, fontFamily: 'Inter, system-ui, sans-serif' }}>
         The renewable race: who is winning?
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', marginTop: '8px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-        Share of electricity from renewables · 20 countries · 2023
+        Share of electricity from renewables \u00b7 20 countries \u00b7 2023
       </div>
       <div style={{ flex: 1, marginTop: '12px', minHeight: 0, overflow: 'hidden' }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', display: 'block' }}>
@@ -434,7 +434,7 @@ function TransitionRacePoster({ raceData, highlightIso3 }: { raceData: RaceEntry
             const barW  = (c.renewable / max) * bMax;
             const isHL  = c.iso3 === highlightIso3;
             const color = barColor(i, c.iso3);
-            const label = c.name.length > 14 ? c.name.slice(0, 13) + '…' : c.name;
+            const label = c.name.length > 14 ? c.name.slice(0, 13) + '\u2026' : c.name;
             return (
               <g key={c.iso3}>
                 <text x={0} y={y + 13} fontSize={10} fill="#CBD5E1" fontFamily="monospace">{String(i + 1).padStart(2, '\u00a0')}.</text>
@@ -522,12 +522,12 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
         Who is actually reducing emissions?
       </div>
       <div style={{ fontSize: '13px', color: '#64748B', fontFamily: 'Inter, system-ui, sans-serif', marginBottom: '16px' }}>
-        Climate action classification · CO₂ CAGR 2015–2023 + Renewable growth 2018–2023
+        Climate action classification \u00b7 CO\u2082 CAGR 2015\u20132023 + Renewable growth 2018\u20132023
       </div>
       <WorldScoreboard countries={scoreboardData} width={836} height={428} />
       <div style={{ display: 'flex', gap: '32px', marginTop: '16px' }}>
         {[
-          { label: 'Changers', val: counts.Changer, color: '#10B981', desc: '↓CO₂ + ↑Renewable' },
+          { label: 'Changers', val: counts.Changer, color: '#10B981', desc: '\u2193CO\u2082 + \u2191Renewable' },
           { label: 'Starters', val: counts.Starter, color: '#F59E0B', desc: 'One condition met'  },
           { label: 'Talkers',  val: counts.Talker,  color: '#EF4444', desc: 'Neither condition'  },
         ].map(s => (
@@ -539,7 +539,7 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
         ))}
       </div>
       <div style={{ fontSize: '11px', color: '#CBD5E1', fontFamily: 'Inter, system-ui, sans-serif', marginTop: '16px' }}>
-        Source: World Bank WDI CO₂ / Ember Climate Renewable % · VisualClimate classification · visualclimate.org
+        Source: World Bank WDI CO\u2082 / Ember Climate Renewable % \u00b7 VisualClimate classification \u00b7 visualclimate.org
       </div>
       <div style={{
         height: '4px',
@@ -606,7 +606,7 @@ export function PostersClient() {
 
   function renderPoster(type: PosterType) {
     if (loading && type !== 'scoreboard' && type !== 'race') {
-      return <div className="flex aspect-square items-center justify-center text-sm text-[#8888A0]">Loading…</div>;
+      return <div className="flex aspect-square items-center justify-center text-sm text-[#8888A0]">Loading\u2026</div>;
     }
     switch (type) {
       case 'energy':     return <EnergyFlowPoster country={country} metrics={metrics} />;
@@ -633,13 +633,13 @@ export function PostersClient() {
         ];
       case 'inequality':
         return [
-          { label: `${country.name} CO₂/cap`, value: `${metrics.co2.toFixed(1)} t`, color: '#EF4444' },
-          { label: `${compCountry.name} CO₂/cap`, value: `${compMet.co2.toFixed(1)} t`, color: '#3B82F6' },
+          { label: `${country.name} CO\u2082/cap`, value: `${metrics.co2.toFixed(1)} t`, color: '#EF4444' },
+          { label: `${compCountry.name} CO\u2082/cap`, value: `${compMet.co2.toFixed(1)} t`, color: '#3B82F6' },
         ];
       case 'air':
         return [
-          { label: 'PM2.5', value: `${metrics.pm25.toFixed(1)} µg/m³`, color: metrics.pm25 > 5 ? '#EF4444' : '#10B981' },
-          { label: 'WHO Guideline', value: '5 µg/m³', color: '#10B981' },
+          { label: 'PM2.5', value: `${metrics.pm25.toFixed(1)} \u00b5g/m\u00b3`, color: metrics.pm25 > 5 ? '#EF4444' : '#10B981' },
+          { label: 'WHO Guideline', value: '5 \u00b5g/m\u00b3', color: '#10B981' },
         ];
       default:
         return [];
@@ -675,7 +675,7 @@ export function PostersClient() {
     {
       id: 'gap',
       title: 'Paris Gap',
-      subtitle: 'CO₂ CAGR before vs after Paris',
+      subtitle: 'CO\u2082 CAGR before vs after Paris',
       badge: 'Emissions',
       badgeColor: '#F59E0B',
       content: <ParisGapPoster country={country} />,
