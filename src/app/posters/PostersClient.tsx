@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { LayoutGroup } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
 import { ClimateGap } from '@/components/charts/ClimateGap';
@@ -8,8 +9,9 @@ import { WorldScoreboard, type CountryClass } from '@/components/charts/WorldSco
 
 import { PosterHeroSection } from '@/components/posters/hero-section';
 import { BentoSection, type BentoPoster } from '@/components/posters/bento-section';
-import { PosterLightbox } from '@/components/posters/poster-card';
+import { Toolbar, type ViewMode, type FilterType } from '@/components/posters/toolbar';
 import { PosterExplorer, type PosterType, POSTER_DEFS } from '@/components/posters/poster-explorer';
+import { PosterLightbox } from '@/components/posters/poster-lightbox';
 
 // ── Country registry ──────────────────────────────────────────────────────────
 const COUNTRIES = [
@@ -553,7 +555,20 @@ function WorldScoreboardPoster({ scoreboardData }: { scoreboardData: CountryClas
   );
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
 // ── Main PostersClient ────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Category filter definitions (from poster types)
+const CATEGORIES: { value: string; label: string }[] = [
+  { value: 'all',         label: 'All' },
+  { value: 'scoreboard',  label: 'Global' },
+  { value: 'energy',      label: 'Energy' },
+  { value: 'gap',         label: 'Paris Gap' },
+  { value: 'race',        label: 'Transition' },
+  { value: 'inequality',  label: 'Inequality' },
+  { value: 'air',         label: 'Air Quality' },
+];
 
 export function PostersClient() {
   const [iso3,     setIso3]     = useState('KOR');
@@ -566,6 +581,8 @@ export function PostersClient() {
   const [countriesList,  setCountriesList]  = useState<CountryMeta[]>(COUNTRIES);
   const [downloading,    setDownloading]    = useState<PosterType | null>(null);
   const [lightbox,       setLightbox]       = useState<PosterType | null>(null);
+  const [viewMode,       setViewMode]       = useState<ViewMode>('grid');
+  const [filter,         setFilter]         = useState<FilterType>('all');
 
   const refs = useRef<Partial<Record<PosterType, HTMLDivElement | null>>>({});
 
@@ -622,7 +639,7 @@ export function PostersClient() {
     return (el: HTMLDivElement | null) => { refs.current[type] = el; };
   }
 
-  // Build lightbox stats based on type
+  // Build lightbox stats based on type — all from Supabase state
   function getLightboxStats(type: PosterType) {
     switch (type) {
       case 'energy':
@@ -641,12 +658,36 @@ export function PostersClient() {
           { label: 'PM2.5', value: `${metrics.pm25.toFixed(1)} \u00b5g/m\u00b3`, color: metrics.pm25 > 5 ? '#EF4444' : '#10B981' },
           { label: 'WHO Guideline', value: '5 \u00b5g/m\u00b3', color: '#10B981' },
         ];
+      case 'race':
+        return [
+          { label: 'Countries ranked', value: `${raceData.length}`, color: '#7C3AED' },
+          { label: 'Top renewable', value: raceData[0] ? `${raceData[0].renewable.toFixed(1)}%` : '-', color: '#10B981' },
+        ];
+      case 'scoreboard': {
+        const counts = { Changer: 0, Starter: 0, Talker: 0 };
+        for (const c of scoreboardData) if (c.cls !== 'NoData') counts[c.cls as keyof typeof counts]++;
+        return [
+          { label: 'Changers', value: String(counts.Changer), color: '#10B981' },
+          { label: 'Starters', value: String(counts.Starter), color: '#F59E0B' },
+          { label: 'Talkers',  value: String(counts.Talker),  color: '#EF4444' },
+        ];
+      }
+      case 'gap':
+        return [
+          { label: 'CO\u2082/cap', value: `${metrics.co2.toFixed(1)} t`, color: '#D97706' },
+        ];
       default:
         return [];
     }
   }
 
   const lightboxDef = lightbox ? POSTER_DEFS.find(d => d.id === lightbox) : null;
+
+  // Filter poster defs
+  const filteredDefs = useMemo(() => {
+    if (filter === 'all') return POSTER_DEFS;
+    return POSTER_DEFS.filter(p => p.id === filter);
+  }, [filter]);
 
   // ── Bento section data ──────────────────────────────────────────────────
   const bentoPosters: BentoPoster[] = [
@@ -655,7 +696,8 @@ export function PostersClient() {
       title: 'World Scoreboard',
       subtitle: 'Climate action classification for 100+ countries',
       badge: 'Global',
-      badgeColor: '#0066FF',
+      badgeColor: '#3B5998',
+      bgColor: '#F0F4FF',
       content: <WorldScoreboardPoster scoreboardData={scoreboardData} />,
       onDownload: () => handleDownload('scoreboard'),
       downloading: downloading === 'scoreboard',
@@ -666,7 +708,8 @@ export function PostersClient() {
       title: 'Energy Flow',
       subtitle: `${country.name} electricity mix`,
       badge: 'Energy',
-      badgeColor: '#10B981',
+      badgeColor: '#059669',
+      bgColor: '#ECFDF5',
       content: <EnergyFlowPoster country={country} metrics={metrics} />,
       onDownload: () => handleDownload('energy'),
       downloading: downloading === 'energy',
@@ -676,8 +719,9 @@ export function PostersClient() {
       id: 'gap',
       title: 'Paris Gap',
       subtitle: 'CO\u2082 CAGR before vs after Paris',
-      badge: 'Emissions',
-      badgeColor: '#F59E0B',
+      badge: 'Paris Gap',
+      badgeColor: '#D97706',
+      bgColor: '#FFFBEB',
       content: <ParisGapPoster country={country} />,
       onDownload: () => handleDownload('gap'),
       downloading: downloading === 'gap',
@@ -687,8 +731,9 @@ export function PostersClient() {
       id: 'race',
       title: 'Transition Race',
       subtitle: 'Renewable % ranking',
-      badge: 'Energy',
-      badgeColor: '#10B981',
+      badge: 'Transition',
+      badgeColor: '#7C3AED',
+      bgColor: '#F5F3FF',
       content: <TransitionRacePoster raceData={raceData} highlightIso3={iso3} />,
       onDownload: () => handleDownload('race'),
       downloading: downloading === 'race',
@@ -698,8 +743,9 @@ export function PostersClient() {
       id: 'inequality',
       title: 'Carbon Inequality',
       subtitle: `${country.name} vs ${compCountry.name}`,
-      badge: 'Emissions',
-      badgeColor: '#EF4444',
+      badge: 'Inequality',
+      badgeColor: '#E11D48',
+      bgColor: '#FFF1F2',
       content: <CarbonInequalityPoster country={country} compCountry={compCountry} metrics={metrics} compMetrics={compMet} />,
       onDownload: () => handleDownload('inequality'),
       downloading: downloading === 'inequality',
@@ -709,8 +755,9 @@ export function PostersClient() {
       id: 'air',
       title: 'Air Quality',
       subtitle: `${country.name} PM2.5 vs WHO`,
-      badge: 'Health',
-      badgeColor: '#8B5CF6',
+      badge: 'Air Quality',
+      badgeColor: '#0D9488',
+      bgColor: '#F0FDFA',
       content: <AirQualityPoster country={country} metrics={metrics} />,
       onDownload: () => handleDownload('air'),
       downloading: downloading === 'air',
@@ -719,46 +766,69 @@ export function PostersClient() {
   ];
 
   return (
-    <>
-      {/* 1. Hero with card fan */}
-      <PosterHeroSection
-        totalPosters={6}
-        totalCountries={countriesList.length}
-      />
+    <LayoutGroup>
+      <div className="min-h-screen bg-white">
+        {/* 1. Hero with card fan */}
+        <PosterHeroSection
+          totalPosters={6}
+          totalCountries={countriesList.length}
+        />
 
-      {/* 2. Bento grid showcase */}
-      <BentoSection posters={bentoPosters} />
+        {/* 2. Bento grid showcase */}
+        <BentoSection
+          posters={bentoPosters}
+          totalTypes={6}
+          totalCountries={countriesList.length}
+        />
 
-      {/* 3. Explorer with view modes */}
-      <PosterExplorer
-        countriesList={countriesList}
-        iso3={iso3}
-        setIso3={setIso3}
-        compIso3={compIso3}
-        setCompIso3={setCompIso3}
-        onClickPoster={setLightbox}
-        renderPoster={renderPoster}
-        renderPosterRef={renderPosterRef}
-        downloading={downloading}
-        onDownload={handleDownload}
-      />
+        {/* 3. Toolbar (sticky) */}
+        <Toolbar
+          activeCategory={filter}
+          onCategoryChange={setFilter}
+          activeCountry={iso3}
+          onCountryChange={setIso3}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          countriesList={countriesList}
+          categories={CATEGORIES}
+        />
 
-      {/* 4. Lightbox overlay */}
-      <PosterLightbox
-        open={lightbox !== null}
-        onClose={() => setLightbox(null)}
-        title={lightboxDef?.title ?? ''}
-        subtitle={`${country.flag} ${country.name}`}
-        stats={lightbox ? getLightboxStats(lightbox) : []}
-        downloading={downloading === lightbox}
-        onDownload={lightbox ? () => handleDownload(lightbox) : undefined}
-      >
-        {lightbox && (
-          <div ref={renderPosterRef(lightbox)}>
-            {renderPoster(lightbox)}
-          </div>
-        )}
-      </PosterLightbox>
-    </>
+        {/* 4. Explorer with view modes */}
+        <PosterExplorer
+          countriesList={countriesList}
+          iso3={iso3}
+          compIso3={compIso3}
+          setCompIso3={setCompIso3}
+          onClickPoster={setLightbox}
+          renderPoster={renderPoster}
+          renderPosterRef={renderPosterRef}
+          downloading={downloading}
+          onDownload={handleDownload}
+          viewMode={viewMode}
+          filteredDefs={filteredDefs}
+          countryName={country.name}
+        />
+
+        {/* 5. Lightbox overlay */}
+        <PosterLightbox
+          open={lightbox !== null}
+          onClose={() => setLightbox(null)}
+          title={lightboxDef?.title ?? ''}
+          subtitle={`${country.flag} ${country.name}`}
+          categoryLabel={lightboxDef?.category}
+          categoryColor={lightboxDef?.categoryColor}
+          bgColor={lightboxDef?.bgColor}
+          stats={lightbox ? getLightboxStats(lightbox) : []}
+          downloading={downloading === lightbox}
+          onDownload={lightbox ? () => handleDownload(lightbox) : undefined}
+        >
+          {lightbox && (
+            <div ref={renderPosterRef(lightbox)}>
+              {renderPoster(lightbox)}
+            </div>
+          )}
+        </PosterLightbox>
+      </div>
+    </LayoutGroup>
   );
 }

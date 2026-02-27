@@ -1,127 +1,138 @@
 'use client';
 
-import { type ReactNode, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, type ReactNode } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
-/* ── Stat block for lightbox sidebar ─────────────────────────────────────── */
+/* ── Types ──────────────────────────────────────────────────────────────── */
 
-interface StatBlockProps {
-  label: string;
-  value: string;
-  color?: string;
-}
-
-function StatBlock({ label, value, color = '#0066FF' }: StatBlockProps) {
-  return (
-    <div className="rounded-xl bg-[#F8F9FA] px-4 py-3">
-      <p className="text-xs text-[#8888A0]">{label}</p>
-      <p className="text-xl font-bold" style={{ color }}>{value}</p>
-    </div>
-  );
-}
-
-/* ── Lightbox overlay ────────────────────────────────────────────────────── */
-
-interface LightboxProps {
-  open: boolean;
-  onClose: () => void;
+export interface PosterCardProps {
+  index: number;
+  categoryLabel: string;
   title: string;
-  subtitle?: string;
-  stats?: StatBlockProps[];
-  downloading?: boolean;
-  onDownload?: () => void;
-  children: ReactNode;
+  description?: string;
+  bgColor: string;
+  accentColor: string;
+  onClick?: () => void;
+  className?: string;
+  aspectRatio?: string;
+  children?: ReactNode; // renderPoster() output goes here
 }
 
-export function PosterLightbox({
-  open, onClose, title, subtitle, stats, downloading, onDownload, children,
-}: LightboxProps) {
-  // ESC to close
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [open, onClose]);
+/* ── 3D Tilt Card ───────────────────────────────────────────────────────── */
 
-  // Prevent body scroll when open
-  useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
-  }, [open]);
+export function PosterCard({
+  index,
+  categoryLabel,
+  title,
+  description,
+  bgColor,
+  accentColor,
+  onClick,
+  className = '',
+  aspectRatio,
+  children,
+}: PosterCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), {
+    stiffness: 200,
+    damping: 20,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), {
+    stiffness: 200,
+    damping: 20,
+  });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{
+        type: 'spring',
+        stiffness: 90,
+        damping: 18,
+        delay: index * 0.05,
+      }}
+      style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 800,
+        aspectRatio,
+      }}
+      whileHover={{
+        scale: 1.02,
+        transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      className={`group relative cursor-pointer overflow-hidden rounded-3xl ${className}`}
+    >
+      {/* Background */}
+      <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
+      <div
+        className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${accentColor}08, transparent 40%)`,
+        }}
+      />
 
-          {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-auto rounded-2xl bg-white shadow-2xl ring-1 ring-black/[0.06] md:flex-row"
-            onClick={e => e.stopPropagation()}
+      <div className="relative flex h-full flex-col justify-between p-4">
+        {/* Poster content area — renderPoster() output */}
+        <div className="flex flex-1 items-center justify-center overflow-hidden">
+          {children}
+        </div>
+
+        {/* Bottom label area */}
+        <div className="mt-3">
+          <motion.span
+            initial={{ opacity: 0, x: -10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.05 + 0.4 }}
+            className="text-xs font-medium uppercase tracking-widest"
+            style={{ color: accentColor }}
           >
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-[#4A4A6A] shadow-sm backdrop-blur transition-colors hover:bg-white hover:text-[#1A1A2E]"
-              aria-label="Close"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            {categoryLabel}
+          </motion.span>
+          <motion.h3
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.05 + 0.5 }}
+            className="mt-1 text-base font-semibold leading-snug text-slate-900 md:text-lg"
+          >
+            {title}
+          </motion.h3>
 
-            {/* Poster preview */}
-            <div className="flex-1 overflow-auto bg-[#F8F9FA] p-6 md:p-8">
-              {children}
+          {/* Hover-reveal description */}
+          {description && (
+            <div className="h-0 overflow-hidden opacity-0 transition-all duration-400 ease-out group-hover:h-auto group-hover:mt-2 group-hover:opacity-100">
+              <p className="text-xs leading-relaxed text-slate-500">
+                {description}
+              </p>
             </div>
-
-            {/* Sidebar info */}
-            <div className="flex w-full flex-col border-t border-[#E8E8ED] p-6 md:w-72 md:border-l md:border-t-0">
-              <h3 className="text-lg font-bold text-[#1A1A2E]">{title}</h3>
-              {subtitle && <p className="mt-1 text-sm text-[#4A4A6A]">{subtitle}</p>}
-
-              {stats && stats.length > 0 && (
-                <div className="mt-4 grid gap-2">
-                  {stats.map((s, i) => <StatBlock key={i} {...s} />)}
-                </div>
-              )}
-
-              <div className="mt-auto pt-6">
-                {onDownload && (
-                  <button
-                    onClick={onDownload}
-                    disabled={downloading}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0066FF] px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-[#0052CC] disabled:opacity-50"
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                    {downloading ? 'Preparing\u2026' : 'Download PNG'}
-                  </button>
-                )}
-                <p className="mt-3 text-center text-[10px] text-[#8888A0]">
-                  1080\u00d71080px &middot; visualclimate.org
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 }

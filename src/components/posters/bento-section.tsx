@@ -1,73 +1,21 @@
 'use client';
 
-import { type ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { useRef, type ReactNode } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { PosterCard } from './poster-card';
 
-/* ── Bento card wrapper ──────────────────────────────────────────────────── */
-
-interface BentoCardProps {
-  title: string;
-  subtitle: string;
-  badge: string;
-  badgeColor: string;
-  span?: string;      // grid span classes
-  children: ReactNode; // poster content
-  onDownload?: () => void;
-  downloading?: boolean;
-}
-
-function BentoCard({ title, subtitle, badge, badgeColor, span, children, onDownload, downloading }: BentoCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.6, type: 'spring', stiffness: 100, damping: 20 }}
-      className={`group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${span ?? ''}`}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between px-5 pt-5">
-        <div>
-          <span
-            className="mb-1.5 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-            style={{ backgroundColor: `${badgeColor}14`, color: badgeColor }}
-          >
-            {badge}
-          </span>
-          <h3 className="text-base font-bold text-[#1A1A2E]">{title}</h3>
-          <p className="text-xs text-[#4A4A6A]">{subtitle}</p>
-        </div>
-        {onDownload && (
-          <button
-            onClick={e => { e.stopPropagation(); onDownload(); }}
-            disabled={downloading}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F8F9FA] text-[#4A4A6A] opacity-0 transition-all duration-200 hover:bg-[#0066FF] hover:text-white group-hover:opacity-100 disabled:opacity-40"
-            aria-label="Download PNG"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {/* Chart content */}
-      <div className="px-5 pb-5 pt-3">
-        {children}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Bento section ───────────────────────────────────────────────────────── */
+/* ── Types ──────────────────────────────────────────────────────────────── */
 
 export interface BentoPoster {
   id: string;
   title: string;
   subtitle: string;
+  description?: string;
   badge: string;
   badgeColor: string;
-  content: ReactNode;
+  bgColor: string;
+  content: ReactNode; // renderPoster() output
   onDownload?: () => void;
   downloading?: boolean;
   refCallback?: (el: HTMLDivElement | null) => void;
@@ -75,90 +23,270 @@ export interface BentoPoster {
 
 interface BentoSectionProps {
   posters: BentoPoster[];
+  totalTypes: number;
+  totalCountries: number;
 }
 
-export function BentoSection({ posters }: BentoSectionProps) {
-  // Layout: first poster is featured (2-col span), rest fill in
-  // Row 1: featured (col-span-2) + stacked pair (2 items col-span-1 each)
-  // Row 2: remaining items evenly
+/* ── Bento Showcase Section ─────────────────────────────────────────────── */
 
-  const featured = posters[0];
-  const secondRow = posters.slice(1, 3); // energy + gap
-  const thirdRow = posters.slice(3);      // race, inequality, air
+export function BentoSection({ posters, totalTypes, totalCountries }: BentoSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Parallax transforms for left column
+  const textY = useTransform(scrollYProgress, [0, 0.5], [80, -20]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0.6]);
+
+  // Stagger transforms for right column cards
+  const card1Y = useTransform(scrollYProgress, [0.05, 0.35], [120, 0]);
+  const card2Y = useTransform(scrollYProgress, [0.1, 0.4], [140, 0]);
+  const card3Y = useTransform(scrollYProgress, [0.12, 0.42], [100, 0]);
+  const card4Y = useTransform(scrollYProgress, [0.15, 0.45], [160, 0]);
+  const card5Y = useTransform(scrollYProgress, [0.18, 0.48], [120, 0]);
+
+  const cardTransforms = [card1Y, card2Y, card3Y, card4Y, card5Y];
+
+  // We show up to 5 posters in the bento grid (skip scoreboard which is wide)
+  const gridPosters = posters.slice(0, 5);
 
   return (
-    <section className="bg-[#F8F9FA] px-4 py-16">
-      <div className="mx-auto max-w-6xl">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
-          <span className="mb-2 inline-block rounded-full border border-[#E8E8ED] bg-white px-3 py-1 text-xs font-medium text-[#4A4A6A]">
-            Featured
-          </span>
-          <h2 className="text-2xl font-bold text-[#1A1A2E] md:text-3xl">
-            Poster Collection
-          </h2>
-          <p className="mt-2 text-sm text-[#4A4A6A]">
-            Click any poster to expand &middot; Download as PNG for social sharing
-          </p>
-        </motion.div>
+    <section ref={sectionRef} className="overflow-hidden bg-white py-24 md:py-36">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
+          {/* Left: sticky description column */}
+          <motion.div
+            style={{ y: textY, opacity: textOpacity }}
+            className="flex-shrink-0 lg:sticky lg:top-32 lg:w-[340px]"
+          >
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+              className="text-xs font-medium uppercase tracking-widest text-slate-400"
+            >
+              Featured
+            </motion.span>
 
-        {/* Bento grid */}
-        <div className="grid gap-4 md:grid-cols-3">
-          {/* Featured: World Scoreboard spans 2 cols */}
-          {featured && (
-            <div ref={featured.refCallback} className="md:col-span-2">
-              <BentoCard
-                title={featured.title}
-                subtitle={featured.subtitle}
-                badge={featured.badge}
-                badgeColor={featured.badgeColor}
-                onDownload={featured.onDownload}
-                downloading={featured.downloading}
+            <motion.h2
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.1 }}
+              className="mt-3 text-balance text-4xl font-bold tracking-tight text-slate-900 md:text-5xl"
+            >
+              Poster Collection
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.2 }}
+              className="mt-4 text-pretty text-base leading-relaxed text-slate-500"
+            >
+              Six distinct poster types covering emissions, energy mix, Paris gap analysis,
+              transition race, carbon inequality, and air quality across {totalCountries}+ countries.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.3 }}
+              className="mt-3 text-sm text-slate-400"
+            >
+              Click any poster to expand. Download as PNG for social sharing.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.4 }}
+              className="mt-8"
+            >
+              <a
+                href="#posters"
+                className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-slate-800"
               >
-                {featured.content}
-              </BentoCard>
-            </div>
-          )}
+                Explore all posters
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
+            </motion.div>
 
-          {/* Stacked pair: Energy + Gap */}
-          <div className="flex flex-col gap-4">
-            {secondRow.map(p => (
-              <div key={p.id} ref={p.refCallback}>
-                <BentoCard
-                  title={p.title}
-                  subtitle={p.subtitle}
-                  badge={p.badge}
-                  badgeColor={p.badgeColor}
-                  onDownload={p.onDownload}
-                  downloading={p.downloading}
+            {/* Stats block */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.5 }}
+              className="mt-12 grid grid-cols-3 gap-4"
+            >
+              {[
+                { value: String(totalTypes), label: 'Poster types' },
+                { value: `${totalCountries}+`, label: 'Countries' },
+                { value: '200+', label: 'Data points' },
+              ].map((stat, i) => (
+                <div key={stat.label} className="text-center">
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.6 + i * 0.1 }}
+                    className="text-2xl font-bold text-slate-900"
+                  >
+                    {stat.value}
+                  </motion.span>
+                  <p className="mt-1 text-xs text-slate-400">{stat.label}</p>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Right: poster grid with scroll-driven movement */}
+          <div className="flex-1">
+            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {/* Row 1: wide card */}
+              {gridPosters[0] && (
+                <motion.div
+                  style={{ y: cardTransforms[0] }}
+                  className="sm:col-span-2"
                 >
-                  {p.content}
-                </BentoCard>
-              </div>
-            ))}
-          </div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 18 }}
+                  >
+                    <div ref={gridPosters[0].refCallback}>
+                      <PosterCard
+                        index={0}
+                        categoryLabel={gridPosters[0].badge}
+                        title={gridPosters[0].title}
+                        description={gridPosters[0].subtitle}
+                        bgColor={gridPosters[0].bgColor}
+                        accentColor={gridPosters[0].badgeColor}
+                        onClick={gridPosters[0].onDownload}
+                        className="h-full min-h-[220px] md:min-h-[300px]"
+                      >
+                        {gridPosters[0].content}
+                      </PosterCard>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
 
-          {/* Bottom row: fills remaining */}
-          {thirdRow.map(p => (
-            <div key={p.id} ref={p.refCallback}>
-              <BentoCard
-                title={p.title}
-                subtitle={p.subtitle}
-                badge={p.badge}
-                badgeColor={p.badgeColor}
-                onDownload={p.onDownload}
-                downloading={p.downloading}
-              >
-                {p.content}
-              </BentoCard>
+              {/* Row 2: two cards */}
+              {gridPosters[1] && (
+                <motion.div style={{ y: cardTransforms[1] }}>
+                  <motion.div
+                    initial={{ opacity: 0, x: -40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.08 }}
+                  >
+                    <div ref={gridPosters[1].refCallback}>
+                      <PosterCard
+                        index={1}
+                        categoryLabel={gridPosters[1].badge}
+                        title={gridPosters[1].title}
+                        description={gridPosters[1].subtitle}
+                        bgColor={gridPosters[1].bgColor}
+                        accentColor={gridPosters[1].badgeColor}
+                        onClick={gridPosters[1].onDownload}
+                        className="h-full min-h-[240px] md:min-h-[340px]"
+                      >
+                        {gridPosters[1].content}
+                      </PosterCard>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {gridPosters[2] && (
+                <motion.div style={{ y: cardTransforms[2] }}>
+                  <motion.div
+                    initial={{ opacity: 0, x: 40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.12 }}
+                  >
+                    <div ref={gridPosters[2].refCallback}>
+                      <PosterCard
+                        index={2}
+                        categoryLabel={gridPosters[2].badge}
+                        title={gridPosters[2].title}
+                        description={gridPosters[2].subtitle}
+                        bgColor={gridPosters[2].bgColor}
+                        accentColor={gridPosters[2].badgeColor}
+                        onClick={gridPosters[2].onDownload}
+                        className="h-full min-h-[240px] md:min-h-[340px]"
+                      >
+                        {gridPosters[2].content}
+                      </PosterCard>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* Row 3: two more cards */}
+              {gridPosters[3] && (
+                <motion.div style={{ y: cardTransforms[3] }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 50, rotate: -2 }}
+                    whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.16 }}
+                  >
+                    <div ref={gridPosters[3].refCallback}>
+                      <PosterCard
+                        index={3}
+                        categoryLabel={gridPosters[3].badge}
+                        title={gridPosters[3].title}
+                        description={gridPosters[3].subtitle}
+                        bgColor={gridPosters[3].bgColor}
+                        accentColor={gridPosters[3].badgeColor}
+                        onClick={gridPosters[3].onDownload}
+                        className="h-full min-h-[240px] md:min-h-[300px]"
+                      >
+                        {gridPosters[3].content}
+                      </PosterCard>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {gridPosters[4] && (
+                <motion.div style={{ y: cardTransforms[4] }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 50, rotate: 2 }}
+                    whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.2 }}
+                  >
+                    <div ref={gridPosters[4].refCallback}>
+                      <PosterCard
+                        index={4}
+                        categoryLabel={gridPosters[4].badge}
+                        title={gridPosters[4].title}
+                        description={gridPosters[4].subtitle}
+                        bgColor={gridPosters[4].bgColor}
+                        accentColor={gridPosters[4].badgeColor}
+                        onClick={gridPosters[4].onDownload}
+                        className="h-full min-h-[240px] md:min-h-[300px]"
+                      >
+                        {gridPosters[4].content}
+                      </PosterCard>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
