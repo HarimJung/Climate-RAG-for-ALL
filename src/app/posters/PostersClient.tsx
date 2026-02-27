@@ -351,7 +351,6 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
   const pm25 = metrics.pm25 > 0 ? metrics.pm25 : WHO;
   const ratio = Math.max(1, Math.round(pm25 / WHO));
   const maxR = 90;
-  const whoR = Math.sqrt(WHO / pm25) * maxR;
   const cntR = maxR;
   const W = 460; const H = 220;
 
@@ -370,8 +369,8 @@ function AirQualityPoster({ country, metrics }: { country: CountryMeta; metrics:
       <div style={{ flex: 1, marginTop: '12px', minHeight: 0 }}>
         <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '100%', display: 'block' }}>
           <rect width={W} height={H} fill={`rgba(120,100,80,${Math.min(0.12, pm25 / 100 * 0.15)})`} rx={12} />
-          <circle cx={W * 0.27} cy={H / 2} r={whoR} fill="#10B981" opacity={0.18} />
-          <circle cx={W * 0.27} cy={H / 2} r={whoR} fill="none" stroke="#10B981" strokeWidth={2} strokeDasharray="5,3" />
+          <circle cx={W * 0.27} cy={H / 2} r={Math.sqrt(WHO / pm25) * maxR} fill="#10B981" opacity={0.18} />
+          <circle cx={W * 0.27} cy={H / 2} r={Math.sqrt(WHO / pm25) * maxR} fill="none" stroke="#10B981" strokeWidth={2} strokeDasharray="5,3" />
           <text x={W * 0.27} y={H / 2 - 5} textAnchor="middle" fontSize={12} fontWeight="700" fill="#059669" fontFamily="Inter, system-ui, sans-serif">WHO</text>
           <text x={W * 0.27} y={H / 2 + 11} textAnchor="middle" fontSize={11} fill="#059669" fontFamily="monospace">5 \u00b5g/m\u00b3</text>
           <text x={W / 2} y={H / 2 + 6} textAnchor="middle" fontSize={20} fill="#94A3B8" fontFamily="Inter, system-ui, sans-serif">vs</text>
@@ -765,20 +764,27 @@ export function PostersClient() {
     },
   ];
 
+  // Handle poster click for lightbox — accept PosterType or string id
+  const handlePosterClick = useCallback((id: string) => {
+    const posterType = id as PosterType;
+    setLightbox(posterType);
+  }, []);
+
   return (
     <LayoutGroup>
       <div className="min-h-screen bg-white">
-        {/* 1. Hero with card fan */}
+        {/* 1. Hero with scroll-driven fan-to-grid animation */}
         <PosterHeroSection
           totalPosters={6}
           totalCountries={countriesList.length}
         />
 
-        {/* 2. Bento grid showcase */}
+        {/* 2. Bento showcase: left sticky description + right 5-card bento grid */}
         <BentoSection
           posters={bentoPosters}
           totalTypes={6}
           totalCountries={countriesList.length}
+          onPosterClick={handlePosterClick}
         />
 
         {/* 3. Toolbar (sticky) */}
@@ -793,7 +799,7 @@ export function PostersClient() {
           categories={CATEGORIES}
         />
 
-        {/* 4. Explorer with view modes */}
+        {/* 4. Explorer with 3 view modes */}
         <PosterExplorer
           countriesList={countriesList}
           iso3={iso3}
