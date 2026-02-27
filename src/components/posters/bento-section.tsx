@@ -15,7 +15,7 @@ export interface BentoPoster {
   badge: string;
   badgeColor: string;
   bgColor: string;
-  content: ReactNode; // renderPoster() output
+  content: ReactNode;
   onDownload?: () => void;
   downloading?: boolean;
   refCallback?: (el: HTMLDivElement | null) => void;
@@ -27,7 +27,7 @@ interface BentoSectionProps {
   totalCountries: number;
 }
 
-/* ── Bento Showcase Section ─────────────────────────────────────────────── */
+/* ── Bento Grid Section ─────────────────────────────────────────────────── */
 
 export function BentoSection({ posters, totalTypes, totalCountries }: BentoSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -36,257 +36,276 @@ export function BentoSection({ posters, totalTypes, totalCountries }: BentoSecti
     offset: ['start end', 'end start'],
   });
 
-  // Parallax transforms for left column
-  const textY = useTransform(scrollYProgress, [0, 0.5], [80, -20]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0.6]);
+  const textY = useTransform(scrollYProgress, [0, 0.4], [40, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0.9]);
 
-  // Stagger transforms for right column cards
-  const card1Y = useTransform(scrollYProgress, [0.05, 0.35], [120, 0]);
-  const card2Y = useTransform(scrollYProgress, [0.1, 0.4], [140, 0]);
-  const card3Y = useTransform(scrollYProgress, [0.12, 0.42], [100, 0]);
-  const card4Y = useTransform(scrollYProgress, [0.15, 0.45], [160, 0]);
-  const card5Y = useTransform(scrollYProgress, [0.18, 0.48], [120, 0]);
-
-  const cardTransforms = [card1Y, card2Y, card3Y, card4Y, card5Y];
-
-  // We show up to 5 posters in the bento grid (skip scoreboard which is wide)
-  const gridPosters = posters.slice(0, 5);
+  // All 6 posters:
+  // [0] scoreboard, [1] energy, [2] gap, [3] race, [4] inequality, [5] air
+  const p = posters.slice(0, 6);
 
   return (
-    <section ref={sectionRef} className="overflow-hidden bg-white py-24 md:py-36">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
-          {/* Left: sticky description column */}
+    <section ref={sectionRef} className="overflow-hidden bg-white py-12 md:py-16">
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+
+        {/*
+          3-column bento grid:
+          ┌──────────┬──────────────────────────┐
+          │  TEXT    │  SCOREBOARD (col-span-2) │  row 1
+          │ (row-    ├─────────────┬────────────┤
+          │  span-2) │  ENERGY     │  PARIS GAP │  row 2
+          ├──────────┼─────────────┼────────────┤
+          │  RACE    │  INEQUALITY │  AIR       │  row 3
+          └──────────┴─────────────┴────────────┘
+        */}
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+
+          {/* ── Cell: Text block — col 1, rows 1-2 ── */}
           <motion.div
             style={{ y: textY, opacity: textOpacity }}
-            className="flex-shrink-0 lg:sticky lg:top-32 lg:w-[340px]"
+            className="flex flex-col justify-between rounded-2xl border border-slate-100 bg-[#F8F9FA] p-7
+              md:col-start-1 md:row-start-1 md:row-span-2"
           >
-            <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 120, damping: 20 }}
-              className="text-xs font-medium uppercase tracking-widest text-slate-400"
-            >
-              Featured
-            </motion.span>
-
-            <motion.h2
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.1 }}
-              className="mt-3 text-balance text-4xl font-bold tracking-tight text-slate-900 md:text-5xl"
-            >
-              Poster Collection
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.2 }}
-              className="mt-4 text-pretty text-base leading-relaxed text-slate-500"
-            >
-              Six distinct poster types covering emissions, energy mix, Paris gap analysis,
-              transition race, carbon inequality, and air quality across {totalCountries}+ countries.
-            </motion.p>
-
-            <motion.p
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.3 }}
-              className="mt-3 text-sm text-slate-400"
-            >
-              Click any poster to expand. Download as PNG for social sharing.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.4 }}
-              className="mt-8"
-            >
-              <a
-                href="#posters"
-                className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-slate-800"
+            <div className="flex flex-col gap-5">
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+                className="text-xs font-medium uppercase tracking-widest text-slate-400"
               >
-                Explore all posters
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </a>
-            </motion.div>
+                Featured
+              </motion.span>
 
-            {/* Stats block */}
+              <motion.h2
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.1 }}
+                className="text-balance text-4xl font-bold tracking-tight text-slate-900 md:text-5xl"
+              >
+                Poster<br />Collection
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.2 }}
+                className="text-pretty text-sm leading-relaxed text-slate-500"
+              >
+                Six distinct poster types covering emissions, energy mix, Paris gap analysis,
+                transition race, carbon inequality, and air quality across {totalCountries}+ countries.
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.3 }}
+                className="text-xs text-slate-400"
+              >
+                Click any poster to expand. Download as PNG for social sharing.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.4 }}
+              >
+                <a
+                  href="#posters"
+                  className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-slate-800"
+                >
+                  Explore all posters
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </a>
+              </motion.div>
+            </div>
+
+            {/* Stats at bottom */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.5 }}
-              className="mt-12 grid grid-cols-3 gap-4"
+              className="mt-8 grid grid-cols-3 gap-3 border-t border-slate-200 pt-6"
             >
               {[
                 { value: String(totalTypes), label: 'Poster types' },
                 { value: `${totalCountries}+`, label: 'Countries' },
                 { value: '200+', label: 'Data points' },
               ].map((stat, i) => (
-                <div key={stat.label} className="text-center">
+                <div key={stat.label}>
                   <motion.span
                     initial={{ opacity: 0, scale: 0.5 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.6 + i * 0.1 }}
-                    className="text-2xl font-bold text-slate-900"
+                    className="block text-2xl font-bold text-slate-900"
                   >
                     {stat.value}
                   </motion.span>
-                  <p className="mt-1 text-xs text-slate-400">{stat.label}</p>
+                  <p className="mt-0.5 text-xs text-slate-400">{stat.label}</p>
                 </div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right: poster grid with scroll-driven movement */}
-          <div className="flex-1">
-            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-              {/* Row 1: wide card */}
-              {gridPosters[0] && (
-                <motion.div
-                  style={{ y: cardTransforms[0] }}
-                  className="sm:col-span-2"
+          {/* ── Cell: Scoreboard — col 2-3, row 1 ── */}
+          {p[0] && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18 }}
+              className="md:col-start-2 md:col-span-2 md:row-start-1"
+            >
+              <div ref={p[0].refCallback} className="h-full">
+                <PosterCard
+                  index={0}
+                  categoryLabel={p[0].badge}
+                  title={p[0].title}
+                  description={p[0].subtitle}
+                  bgColor={p[0].bgColor}
+                  accentColor={p[0].badgeColor}
+                  onClick={p[0].onDownload}
+                  className="h-full min-h-[280px] md:min-h-[320px]"
                 >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 18 }}
-                  >
-                    <div ref={gridPosters[0].refCallback}>
-                      <PosterCard
-                        index={0}
-                        categoryLabel={gridPosters[0].badge}
-                        title={gridPosters[0].title}
-                        description={gridPosters[0].subtitle}
-                        bgColor={gridPosters[0].bgColor}
-                        accentColor={gridPosters[0].badgeColor}
-                        onClick={gridPosters[0].onDownload}
-                        className="h-full min-h-[220px] md:min-h-[300px]"
-                      >
-                        {gridPosters[0].content}
-                      </PosterCard>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
+                  {p[0].content}
+                </PosterCard>
+              </div>
+            </motion.div>
+          )}
 
-              {/* Row 2: two cards */}
-              {gridPosters[1] && (
-                <motion.div style={{ y: cardTransforms[1] }}>
-                  <motion.div
-                    initial={{ opacity: 0, x: -40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.08 }}
-                  >
-                    <div ref={gridPosters[1].refCallback}>
-                      <PosterCard
-                        index={1}
-                        categoryLabel={gridPosters[1].badge}
-                        title={gridPosters[1].title}
-                        description={gridPosters[1].subtitle}
-                        bgColor={gridPosters[1].bgColor}
-                        accentColor={gridPosters[1].badgeColor}
-                        onClick={gridPosters[1].onDownload}
-                        className="h-full min-h-[240px] md:min-h-[340px]"
-                      >
-                        {gridPosters[1].content}
-                      </PosterCard>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
+          {/* ── Cell: Energy — col 2, row 2 ── */}
+          {p[1] && (
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.08 }}
+              className="md:col-start-2 md:row-start-2"
+            >
+              <div ref={p[1].refCallback} className="h-full">
+                <PosterCard
+                  index={1}
+                  categoryLabel={p[1].badge}
+                  title={p[1].title}
+                  description={p[1].subtitle}
+                  bgColor={p[1].bgColor}
+                  accentColor={p[1].badgeColor}
+                  onClick={p[1].onDownload}
+                  className="h-full min-h-[260px] md:min-h-[300px]"
+                >
+                  {p[1].content}
+                </PosterCard>
+              </div>
+            </motion.div>
+          )}
 
-              {gridPosters[2] && (
-                <motion.div style={{ y: cardTransforms[2] }}>
-                  <motion.div
-                    initial={{ opacity: 0, x: 40 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.12 }}
-                  >
-                    <div ref={gridPosters[2].refCallback}>
-                      <PosterCard
-                        index={2}
-                        categoryLabel={gridPosters[2].badge}
-                        title={gridPosters[2].title}
-                        description={gridPosters[2].subtitle}
-                        bgColor={gridPosters[2].bgColor}
-                        accentColor={gridPosters[2].badgeColor}
-                        onClick={gridPosters[2].onDownload}
-                        className="h-full min-h-[240px] md:min-h-[340px]"
-                      >
-                        {gridPosters[2].content}
-                      </PosterCard>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
+          {/* ── Cell: Paris Gap — col 3, row 2 ── */}
+          {p[2] && (
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.12 }}
+              className="md:col-start-3 md:row-start-2"
+            >
+              <div ref={p[2].refCallback} className="h-full">
+                <PosterCard
+                  index={2}
+                  categoryLabel={p[2].badge}
+                  title={p[2].title}
+                  description={p[2].subtitle}
+                  bgColor={p[2].bgColor}
+                  accentColor={p[2].badgeColor}
+                  onClick={p[2].onDownload}
+                  className="h-full min-h-[260px] md:min-h-[300px]"
+                >
+                  {p[2].content}
+                </PosterCard>
+              </div>
+            </motion.div>
+          )}
 
-              {/* Row 3: two more cards */}
-              {gridPosters[3] && (
-                <motion.div style={{ y: cardTransforms[3] }}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 50, rotate: -2 }}
-                    whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.16 }}
-                  >
-                    <div ref={gridPosters[3].refCallback}>
-                      <PosterCard
-                        index={3}
-                        categoryLabel={gridPosters[3].badge}
-                        title={gridPosters[3].title}
-                        description={gridPosters[3].subtitle}
-                        bgColor={gridPosters[3].bgColor}
-                        accentColor={gridPosters[3].badgeColor}
-                        onClick={gridPosters[3].onDownload}
-                        className="h-full min-h-[240px] md:min-h-[300px]"
-                      >
-                        {gridPosters[3].content}
-                      </PosterCard>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
+          {/* ── Row 3: Race / Inequality / Air — all 3 cols ── */}
+          {p[3] && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.16 }}
+              className="md:col-start-1 md:row-start-3"
+            >
+              <div ref={p[3].refCallback} className="h-full">
+                <PosterCard
+                  index={3}
+                  categoryLabel={p[3].badge}
+                  title={p[3].title}
+                  description={p[3].subtitle}
+                  bgColor={p[3].bgColor}
+                  accentColor={p[3].badgeColor}
+                  onClick={p[3].onDownload}
+                  className="h-full min-h-[260px] md:min-h-[300px]"
+                >
+                  {p[3].content}
+                </PosterCard>
+              </div>
+            </motion.div>
+          )}
 
-              {gridPosters[4] && (
-                <motion.div style={{ y: cardTransforms[4] }}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 50, rotate: 2 }}
-                    whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.2 }}
-                  >
-                    <div ref={gridPosters[4].refCallback}>
-                      <PosterCard
-                        index={4}
-                        categoryLabel={gridPosters[4].badge}
-                        title={gridPosters[4].title}
-                        description={gridPosters[4].subtitle}
-                        bgColor={gridPosters[4].bgColor}
-                        accentColor={gridPosters[4].badgeColor}
-                        onClick={gridPosters[4].onDownload}
-                        className="h-full min-h-[240px] md:min-h-[300px]"
-                      >
-                        {gridPosters[4].content}
-                      </PosterCard>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </div>
-          </div>
+          {p[4] && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.2 }}
+              className="md:col-start-2 md:row-start-3"
+            >
+              <div ref={p[4].refCallback} className="h-full">
+                <PosterCard
+                  index={4}
+                  categoryLabel={p[4].badge}
+                  title={p[4].title}
+                  description={p[4].subtitle}
+                  bgColor={p[4].bgColor}
+                  accentColor={p[4].badgeColor}
+                  onClick={p[4].onDownload}
+                  className="h-full min-h-[260px] md:min-h-[300px]"
+                >
+                  {p[4].content}
+                </PosterCard>
+              </div>
+            </motion.div>
+          )}
+
+          {p[5] && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.24 }}
+              className="md:col-start-3 md:row-start-3"
+            >
+              <div ref={p[5].refCallback} className="h-full">
+                <PosterCard
+                  index={5}
+                  categoryLabel={p[5].badge}
+                  title={p[5].title}
+                  description={p[5].subtitle}
+                  bgColor={p[5].bgColor}
+                  accentColor={p[5].badgeColor}
+                  onClick={p[5].onDownload}
+                  className="h-full min-h-[260px] md:min-h-[300px]"
+                >
+                  {p[5].content}
+                </PosterCard>
+              </div>
+            </motion.div>
+          )}
+
         </div>
       </div>
     </section>
