@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, type ReactNode } from 'react';
-import { type MotionValue, motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { useRef } from 'react';
+import { type MotionValue, motion, useScroll, useTransform} from 'framer-motion';
 
 /* ── Card data for the 6 poster mini-cards in the hero ─────────────────── */
 
@@ -20,26 +20,12 @@ const fanConfig = [
   { angle: -18, y: 20, x: -160 },
   { angle: -10, y: 8,  x: -96 },
   { angle: -3,  y: 0,  x: -32 },
-  { angle: 3,   y: 0,  x: 32 },
-  { angle: 10,  y: 8,  x: 96 },
-  { angle: 18,  y: 20, x: 160 },
+  { angle:  3,  y: 0,  x:  32 },
+  { angle:  10, y: 8,  x:  96 },
+  { angle:  18, y: 20, x: 160 },
 ];
 
-/* Grid state: bento layout (1 wide top + 2+2, card 5 offscreen) */
-const gridConfig = [
-  { x: 0,    y: -180, s: 2.5 },   // Scoreboard: wide top center
-  { x: -145, y: 20,   s: 1.9 },   // Energy: mid-left
-  { x: 145,  y: 20,   s: 1.9 },   // Paris Gap: mid-right
-  { x: -145, y: 200,  s: 1.9 },   // Race: bottom-left
-  { x: 145,  y: 200,  s: 1.9 },   // Inequality: bottom-right
-  { x: 500,  y: 300,  s: 1.0 },   // Air: offscreen right
-];
-
-/* Card sizes */
-const FAN_W = 'w-28 md:w-36';
-const FAN_H = 'h-36 md:h-48';
-
-/* ── Single animated card ─────────────────────────────────────────────── */
+/* ── Single animated card (fan only, no grid transition) ──────────────── */
 
 function AnimatedCard({
   card,
@@ -51,39 +37,16 @@ function AnimatedCard({
   scrollProgress: MotionValue<number>;
 }) {
   const fan = fanConfig[index];
-  const grid = gridConfig[index];
 
-  /*
-   * Timeline:
-   * 0.00 – 0.30  → fan (resting)
-   * 0.30 – 0.65  → transition to grid
-   * 0.65 – 1.00  → grid (resting, NO fade out — cards persist)
-   */
-  const x = useSpring(
-    useTransform(scrollProgress, [0, 0.28, 0.62, 1], [fan.x, fan.x, grid.x, grid.x]),
-    { stiffness: 90, damping: 20 },
-  );
-  const y = useSpring(
-    useTransform(scrollProgress, [0, 0.28, 0.62, 1], [fan.y, fan.y, grid.y, grid.y]),
-    { stiffness: 90, damping: 20 },
-  );
-  const rotate = useSpring(
-    useTransform(scrollProgress, [0, 0.28, 0.62, 1], [fan.angle, fan.angle, 0, 0]),
-    { stiffness: 90, damping: 20 },
-  );
-  const scale = useSpring(
-    useTransform(scrollProgress, [0, 0.28, 0.62, 1], [1, 1, grid.s, grid.s]),
-    { stiffness: 90, damping: 20 },
-  );
-
-  // Fade out at end so bento section takes over seamlessly
-  const opacity = useTransform(scrollProgress, [0.85, 0.98], [1, 0]);
+  // Cards stay in fan position, fade out with parallax as user scrolls
+  const y = useTransform(scrollProgress, [0, 1], [fan.y, fan.y - 60]);
+  const opacity = useTransform(scrollProgress, [0, 0.5, 0.85], [1, 1, 0]);
   const zFan = posterCards.length - Math.abs(index - 2.5);
 
   return (
     <motion.div
       className="absolute"
-      style={{ x, y, rotate, scale, opacity, zIndex: Math.round(zFan) }}
+      style={{ x: fan.x, y, rotate: fan.angle, opacity, zIndex: Math.round(zFan) }}
       initial={{ opacity: 0, y: 80, rotate: 0, scale: 0.6 }}
       animate={{ opacity: 1, y: fan.y, rotate: fan.angle, scale: 1 }}
       transition={{
@@ -95,7 +58,7 @@ function AnimatedCard({
       }}
     >
       <div
-        className={`${FAN_W} ${FAN_H} flex flex-col overflow-hidden rounded-2xl border border-white/70 shadow-xl`}
+        className="flex h-36 w-28 flex-col overflow-hidden rounded-2xl border border-white/70 shadow-xl md:h-48 md:w-36"
         style={{ backgroundColor: card.color }}
       >
         <div className="flex h-full flex-col p-3 md:p-4">
@@ -152,7 +115,7 @@ export function PosterHeroSection({ totalPosters, totalCountries }: PosterHeroSe
   const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
 
   return (
-    <div ref={containerRef} className="relative h-[220vh]">
+    <div ref={containerRef} className="relative h-[140vh]">
       <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden bg-[#F8F9FA]">
         {/* Decorative blurred circles */}
         <div className="pointer-events-none absolute left-[-80px] top-[60px] h-44 w-44 rounded-full bg-emerald-100/50 blur-3xl" />
