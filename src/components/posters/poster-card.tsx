@@ -36,13 +36,13 @@ export function PosterCard({
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), {
-    stiffness: 200,
-    damping: 20,
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
+    stiffness: 300,
+    damping: 30,
   });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), {
-    stiffness: 200,
-    damping: 20,
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
+    stiffness: 300,
+    damping: 30,
   });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -74,11 +74,12 @@ export function PosterCard({
       style={{
         rotateX,
         rotateY,
-        transformPerspective: 800,
+        transformPerspective: 1000,
         aspectRatio,
       }}
       whileHover={{
         scale: 1.02,
+        boxShadow: '0 20px 40px -12px rgba(0,0,0,0.15)',
         transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
       }}
       onMouseMove={handleMouseMove}

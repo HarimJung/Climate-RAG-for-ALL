@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode, useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PosterCard } from './poster-card';
 import type { ViewMode } from './toolbar';
@@ -107,17 +107,17 @@ function GridMode({
               </PosterCard>
             </div>
             {/* Hover overlay with download */}
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 rounded-3xl bg-black/40 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 rounded-3xl bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <button
                 onClick={e => { e.stopPropagation(); onClickPoster(p.id); }}
-                className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-[#1A1A2E] shadow transition-all hover:scale-105"
+                className="pointer-events-auto rounded-lg bg-white px-4 py-2 text-xs font-semibold text-[#1A1A2E] shadow transition-all hover:scale-105"
               >
                 Expand
               </button>
               <button
                 onClick={e => { e.stopPropagation(); onDownload(p.id); }}
                 disabled={downloading === p.id}
-                className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow transition-all hover:scale-105 disabled:opacity-50"
+                className="pointer-events-auto rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow transition-all hover:scale-105 disabled:opacity-50"
               >
                 {downloading === p.id ? 'Saving\u2026' : 'PNG'}
               </button>
@@ -126,6 +126,33 @@ function GridMode({
         </motion.div>
       ))}
     </div>
+  );
+}
+
+/* ── 3D Tilt wrapper for Focus Mode center card ─────────────────────────── */
+
+function CenterCardTilt({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
+  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ rotateX: rx, rotateY: ry, transformPerspective: 1000 }}
+      onMouseMove={(e) => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        mx.set((e.clientX - rect.left) / rect.width - 0.5);
+        my.set((e.clientY - rect.top) / rect.height - 0.5);
+      }}
+      onMouseLeave={() => { mx.set(0); my.set(0); }}
+      className="h-full"
+    >
+      {children}
+    </motion.div>
   );
 }
 
@@ -244,34 +271,34 @@ function FocusMode({
                   }
                 }}
               >
-                {/* Card inner content */}
-                <div className="flex h-full flex-col justify-between p-4 md:p-6">
-                  <div className="flex flex-1 items-center justify-center overflow-hidden">
-                    {isCenter && (
-                      <div ref={renderPosterRef(def.id)} className="w-full">
-                        {renderPoster(def.id)}
+                {isCenter ? (
+                  <CenterCardTilt>
+                    <div className="flex h-full flex-col justify-between p-4 md:p-6">
+                      <div className="flex flex-1 items-center justify-center overflow-hidden">
+                        <div ref={renderPosterRef(def.id)} className="w-full">
+                          {renderPoster(def.id)}
+                        </div>
                       </div>
-                    )}
-                    {!isCenter && (
-                      <div className="flex w-full flex-col items-center gap-2 opacity-60">
+                      <div className="mt-3">
                         <span className="text-xs font-medium uppercase tracking-widest" style={{ color: def.categoryColor }}>
                           {def.category}
                         </span>
-                        <span className="text-sm font-semibold text-slate-700">{def.title}</span>
+                        <h3 className="mt-1 text-lg font-semibold leading-snug text-slate-900 md:text-xl">
+                          {def.title}
+                        </h3>
                       </div>
-                    )}
-                  </div>
-                  {isCenter && (
-                    <div className="mt-3">
+                    </div>
+                  </CenterCardTilt>
+                ) : (
+                  <div className="flex h-full flex-col items-center justify-center p-4 md:p-6">
+                    <div className="flex w-full flex-col items-center gap-2 opacity-60">
                       <span className="text-xs font-medium uppercase tracking-widest" style={{ color: def.categoryColor }}>
                         {def.category}
                       </span>
-                      <h3 className="mt-1 text-lg font-semibold leading-snug text-slate-900 md:text-xl">
-                        {def.title}
-                      </h3>
+                      <span className="text-sm font-semibold text-slate-700">{def.title}</span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </motion.div>
             );
           })}
@@ -402,11 +429,11 @@ function CompareMode({
               </PosterCard>
             </div>
             {/* Hover overlay */}
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 rounded-3xl bg-black/40 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 rounded-3xl bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <button
                 onClick={e => { e.stopPropagation(); onDownload(p.id); }}
                 disabled={downloading === p.id}
-                className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow transition-all hover:scale-105 disabled:opacity-50"
+                className="pointer-events-auto rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow transition-all hover:scale-105 disabled:opacity-50"
               >
                 {downloading === p.id ? 'Saving\u2026' : 'Download PNG'}
               </button>

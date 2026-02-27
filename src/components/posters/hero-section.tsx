@@ -6,12 +6,12 @@ import { type MotionValue, motion, useScroll, useTransform, useSpring } from 'fr
 /* ── Card data for the 6 poster mini-cards in the hero ─────────────────── */
 
 const posterCards = [
-  { title: 'Energy Flow',      subtitle: 'Electricity mix by source', color: '#ECFDF5', accent: '#059669' },
-  { title: 'Carbon Inequality', subtitle: 'CO\u2082 per capita gap',   color: '#FFF1F2', accent: '#E11D48' },
-  { title: 'Paris Gap',         subtitle: 'Pre vs post-Paris CAGR',    color: '#FFFBEB', accent: '#D97706' },
-  { title: 'Air Quality',       subtitle: 'PM2.5 vs WHO guideline',    color: '#F0FDFA', accent: '#0D9488' },
-  { title: 'Transition Race',   subtitle: 'Renewable % ranking',       color: '#F5F3FF', accent: '#7C3AED' },
   { title: 'World Scoreboard',  subtitle: 'Climate action class',      color: '#F0F4FF', accent: '#3B5998' },
+  { title: 'Energy Flow',       subtitle: 'Electricity mix by source',  color: '#ECFDF5', accent: '#059669' },
+  { title: 'Paris Gap',         subtitle: 'Pre vs post-Paris CAGR',     color: '#FFFBEB', accent: '#D97706' },
+  { title: 'Transition Race',   subtitle: 'Renewable % ranking',        color: '#F5F3FF', accent: '#7C3AED' },
+  { title: 'Carbon Inequality', subtitle: 'CO\u2082 per capita gap',    color: '#FFF1F2', accent: '#E11D48' },
+  { title: 'Air Quality',       subtitle: 'PM2.5 vs WHO guideline',     color: '#F0FDFA', accent: '#0D9488' },
 ];
 
 /* ── Fan state: angles, y offsets, x offsets (px from center) ─────────── */
@@ -25,20 +25,19 @@ const fanConfig = [
   { angle: 18,  y: 20, x: 160 },
 ];
 
-/* Grid state: 3 cols x 2 rows, offset from center */
+/* Grid state: bento layout (1 wide top + 2+2, card 5 offscreen) */
 const gridConfig = [
-  { x: -290, y: -160 },
-  { x: 0,    y: -160 },
-  { x: 290,  y: -160 },
-  { x: -290, y: 80 },
-  { x: 0,    y: 80 },
-  { x: 290,  y: 80 },
+  { x: 0,    y: -180, s: 2.5 },   // Scoreboard: wide top center
+  { x: -145, y: 20,   s: 1.9 },   // Energy: mid-left
+  { x: 145,  y: 20,   s: 1.9 },   // Paris Gap: mid-right
+  { x: -145, y: 200,  s: 1.9 },   // Race: bottom-left
+  { x: 145,  y: 200,  s: 1.9 },   // Inequality: bottom-right
+  { x: 500,  y: 300,  s: 1.0 },   // Air: offscreen right
 ];
 
 /* Card sizes */
 const FAN_W = 'w-28 md:w-36';
 const FAN_H = 'h-36 md:h-48';
-const GRID_SCALE = 1.9;
 
 /* ── Single animated card ─────────────────────────────────────────────── */
 
@@ -73,17 +72,18 @@ function AnimatedCard({
     { stiffness: 90, damping: 20 },
   );
   const scale = useSpring(
-    useTransform(scrollProgress, [0, 0.28, 0.62, 1], [1, 1, GRID_SCALE, GRID_SCALE]),
+    useTransform(scrollProgress, [0, 0.28, 0.62, 1], [1, 1, grid.s, grid.s]),
     { stiffness: 90, damping: 20 },
   );
 
-  // NO opacity fade-out: cards stay visible at 1
+  // Fade out at end so bento section takes over seamlessly
+  const opacity = useTransform(scrollProgress, [0.85, 0.98], [1, 0]);
   const zFan = posterCards.length - Math.abs(index - 2.5);
 
   return (
     <motion.div
       className="absolute"
-      style={{ x, y, rotate, scale, zIndex: Math.round(zFan) }}
+      style={{ x, y, rotate, scale, opacity, zIndex: Math.round(zFan) }}
       initial={{ opacity: 0, y: 80, rotate: 0, scale: 0.6 }}
       animate={{ opacity: 1, y: fan.y, rotate: fan.angle, scale: 1 }}
       transition={{
