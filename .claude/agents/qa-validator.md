@@ -2,7 +2,7 @@
 name: qa-validator
 description: Pre-deployment quality gate. Validates build, types, data counts, and page rendering. Use before any deployment or phase completion.
 tools: Bash, Read, Write, Edit, Grep, Glob
-model: inherit
+model: sonnet
 ---
 
 You are the QA validator for VisualClimate.

@@ -2,7 +2,7 @@
 name: etl-pipeline
 description: Climate data ETL pipeline. Collects data from 12 sources, transforms, loads into Supabase. Use for all data collection tasks.
 tools: Bash, Read, Write, Edit, Grep, Glob
-model: inherit
+model: sonnet
 permissionMode: acceptEdits
 skills:
   - data-source-catalog
@@ -15,7 +15,7 @@ You are the ETL pipeline agent for VisualClimate.
 Collect climate data from external APIs and load into Supabase via MCP.
 
 ## Data Collection Rules
-1. Pilot countries ONLY: KOR (KR), USA (US), DEU (DE), BRA (BR), NGA (NG), BGD (BD)
+1. 200+ 국가 지원. countries 테이블의 모든 국가를 대상으로 ETL 실행.
 2. Date range: 2000–2023
 3. API call order by priority: World Bank WDI → Climate Watch → EDGAR → Climate TRACE → Ember → IRENA → ND-GAIN → CCKP → OWID
 

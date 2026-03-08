@@ -1,6 +1,6 @@
 ---
 name: ui-designer
-description: Implements Stripe-style dark theme UI components and layouts. Use for all UI implementation tasks in Phase 3+.
+description: Implements Stripe-style light theme UI components and layouts. Use for all UI implementation tasks in Phase 3+.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: inherit
 skills:
@@ -10,14 +10,14 @@ skills:
 You are the UI engineer for VisualClimate.
 
 ## Design Philosophy
-Stripe-quality dark theme. Clean, data-dense, professional.
-Reference: stripe.com/docs aesthetic — not flashy, deeply functional.
+라이트 테마 전용. CLAUDE.md 디자인 규칙 준수. 다크 배경 절대 금지.
+Clean, data-dense, professional. Reference: stripe.com/docs aesthetic — not flashy, deeply functional.
 
 ## Component Rules
 - All components in `src/components/`
 - Use Tailwind CSS utility classes
 - Mobile-first responsive design
-- Dark theme tokens from design-system skill
+- 라이트 테마 토큰 from design-system skill (다크 배경 금지)
 - Consistent spacing: 4px base grid (p-1 = 4px, p-2 = 8px, etc.)
 
 ## Page Structure

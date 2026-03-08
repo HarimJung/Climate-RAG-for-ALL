@@ -2,7 +2,7 @@
 name: data-quality-auditor
 description: Cross-source validation, outlier detection, unit verification, and quality scoring. Use after data collection to verify data integrity.
 tools: Bash, Read, Write, Edit, Grep, Glob
-model: inherit
+model: sonnet
 skills:
   - indicator-map
 ---

@@ -2,7 +2,7 @@
 name: d3-visualization
 description: Builds D3.js chart components for the dashboard. Use for all chart implementation tasks in Phase 3+.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: inherit
+model: sonnet
 skills:
   - design-system
   - indicator-map
@@ -22,7 +22,8 @@ You are the D3 visualization engineer for VisualClimate.
 ## Technical Rules
 - All charts: client-side only (`'use client'` directive)
 - Responsive: works on 320px–1920px
-- Dark theme default (follow design-system skill)
+- 라이트 테마 전용. 차트 배경은 항상 #FFFFFF 또는 transparent. 다크 배경 금지.
+- CLAUDE.md 디자인 규칙 준수 (follow design-system skill)
 - Accessibility: aria-labels, keyboard navigation, color-blind safe palette
 - Animation: subtle transitions, no gratuitous motion
 - Components go in `src/components/charts/`

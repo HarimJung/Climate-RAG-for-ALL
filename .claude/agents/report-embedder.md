@@ -1,6 +1,7 @@
 ---
 name: report-embedder
 description: >
+  INACTIVE: RAG/pgvector 미구현 상태. CLAUDE.md에서도 'RAG 챗봇 아님' 명시. 향후 RAG 구현 시 활성화.
   Downloads, chunks, embeds climate reports and framework documents into
   Supabase pgvector for RAG. Use when adding reports or improving RAG quality.
 tools: Bash, Read, Write, Edit, Grep, Glob

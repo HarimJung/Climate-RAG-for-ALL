@@ -1,9 +1,19 @@
-## 🎨 DESIGN SYSTEM v2 — Mandatory for ALL UI work
+## DESIGN SYSTEM v2 — Mandatory for ALL UI work
 
 ### Philosophy
 VisualClimate is a world-class climate data storytelling platform.
 Every component must feel like it belongs in a Bloomberg Terminal × Apple Keynote hybrid.
 Data is the hero. Numbers are large. White space is generous. Motion is purposeful.
+
+### Theme Rule (ABSOLUTE)
+라이트 테마 전용. 다크 배경 절대 금지.
+bg-slate-900, bg-slate-800, #0a0a1a, #0d1117 등 사용 금지.
+- --bg-primary: #FFFFFF (body)
+- --bg-section: #F8F9FA (section)
+- --bg-card: #FFFFFF
+- --text-primary: #1A1A2E (제목)
+- --text-secondary: #4A4A6A (본문)
+- --text-muted: #8888A0
 
 ### Brand Identity
 - Concept: "Climate Pulse" — three concentric rings (Changer/Starter/Talker)
@@ -74,11 +84,11 @@ Data is the hero. Numbers are large. White space is generous. Motion is purposef
 - Poster gallery: masonry grid or carousel, hover overlay with title + download button
 
 ### Absolute Prohibitions
-- ❌ Dark backgrounds anywhere (no bg-gray-900, bg-slate-900, bg-[#0F172A])
-- ❌ Tables with >10 visible rows (must paginate or accordion)
-- ❌ Charts without gradients
-- ❌ Numbers in body font (must be mono)
-- ❌ Cards without hover effect
-- ❌ Sections without spacing (py-20 minimum)
-- ❌ Raw data dumps without visual treatment
-- ❌ Same-size everything (must have visual hierarchy)
+- NEVER: Dark backgrounds anywhere (no bg-gray-900, bg-slate-900, bg-[#0F172A], #0a0a1a, #0d1117)
+- NEVER: Tables with >10 visible rows (must paginate or accordion)
+- NEVER: Charts without gradients
+- NEVER: Numbers in body font (must be mono)
+- NEVER: Cards without hover effect
+- NEVER: Sections without spacing (py-20 minimum)
+- NEVER: Raw data dumps without visual treatment
+- NEVER: Same-size everything (must have visual hierarchy)
