@@ -8,6 +8,8 @@ export interface ClimateSankeyProps {
   renewable: number;
   nuclear: number;
   className?: string;
+  /** Hide internal title & footer (when wrapped by LinkedInCard) */
+  hideChrome?: boolean;
 }
 
 const C = {
@@ -25,17 +27,22 @@ function band(x1: number, y1t: number, y1b: number, x2: number, y2t: number, y2b
   return `M${x1},${y1t} C${cx},${y1t} ${cx},${y2t} ${x2},${y2t} L${x2},${y2b} C${cx},${y2b} ${cx},${y1b} ${x1},${y1b} Z`;
 }
 
-export function ClimateSankey({ country, fossil, renewable, nuclear, className = '' }: ClimateSankeyProps) {
+export function ClimateSankey({ country, fossil, renewable, nuclear, className = '', hideChrome = false }: ClimateSankeyProps) {
   const [hovered, setHovered] = useState<string | null>(null);
 
-  // Layout constants
-  const S   = 3.2; // scale: px per %
-  const GAP = 16;  // gap between nodes in left/right columns
-  const NW  = 30;  // node width
-  const LX  = 160; // left node x
-  const MX  = 420; // middle (electricity) node x
-  const RX  = 680; // right node x
-  const TOP = 78;  // y where nodes start (leaves room for title + column headers)
+  // Layout constants — when chrome is hidden, use full viewBox for chart
+  const S   = hideChrome ? 5.5 : 3.2; // scale: px per %
+  const GAP = hideChrome ? 24 : 16;   // gap between nodes
+  const NW  = hideChrome ? 42 : 30;   // node width
+  const LX  = hideChrome ? 160 : 160; // left node x
+  const MX  = hideChrome ? 440 : 420; // middle node x
+  const RX  = hideChrome ? 720 : 680; // right node x
+  const TOP = hideChrome ? 40 : 78;   // y where nodes start
+  const VW  = hideChrome ? 960 : 900; // viewBox width
+  const VH  = hideChrome ? 700 : 500; // viewBox height
+  const FS  = hideChrome ? 17 : 13;   // font size for labels
+  const FSP = hideChrome ? 15 : 12;   // font size for percentages
+  const FMB = hideChrome ? 15 : 11;   // font size for mid-band labels
 
   // Unique gradient ID prefix per country — prevents DOM ID conflicts on multi-instance pages
   const gid = `sk-${country.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
@@ -81,16 +88,16 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative h-full ${className}`}>
       <svg
-        viewBox="0 0 900 500"
+        viewBox={`0 0 ${VW} ${VH}`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ display: 'block', width: '100%', height: 'auto' }}
+        style={{ display: 'block', width: '100%', height: '100%' }}
         role="img"
         aria-label={`${country} energy flow Sankey diagram`}
       >
         {/* White background */}
-        <rect width={900} height={500} fill="#FAFAF9" />
+        <rect width={VW} height={VH} fill={hideChrome ? 'transparent' : '#FAFAF9'} />
 
         <defs>
           {/* Enhanced gradients with glow */}
@@ -131,22 +138,26 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           </linearGradient>
         </defs>
 
-        {/* Title */}
-        <text x={450} y={28} textAnchor="middle" fontSize={20} fontWeight="700"
-          fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">
-          {country} &#8212; Energy Flow 2023
-        </text>
-        <text x={450} y={47} textAnchor="middle" fontSize={12}
-          fontFamily="Inter, system-ui, sans-serif" fill="#94A3B8">
-          Electricity generation mix &#xB7; carbon output
-        </text>
+        {/* Title — hidden when wrapped by LinkedInCard */}
+        {!hideChrome && (
+          <>
+            <text x={450} y={28} textAnchor="middle" fontSize={20} fontWeight="700"
+              fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">
+              {country} &#8212; Energy Flow 2023
+            </text>
+            <text x={450} y={47} textAnchor="middle" fontSize={12}
+              fontFamily="Inter, system-ui, sans-serif" fill="#94A3B8">
+              Electricity generation mix &#xB7; carbon output
+            </text>
+          </>
+        )}
 
         {/* Column headers */}
-        <text x={LX + NW / 2} y={64} textAnchor="middle" fontSize={10} fontWeight="600"
+        <text x={LX + NW / 2} y={hideChrome ? 18 : 64} textAnchor="middle" fontSize={hideChrome ? 12 : 10} fontWeight="600"
           fontFamily="Inter, system-ui, sans-serif" fill="#CBD5E1">INPUT</text>
-        <text x={MX + NW / 2} y={64} textAnchor="middle" fontSize={10} fontWeight="600"
+        <text x={MX + NW / 2} y={hideChrome ? 18 : 64} textAnchor="middle" fontSize={hideChrome ? 12 : 10} fontWeight="600"
           fontFamily="Inter, system-ui, sans-serif" fill="#CBD5E1">GRID</text>
-        <text x={RX + NW / 2} y={64} textAnchor="middle" fontSize={10} fontWeight="600"
+        <text x={RX + NW / 2} y={hideChrome ? 18 : 64} textAnchor="middle" fontSize={hideChrome ? 12 : 10} fontWeight="600"
           fontFamily="Inter, system-ui, sans-serif" fill="#CBD5E1">OUTPUT</text>
 
         {/* ── LINKS ── */}
@@ -190,19 +201,19 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           return (
             <>
               {fossil > 3 && (
-                <text x={midX} y={fossilMidY + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                <text x={midX} y={fossilMidY + 4} textAnchor="middle" fontSize={FMB} fontWeight="600"
                   fill="white" fontFamily="monospace" style={{ pointerEvents: 'none' }}>
                   {fossil.toFixed(0)}%
                 </text>
               )}
               {renewable > 3 && (
-                <text x={midX} y={renewMidY + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                <text x={midX} y={renewMidY + 4} textAnchor="middle" fontSize={FMB} fontWeight="600"
                   fill="white" fontFamily="monospace" style={{ pointerEvents: 'none' }}>
                   {renewable.toFixed(0)}%
                 </text>
               )}
               {nuclear > 3 && nuclearMidY !== null && (
-                <text x={midX} y={nuclearMidY + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                <text x={midX} y={nuclearMidY + 4} textAnchor="middle" fontSize={FMB} fontWeight="600"
                   fill="white" fontFamily="monospace" style={{ pointerEvents: 'none' }}>
                   {nuclear.toFixed(0)}%
                 </text>
@@ -218,9 +229,9 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           <>
             <rect x={LX} y={fossilY} width={NW} height={fossilH} rx={12} fill={C.fossil}
               opacity={no('nd-fossil')} filter={hovered === 'nd-fossil' ? `url(#${gid}-glow)` : undefined} {...bind('nd-fossil')} />
-            <text x={LX - 12} y={cy(fossilY, fossilH) - 7} textAnchor="end" fontSize={13}
+            <text x={LX - 12} y={cy(fossilY, fossilH) - 7} textAnchor="end" fontSize={FS}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Fossil</text>
-            <text x={LX - 12} y={cy(fossilY, fossilH) + 9} textAnchor="end" fontSize={12}
+            <text x={LX - 12} y={cy(fossilY, fossilH) + 9} textAnchor="end" fontSize={FSP}
               fontFamily="monospace" fontWeight="700" fill={C.fossil}>{fossil.toFixed(1)}%</text>
           </>
         )}
@@ -228,9 +239,9 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         {/* Renewable — rounded with shadow */}
         <rect x={LX} y={renewableY} width={NW} height={renewableH} rx={12} fill={C.renewable}
           opacity={no('nd-renewable')} filter={hovered === 'nd-renewable' ? `url(#${gid}-glow)` : undefined} {...bind('nd-renewable')} />
-        <text x={LX - 12} y={cy(renewableY, renewableH) - 7} textAnchor="end" fontSize={13}
+        <text x={LX - 12} y={cy(renewableY, renewableH) - 7} textAnchor="end" fontSize={FS}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Renewable</text>
-        <text x={LX - 12} y={cy(renewableY, renewableH) + 9} textAnchor="end" fontSize={12}
+        <text x={LX - 12} y={cy(renewableY, renewableH) + 9} textAnchor="end" fontSize={FSP}
           fontFamily="monospace" fontWeight="700" fill={C.renewable}>{renewable.toFixed(1)}%</text>
 
         {/* Nuclear (only when > 0) — rounded with shadow */}
@@ -238,9 +249,9 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           <>
             <rect x={LX} y={nuclearY} width={NW} height={nuclearH} rx={12} fill={C.nuclear}
               opacity={no('nd-nuclear')} filter={hovered === 'nd-nuclear' ? `url(#${gid}-glow)` : undefined} {...bind('nd-nuclear')} />
-            <text x={LX - 12} y={cy(nuclearY, nuclearH) - 7} textAnchor="end" fontSize={13}
+            <text x={LX - 12} y={cy(nuclearY, nuclearH) - 7} textAnchor="end" fontSize={FS}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Nuclear</text>
-            <text x={LX - 12} y={cy(nuclearY, nuclearH) + 9} textAnchor="end" fontSize={12}
+            <text x={LX - 12} y={cy(nuclearY, nuclearH) + 9} textAnchor="end" fontSize={FSP}
               fontFamily="monospace" fontWeight="700" fill={C.nuclear}>{nuclear.toFixed(1)}%</text>
           </>
         )}
@@ -248,7 +259,7 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
         {/* ── MIDDLE NODE ── rounded with gradient */}
         <rect x={MX} y={elecY} width={NW} height={elecH} rx={12} fill={C.electricity}
           style={{ filter: 'drop-shadow(0 2px 8px rgba(59,130,246,0.3))' }} />
-        <text x={MX + NW / 2} y={elecY - 10} textAnchor="middle" fontSize={12}
+        <text x={MX + NW / 2} y={elecY - 10} textAnchor="middle" fontSize={hideChrome ? 14 : 12}
           fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E">Electricity</text>
 
         {/* ── RIGHT NODES ── */}
@@ -258,9 +269,9 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           <>
             <rect x={RX} y={co2Y} width={NW} height={co2H} rx={12} fill={C.co2}
               opacity={no('nd-co2')} filter={hovered === 'nd-co2' ? `url(#${gid}-glow)` : undefined} {...bind('nd-co2')} />
-            <text x={RX + NW + 12} y={cy(co2Y, co2H) - 7} fontSize={13}
+            <text x={RX + NW + 12} y={cy(co2Y, co2H) - 7} fontSize={FS}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">CO2 Output</text>
-            <text x={RX + NW + 12} y={cy(co2Y, co2H) + 9} fontSize={12}
+            <text x={RX + NW + 12} y={cy(co2Y, co2H) + 9} fontSize={FSP}
               fontFamily="monospace" fontWeight="700" fill={C.co2}>{fossil.toFixed(1)}%</text>
           </>
         )}
@@ -270,18 +281,20 @@ export function ClimateSankey({ country, fossil, renewable, nuclear, className =
           <>
             <rect x={RX} y={cleanY} width={NW} height={cleanH} rx={12} fill={C.clean}
               opacity={no('nd-clean')} filter={hovered === 'nd-clean' ? `url(#${gid}-glow)` : undefined} {...bind('nd-clean')} />
-            <text x={RX + NW + 12} y={cy(cleanY, cleanH) - 7} fontSize={13}
+            <text x={RX + NW + 12} y={cy(cleanY, cleanH) - 7} fontSize={FS}
               fontFamily="Inter, system-ui, sans-serif" fill="#1A1A2E" fontWeight="500">Clean Output</text>
-            <text x={RX + NW + 12} y={cy(cleanY, cleanH) + 9} fontSize={12}
+            <text x={RX + NW + 12} y={cy(cleanY, cleanH) + 9} fontSize={FSP}
               fontFamily="monospace" fontWeight="700" fill={C.clean}>{(renewable + nuclear).toFixed(1)}%</text>
           </>
         )}
 
-        {/* Footer */}
-        <text x={450} y={490} textAnchor="middle" fontSize={11}
-          fontFamily="Inter, system-ui, sans-serif" fill="#C8C8D0">
-          Source: Ember Global Electricity Review 2023 | visualclimate.org
-        </text>
+        {/* Footer — hidden when wrapped by LinkedInCard */}
+        {!hideChrome && (
+          <text x={450} y={490} textAnchor="middle" fontSize={11}
+            fontFamily="Inter, system-ui, sans-serif" fill="#C8C8D0">
+            Source: Ember Global Electricity Review 2023 | visualclimate.org
+          </text>
+        )}
       </svg>
     </div>
   );

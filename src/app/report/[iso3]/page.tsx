@@ -17,6 +17,7 @@ export interface ReportCardData {
   total: number;
   grade: string;
   gradeNumeric: number;
+  climateClass: 'Changer' | 'Starter' | 'Talker' | null;
   emissions:      number | null;
   energy:         number | null;
   economy:        number | null;
@@ -28,7 +29,7 @@ async function getReportCard(iso3: string): Promise<ReportCardData | null> {
   try {
     const supabase = createServiceClient();
 
-    const [countryRes, scoresRes] = await Promise.all([
+    const [countryRes, scoresRes, classRes] = await Promise.all([
       supabase.from('countries').select('iso3, name, region').eq('iso3', iso3.toUpperCase()).single(),
       supabase
         .from('country_data')
@@ -40,6 +41,13 @@ async function getReportCard(iso3: string): Promise<ReportCardData | null> {
           'REPORT.RESPONSIBILITY_SCORE', 'REPORT.RESILIENCE_SCORE',
         ])
         .eq('year', 2024),
+      supabase
+        .from('country_data')
+        .select('value')
+        .eq('country_iso3', iso3.toUpperCase())
+        .eq('indicator_code', 'DERIVED.CLIMATE_CLASS')
+        .eq('year', 2023)
+        .maybeSingle(),
     ]);
 
     if (!countryRes.data) return null;
@@ -53,6 +61,10 @@ async function getReportCard(iso3: string): Promise<ReportCardData | null> {
     if (lookup['REPORT.TOTAL_SCORE'] === undefined) return null;
 
     const gradeNumeric = Math.round(lookup['REPORT.GRADE'] ?? 0);
+    const CLASS_MAP: Record<number, 'Changer' | 'Starter' | 'Talker'> = { 1: 'Changer', 2: 'Starter', 3: 'Talker' };
+    const classValue = classRes.data?.value as number | undefined;
+    const climateClass = classValue != null ? (CLASS_MAP[Math.round(classValue)] ?? null) : null;
+
     return {
       iso3: country.iso3,
       name: country.name,
@@ -60,6 +72,7 @@ async function getReportCard(iso3: string): Promise<ReportCardData | null> {
       total: lookup['REPORT.TOTAL_SCORE'],
       gradeNumeric,
       grade: GRADE_LABELS[gradeNumeric] ?? 'F',
+      climateClass,
       emissions:      lookup['REPORT.EMISSIONS_SCORE']      ?? null,
       energy:         lookup['REPORT.ENERGY_SCORE']         ?? null,
       economy:        lookup['REPORT.ECONOMY_SCORE']        ?? null,

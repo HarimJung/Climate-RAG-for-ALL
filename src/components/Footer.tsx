@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const FOOTER_LINKS = {
   Platform: [
-    { href: '/report', label: 'Report Card' },
+    { href: '/report', label: 'Report Cards' },
     { href: '/explore', label: 'Explore' },
     { href: '/posters', label: 'Posters' },
     { href: '/compare', label: 'Compare' },
@@ -13,10 +13,10 @@ const FOOTER_LINKS = {
     { href: '/insights/climate-vulnerability', label: 'Climate Vulnerability' },
   ],
   Resources: [
-    { href: '/guides', label: 'Guides' },
-    { href: '/guides/climate-data-sources', label: 'Data Sources' },
-    { href: '/guides/issb-s2-beginners', label: 'ISSB S2 Guide' },
+    { href: '/methodology', label: 'Methodology' },
+    { href: '/about', label: 'About' },
     { href: '/learn', label: 'Learn' },
+    { href: '/guides', label: 'Guides' },
   ],
   'Data Partners': [
     { href: 'https://data.worldbank.org', label: 'World Bank', external: true },

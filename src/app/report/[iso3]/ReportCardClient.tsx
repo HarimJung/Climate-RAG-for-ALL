@@ -21,6 +21,19 @@ const GRADE_BG: Record<string, string> = {
   'D': '#FFF1F2',  'F': '#FFF1F2',
 };
 
+const CLASS_STYLE: Record<string, { bg: string; text: string }> = {
+  Changer: { bg: '#ECFDF5', text: '#00A67E' },
+  Starter: { bg: '#FFFBEB', text: '#F59E0B' },
+  Talker:  { bg: '#FEF2F2', text: '#E5484D' },
+};
+
+function getSoWhat(label: string, countryName: string, score: number | null): string {
+  if (score === null) return `Insufficient data for ${label} assessment.`;
+  if (score >= 70) return `${label} is a relative strength for ${countryName}. Scoring ${score.toFixed(1)}/100 puts them in the top tier among 250 countries.`;
+  if (score >= 40) return `${label} shows moderate performance. ${countryName} scores ${score.toFixed(1)}/100 — room for improvement.`;
+  return `${label} needs urgent attention. With ${score.toFixed(1)}/100, ${countryName} lags behind peers.`;
+}
+
 const DOMAIN_META = [
   { key: 'emissions',      label: 'Emissions',       weight: '30%', color: '#E5484D', description: 'CO₂/capita, CO₂/GDP intensity, decoupling trend' },
   { key: 'energy',         label: 'Energy',          weight: '25%', color: '#0066FF', description: 'Renewable electricity share, grid carbon intensity' },
@@ -166,24 +179,38 @@ export function ReportCardClient({ data }: { data: ReportCardData }) {
           </div>
         </div>
 
-        {/* Grade badge 120px with glow */}
-        <div className="relative">
-          {/* Glow layers */}
-          <div
-            className="absolute inset-0 rounded-full blur-2xl opacity-40"
-            style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.3)' }}
-          />
-          <div
-            className="absolute inset-0 rounded-full blur-xl opacity-30"
-            style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.15)' }}
-          />
-          {/* Main badge */}
-          <div
-            className="relative flex h-[120px] w-[120px] items-center justify-center rounded-full text-5xl font-black shadow-2xl"
-            style={{ backgroundColor: GRADE_BG[data.grade], color: GRADE_COLOR[data.grade] }}
-          >
-            {data.grade}
+        {/* Grade badge 120px with glow + class pill */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative">
+            {/* Glow layers */}
+            <div
+              className="absolute inset-0 rounded-full blur-2xl opacity-40"
+              style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.3)' }}
+            />
+            <div
+              className="absolute inset-0 rounded-full blur-xl opacity-30"
+              style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.15)' }}
+            />
+            {/* Main badge */}
+            <div
+              className="relative flex h-[120px] w-[120px] items-center justify-center rounded-full text-5xl font-black shadow-2xl"
+              style={{ backgroundColor: GRADE_BG[data.grade], color: GRADE_COLOR[data.grade] }}
+            >
+              {data.grade}
+            </div>
           </div>
+          {/* Climate Class pill */}
+          {data.climateClass && (
+            <span
+              className="rounded-full px-4 py-1.5 text-sm font-semibold"
+              style={{
+                backgroundColor: CLASS_STYLE[data.climateClass].bg,
+                color: CLASS_STYLE[data.climateClass].text,
+              }}
+            >
+              {data.climateClass}
+            </span>
+          )}
         </div>
 
         {/* Total score 72px mono with CountUp */}
@@ -237,13 +264,20 @@ export function ReportCardClient({ data }: { data: ReportCardData }) {
                 </div>
               )}
               <p className="mt-2 text-xs leading-tight text-[--text-muted]">{d.description}</p>
+              {/* So What? insight */}
+              <div className="mt-3 border-t border-gray-100 pt-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[--text-muted]">So What?</p>
+                <p className="mt-1 text-xs leading-relaxed text-[--text-secondary]">
+                  {getSoWhat(d.label, data.name, score)}
+                </p>
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* CTA Cards — Large 2-column */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-2">
+      {/* CTA Cards */}
+      <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {/* Full country profile */}
         <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#F0FDF4' }}>
           <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-green-400 opacity-10 blur-3xl" />
@@ -283,6 +317,28 @@ export function ReportCardClient({ data }: { data: ReportCardData }) {
               style={{ backgroundColor: '#3B82F6' }}
             >
               Read Methodology
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Explore All Countries */}
+        <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#FFF7ED' }}>
+          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-400 opacity-10 blur-3xl" />
+          <div className="relative">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="text-5xl leading-none">🌍</span>
+              <span className="text-xl font-bold text-[--text-primary]">250 Countries</span>
+            </div>
+            <p className="mb-6 text-base leading-relaxed text-[--text-secondary]">
+              Browse, filter, and compare climate report cards for every country in the world.
+            </p>
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
+              style={{ backgroundColor: '#F59E0B' }}
+            >
+              Explore All Countries
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>

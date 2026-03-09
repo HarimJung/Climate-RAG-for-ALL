@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createMetaTags } from '@/components/seo/MetaTags';
 import { Metadata } from 'next';
 
@@ -219,6 +220,20 @@ export default function MethodologyPage() {
           <p className="mt-6 text-xs text-[--text-muted]">
             Scores updated annually. Current scoring year: 2024. VisualClimate is an independent platform and is not affiliated with any of the above organizations.
           </p>
+        </section>
+
+        {/* Bottom CTA */}
+        <section className="mt-12 rounded-2xl border border-[--border-card] bg-[--bg-section] p-8 text-center">
+          <p className="text-lg font-semibold text-[--text-primary]">See the methodology in action</p>
+          <p className="mt-1 text-sm text-[--text-secondary]">Search any country to view its report card with scores across all 5 domains.</p>
+          <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link href="/explore" className="rounded-lg bg-[--accent-primary] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]">
+              Explore all countries
+            </Link>
+            <Link href="/posters" className="rounded-lg border border-[--border-card] bg-white px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]">
+              Download posters
+            </Link>
+          </div>
         </section>
 
       </div>

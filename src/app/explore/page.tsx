@@ -2,7 +2,19 @@ import { createServiceClient } from '@/lib/supabase/server';
 import { createMetaTags } from '@/components/seo/MetaTags';
 import { Metadata } from 'next';
 import { ExploreClient } from './ExploreClient';
-import type { CountryCard } from '@/app/dashboard/page';
+
+export interface CountryCard {
+  iso3: string;
+  name: string;
+  region?: string;
+  incomeGroup?: string;
+  co2?: number;
+  renewable?: number;
+  gdp?: number;
+  climateClass?: 'Changer' | 'Starter' | 'Talker';
+  grade?: string;
+  totalScore?: number;
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +34,7 @@ async function fetchAllCountries(): Promise<CountryCard[]> {
   try {
     const supabase = createServiceClient();
     const [countriesRes, co2Res, renewableRes, gdpRes, classRes, gradeRes] = await Promise.all([
-      supabase.from('countries').select('iso3, name, region').order('name'),
+      supabase.from('countries').select('iso3, name, region, income_group').order('name'),
       supabase.from('country_data').select('country_iso3, value, year')
         .eq('indicator_code', 'EN.GHG.CO2.PC.CE.AR5').in('year', [2022, 2021, 2020]).gt('value', 0).order('year', { ascending: false }),
       supabase.from('country_data').select('country_iso3, value, year')
@@ -48,11 +60,11 @@ async function fetchAllCountries(): Promise<CountryCard[]> {
       if (r.indicator_code === 'REPORT.GRADE') gradeMap.set(r.country_iso3, GRADE_LABELS[Math.round(r.value)] ?? 'F');
       if (r.indicator_code === 'REPORT.TOTAL_SCORE') scoreMap.set(r.country_iso3, r.value);
     }
-    return (countriesRes.data ?? []).map((c: { iso3: string; name: string; region?: string }) => {
+    return (countriesRes.data ?? []).map((c: { iso3: string; name: string; region?: string; income_group?: string }) => {
       const iso3 = c.iso3.trim().toUpperCase();
       const clsNum = classMap.get(iso3);
       return {
-        iso3, name: c.name, region: c.region,
+        iso3, name: c.name, region: c.region, incomeGroup: c.income_group,
         co2: co2Map.get(iso3), renewable: renewableMap.get(iso3), gdp: gdpMap.get(iso3),
         climateClass: clsNum ? CLASS_NAME_MAP[clsNum] : undefined,
         grade: gradeMap.get(iso3), totalScore: scoreMap.get(iso3),

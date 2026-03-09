@@ -4,11 +4,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const NAV_LINKS = [
-    { href: '/report',  label: 'Report Card' },
     { href: '/explore', label: 'Explore' },
     { href: '/posters', label: 'Posters' },
-    { href: '/learn',   label: 'Learn' },
-    { href: '/about',   label: 'About' },
 ];
 
 export function Header() {
@@ -40,12 +37,6 @@ export function Header() {
                             {link.label}
                         </Link>
                     ))}
-                    <Link
-                        href="/report"
-                        className="rounded-lg bg-[--accent-primary] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[#0052cc] hover:shadow-md"
-                    >
-                        Get Started
-                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -79,13 +70,6 @@ export function Header() {
                                 {link.label}
                             </Link>
                         ))}
-                        <Link
-                            href="/report"
-                            className="mt-2 block rounded-lg bg-[--accent-primary] px-3 py-2 text-center text-base font-semibold text-white"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Get Started
-                        </Link>
                     </div>
                 </div>
             )}

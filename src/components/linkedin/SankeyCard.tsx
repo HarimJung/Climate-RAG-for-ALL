@@ -26,12 +26,13 @@ export function SankeyCard({ countryName, iso3, fossil, renewable, nuclear, year
       }}
       source={`Source: Ember Global Electricity Review ${year}`}
     >
-      <div className="flex h-full items-center justify-center py-4">
+      <div style={{ width: 960, height: 700, margin: '0 auto' }}>
         <ClimateSankey
           country={countryName}
           fossil={fossil}
           renewable={renewable}
           nuclear={nuclear}
+          hideChrome
         />
       </div>
     </LinkedInCard>

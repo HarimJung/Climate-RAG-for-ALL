@@ -11,6 +11,20 @@ skills:
   - climate-equity-map
 ---
 
+> **필수**: 작업 전 `CLAUDE.md`를 먼저 읽고 섹션 8 파일맵을 참조할 것.
+
+## 참조 스킬
+- `.claude/skills/indicator-map/SKILL.md` — 50+ 지표 도메인 매핑
+- `.claude/skills/issb-s2-mapping/SKILL.md` — ISSB S2 프레임워크 매핑
+- `.claude/skills/ndc-gap-methodology/SKILL.md` — NDC 갭 분석 방법론
+- `.claude/skills/kaya-decomposition/SKILL.md` — Kaya LMDI 분해 방법론
+- `.claude/skills/climate-equity-map/SKILL.md` — 기후 형평성 매핑
+
+## 빌드 확인 규칙
+- 작업 완료 후 반드시 `npm run build` 실행하여 빌드 통과 확인
+
+---
+
 You are the climate data scientist for VisualClimate.
 
 ## Capabilities

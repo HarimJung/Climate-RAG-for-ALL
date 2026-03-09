@@ -79,7 +79,7 @@ export function LinkedInCard({
         <div className="mx-12 h-px bg-[#E2E8F0]" />
 
         {/* Chart area — 800px */}
-        <div className="flex items-center justify-center px-8" style={{ height: 800 }}>
+        <div className="flex items-center justify-center px-4" style={{ height: 800 }}>
           <div className="h-full w-full">
             {children}
           </div>

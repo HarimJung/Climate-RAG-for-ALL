@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
-import type { CountryCard } from '@/app/dashboard/page';
+import type { CountryCard } from './page';
 
 type SortKey = 'co2-desc' | 'renewable-desc' | 'name-asc' | 'gdp-desc' | 'grade-desc';
 type FilterTab = 'all' | 'Changer' | 'Starter' | 'Talker';
@@ -29,14 +29,14 @@ const GRADE_ORDER: Record<string, number> = {
   'A+': 7, 'A': 6, 'B+': 5, 'B': 4, 'C+': 3, 'C': 2, 'D': 1, 'F': 0,
 };
 
-// Class color for accent line
 const CLASS_ACCENT_GRADIENT: Record<string, string> = {
   Changer: 'from-emerald-400 to-emerald-600',
   Starter: 'from-amber-400 to-amber-600',
   Talker:  'from-red-400 to-red-600',
 };
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 48;
+const MAX_COMPARE = 4;
 
 function ClassBadge({ cls }: { cls: string }) {
   return (
@@ -84,20 +84,26 @@ function CardSkeleton() {
 export function ExploreClient({ countries }: { countries: CountryCard[] }) {
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [region, setRegion]       = useState('all');
+  const [incomeGroup, setIncomeGroup] = useState('all');
   const [search, setSearch]       = useState('');
   const [sort, setSort]           = useState<SortKey>('name-asc');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [mounted, setMounted]     = useState(false);
+  const [selected, setSelected]   = useState<string[]>([]);
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Reset visible count when filters change
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeTab, region, search, sort]);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeTab, region, incomeGroup, search, sort]);
 
-  // Derive distinct regions
   const regions = useMemo(() => {
     const set = new Set<string>();
     for (const c of countries) if (c.region) set.add(c.region);
+    return ['all', ...Array.from(set).sort()];
+  }, [countries]);
+
+  const incomeGroups = useMemo(() => {
+    const set = new Set<string>();
+    for (const c of countries) if (c.incomeGroup) set.add(c.incomeGroup);
     return ['all', ...Array.from(set).sort()];
   }, [countries]);
 
@@ -112,53 +118,42 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
     const q = search.toLowerCase();
 
     let list = countries.filter(c => {
-      // Class tab
       if (activeTab !== 'all' && c.climateClass !== activeTab) return false;
-      // Region
       if (region !== 'all' && c.region !== region) return false;
-      // Search
+      if (incomeGroup !== 'all' && c.incomeGroup !== incomeGroup) return false;
       if (q && !c.name.toLowerCase().includes(q) && !c.iso3.toLowerCase().includes(q)) return false;
       return true;
     });
 
+    const numSort = (key: 'co2' | 'renewable' | 'gdp') =>
+      [...list].sort((a, b) => {
+        if (a[key] == null && b[key] == null) return 0;
+        if (a[key] == null) return 1; if (b[key] == null) return -1;
+        return b[key]! - a[key]!;
+      });
+
     switch (sort) {
-      case 'co2-desc':
-        list = [...list].sort((a, b) => {
-          if (a.co2 == null && b.co2 == null) return 0;
-          if (a.co2 == null) return 1; if (b.co2 == null) return -1;
-          return b.co2 - a.co2;
-        });
-        break;
-      case 'renewable-desc':
-        list = [...list].sort((a, b) => {
-          if (a.renewable == null && b.renewable == null) return 0;
-          if (a.renewable == null) return 1; if (b.renewable == null) return -1;
-          return b.renewable - a.renewable;
-        });
-        break;
-      case 'gdp-desc':
-        list = [...list].sort((a, b) => {
-          if (a.gdp == null && b.gdp == null) return 0;
-          if (a.gdp == null) return 1; if (b.gdp == null) return -1;
-          return b.gdp - a.gdp;
-        });
-        break;
+      case 'co2-desc':       list = numSort('co2'); break;
+      case 'renewable-desc': list = numSort('renewable'); break;
+      case 'gdp-desc':       list = numSort('gdp'); break;
       case 'grade-desc':
-        list = [...list].sort((a, b) => {
-          const ga = a.grade ? (GRADE_ORDER[a.grade] ?? -1) : -1;
-          const gb = b.grade ? (GRADE_ORDER[b.grade] ?? -1) : -1;
-          return gb - ga;
-        });
+        list = [...list].sort((a, b) => (GRADE_ORDER[b.grade ?? ''] ?? -1) - (GRADE_ORDER[a.grade ?? ''] ?? -1));
         break;
-      case 'name-asc':
-      default:
-        list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+      default: list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [countries, activeTab, region, search, sort]);
+  }, [countries, activeTab, region, incomeGroup, search, sort]);
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+
+  function toggleSelect(iso3: string) {
+    setSelected(prev => {
+      if (prev.includes(iso3)) return prev.filter(s => s !== iso3);
+      if (prev.length >= MAX_COMPARE) return prev;
+      return [...prev, iso3];
+    });
+  }
 
   const tabs: { key: FilterTab; label: string; color?: string }[] = [
     { key: 'all',     label: `All (${counts.all})` },
@@ -194,7 +189,7 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
           })}
         </div>
 
-        {/* Search + Region + Sort row */}
+        {/* Search + Region + Income Group + Sort row */}
         <div className="flex flex-wrap gap-2 sm:gap-3">
           {/* Search */}
           <div className="relative flex-1 min-w-[200px]">
@@ -218,6 +213,17 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
           >
             {regions.map(r => (
               <option key={r} value={r}>{r === 'all' ? 'All Regions' : r}</option>
+            ))}
+          </select>
+
+          {/* Income Group dropdown */}
+          <select
+            value={incomeGroup}
+            onChange={e => setIncomeGroup(e.target.value)}
+            className="rounded-lg border border-[--border-card] bg-white px-3 py-2 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]"
+          >
+            {incomeGroups.map(ig => (
+              <option key={ig} value={ig}>{ig === 'all' ? 'All Income Groups' : ig}</option>
             ))}
           </select>
 
@@ -256,53 +262,75 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
             {visible.map(c => {
               const flag = iso3ToFlag(c.iso3);
               const accentGradient = c.climateClass ? CLASS_ACCENT_GRADIENT[c.climateClass] : 'from-blue-400 to-blue-600';
+              const isSelected = selected.includes(c.iso3);
               return (
-                <Link
-                  key={c.iso3}
-                  href={`/country/${c.iso3}`}
-                  className="group relative flex flex-col rounded-xl border border-[--border-card] bg-white p-4 transition-all hover:border-[--accent-primary] hover:shadow-lg"
-                  style={{ boxShadow: 'var(--shadow-card)' }}
-                >
-                  {/* Accent line (left edge) */}
-                  <div className={`absolute left-0 top-0 h-full w-1 rounded-l-xl bg-gradient-to-b ${accentGradient}`} />
+                <div key={c.iso3} className="relative">
+                  {/* Checkbox */}
+                  <button
+                    onClick={() => toggleSelect(c.iso3)}
+                    className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded border transition-colors"
+                    style={{
+                      borderColor: isSelected ? '#0066FF' : '#D1D5DB',
+                      backgroundColor: isSelected ? '#0066FF' : 'white',
+                    }}
+                    aria-label={`Select ${c.name} for comparison`}
+                  >
+                    {isSelected && (
+                      <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    )}
+                  </button>
 
-                  {/* Header row */}
-                  <div className="mb-2 ml-2 flex items-center justify-between gap-2">
-                    <span className="text-2xl leading-none">{flag}</span>
-                    <div className="flex items-center gap-1.5">
-                      {c.grade && <GradeBadge grade={c.grade} />}
-                      {c.climateClass && <ClassBadge cls={c.climateClass} />}
-                    </div>
-                  </div>
+                  <Link
+                    href={`/report/${c.iso3}`}
+                    className="group relative flex flex-col rounded-xl border bg-white p-4 transition-all hover:border-[--accent-primary] hover:shadow-lg"
+                    style={{
+                      borderColor: isSelected ? '#0066FF' : 'var(--border-card)',
+                      boxShadow: 'var(--shadow-card)',
+                    }}
+                  >
+                    {/* Accent line (left edge) */}
+                    <div className={`absolute left-0 top-0 h-full w-1 rounded-l-xl bg-gradient-to-b ${accentGradient}`} />
 
-                  {/* Name + region */}
-                  <p className="ml-2 text-sm font-semibold leading-tight text-[--text-primary] group-hover:text-[--accent-primary]">
-                    {c.name}
-                  </p>
-                  {c.region && <p className="ml-2 mt-0.5 text-xs text-[--text-muted] truncate">{c.region}</p>}
+                    {/* Header row */}
+                    <div className="mb-2 ml-2 flex items-center justify-between gap-2 pr-5">
+                      <span className="text-2xl leading-none">{flag}</span>
+                      <div className="flex items-center gap-1.5">
+                        {c.grade && <GradeBadge grade={c.grade} />}
+                        {c.climateClass && <ClassBadge cls={c.climateClass} />}
+                      </div>
+                    </div>
 
-                  {/* Metrics */}
-                  <div className="ml-2 mt-3 space-y-1.5 border-t border-[--border-card] pt-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-[--text-muted]">CO₂/cap</span>
-                      <span className="font-mono font-medium text-[--text-primary]">
-                        {c.co2 != null ? `${c.co2.toFixed(1)} t` : '—'}
-                      </span>
+                    {/* Name + region */}
+                    <p className="ml-2 text-sm font-semibold leading-tight text-[--text-primary] group-hover:text-[--accent-primary]">
+                      {c.name}
+                    </p>
+                    {c.region && <p className="ml-2 mt-0.5 text-xs text-[--text-muted] truncate">{c.region}</p>}
+
+                    {/* Metrics */}
+                    <div className="ml-2 mt-3 space-y-1.5 border-t border-[--border-card] pt-3">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[--text-muted]">CO₂/cap</span>
+                        <span className="font-mono font-medium text-[--text-primary]">
+                          {c.co2 != null ? `${c.co2.toFixed(1)} t` : '—'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[--text-muted]">Renewable</span>
+                        <span className="font-mono font-medium" style={{ color: c.renewable != null ? '#00A67E' : 'var(--text-muted)' }}>
+                          {c.renewable != null ? `${c.renewable.toFixed(0)}%` : '—'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[--text-muted]">GDP/cap</span>
+                        <span className="font-mono font-medium text-[--text-primary]">
+                          {c.gdp != null ? formatGdp(c.gdp) : '—'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-[--text-muted]">Renewable</span>
-                      <span className="font-mono font-medium" style={{ color: c.renewable != null ? '#00A67E' : 'var(--text-muted)' }}>
-                        {c.renewable != null ? `${c.renewable.toFixed(0)}%` : '—'}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-[--text-muted]">GDP/cap</span>
-                      <span className="font-mono font-medium text-[--text-primary]">
-                        {c.gdp != null ? formatGdp(c.gdp) : '—'}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               );
             })}
           </div>
@@ -325,6 +353,47 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
       <p className="text-center text-sm text-[--text-muted]">
         {counts.all} countries tracked &mdash; Source: World Bank, Ember, ND-GAIN, OWID, Climate TRACE
       </p>
+
+      {/* Bottom CTA */}
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <Link
+          href="/posters"
+          className="rounded-lg border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+        >
+          Download Posters
+        </Link>
+        <Link
+          href="/report"
+          className="rounded-lg bg-[#0066FF] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
+        >
+          View Report Cards
+        </Link>
+      </div>
+
+      {/* ── Sticky Compare Bar ─────────────────────────────────────────── */}
+      {selected.length >= 2 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[--border-card] bg-white px-4 py-3 shadow-lg">
+          <div className="mx-auto flex max-w-7xl items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-[--text-primary]">
+                {selected.length} countries selected
+              </span>
+              <button
+                onClick={() => setSelected([])}
+                className="text-xs text-[--text-muted] underline hover:text-[--text-primary]"
+              >
+                Clear
+              </button>
+            </div>
+            <Link
+              href={`/compare?countries=${selected.join(',')}`}
+              className="rounded-lg bg-[#0066FF] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
+            >
+              Compare {selected.length} countries
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,6 +16,7 @@ export interface WorldScoreboardProps {
   width?:    number;
   height?:   number;
   className?: string;
+  onCountryClick?: (iso3: string) => void;
 }
 
 const CLASS_COLOR: Record<string, string> = {
@@ -44,7 +45,7 @@ interface TooltipState {
   cls: string; co2?: number; renewable?: number;
 }
 
-export function WorldScoreboard({ countries, width = 900, height = 460, className = '' }: WorldScoreboardProps) {
+export function WorldScoreboard({ countries, width = 900, height = 460, className = '', onCountryClick }: WorldScoreboardProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [features, setFeatures] = useState<GeoFeature[]>([]);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -134,9 +135,10 @@ export function WorldScoreboard({ countries, width = 900, height = 460, classNam
                 stroke="#fff"
                 strokeWidth={0.4}
                 opacity={cls === 'NoData' ? 0.6 : 0.85}
-                style={{ cursor: 'pointer', transition: 'opacity 0.15s' }}
+                style={{ cursor: onCountryClick ? 'pointer' : 'default', transition: 'opacity 0.15s' }}
                 onMouseEnter={e => handleMouseEnter(e, feat)}
                 onMouseLeave={() => setTooltip(null)}
+                onClick={() => onCountryClick?.(feat.id)}
               />
             );
           })

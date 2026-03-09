@@ -116,6 +116,20 @@ export default function AboutPage() {
           own derived metrics and do not represent official positions of any government or institution.
         </p>
 
+        {/* Bottom CTA */}
+        <section className="mt-12 rounded-2xl border border-[--border-card] bg-[--bg-section] p-8 text-center">
+          <p className="text-lg font-semibold text-[--text-primary]">Ready to explore the data?</p>
+          <p className="mt-1 text-sm text-[--text-secondary]">Search any country to see its climate report card.</p>
+          <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link href="/explore" className="rounded-lg bg-[--accent-primary] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]">
+              Explore all countries
+            </Link>
+            <Link href="/methodology" className="rounded-lg border border-[--border-card] bg-white px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]">
+              Read methodology
+            </Link>
+          </div>
+        </section>
+
       </div>
     </div>
   );

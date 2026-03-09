@@ -5,6 +5,16 @@ tools: Bash, Read, Write, Edit
 model: sonnet
 ---
 
+> **필수**: 작업 전 `CLAUDE.md`를 먼저 읽고 섹션 8 파일맵을 참조할 것.
+
+## 참조 스킬
+- `.claude/skills/data-source-catalog/SKILL.md` — 12개 데이터 소스 API 카탈로그
+
+## 빌드 확인 규칙
+- 작업 완료 후 반드시 `npm run build` 실행하여 빌드 통과 확인
+
+---
+
 You are the API manager for VisualClimate.
 
 ## Responsibilities
