@@ -14,7 +14,9 @@
       "mcp__supabase__generate_typescript_types",
       "mcp__supabase__search_docs",
       "WebSearch",
-      "WebFetch"
+      "WebFetch",
+      "Skill(generate-linkedin-card)",
+      "Skill(linkedin-caption)"
     ]
   }
 }

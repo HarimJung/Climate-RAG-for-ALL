@@ -11,46 +11,118 @@ export const metadata = createMetaTags({
 
 export const dynamic = 'force-dynamic';
 
+export interface DomainScores {
+    emissions:      number | null;
+    energy:         number | null;
+    economy:        number | null;
+    responsibility: number | null;
+    resilience:     number | null;
+    total:          number | null;
+    grade:          string | null;
+    climateClass:   'Changer' | 'Starter' | 'Talker' | null;
+}
+
 export interface CountryCompareData {
     iso3: string;
     name: string;
+    region: string;
     indicators: Record<string, { value: number; year: number } | null>;
+    domain: DomainScores;
 }
+
+const GRADE_LABELS: Record<number, string> = {
+    7: 'A+', 6: 'A', 5: 'B+', 4: 'B', 3: 'C+', 2: 'C', 1: 'D', 0: 'F',
+};
+const CLASS_MAP: Record<number, 'Changer' | 'Starter' | 'Talker'> = {
+    1: 'Changer', 2: 'Starter', 3: 'Talker',
+};
+
+const DOMAIN_CODES = [
+    'REPORT.TOTAL_SCORE', 'REPORT.GRADE',
+    'REPORT.EMISSIONS_SCORE', 'REPORT.ENERGY_SCORE',
+    'REPORT.ECONOMY_SCORE', 'REPORT.RESPONSIBILITY_SCORE',
+    'REPORT.RESILIENCE_SCORE',
+];
 
 async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]> {
   try {
     const supabase = createServiceClient();
     const codes = CLIMATE_INDICATORS.map(i => i.code);
 
-    const { data: rows } = await supabase
-        .from('country_data')
-        .select('country_iso3, indicator_code, year, value')
-        .in('country_iso3', iso3List)
-        .in('indicator_code', codes)
-        .order('year', { ascending: false });
+    const [indicatorRes, countryRes, domainRes, classRes] = await Promise.all([
+        supabase
+            .from('country_data')
+            .select('country_iso3, indicator_code, year, value')
+            .in('country_iso3', iso3List)
+            .in('indicator_code', codes)
+            .order('year', { ascending: false }),
+        supabase
+            .from('countries')
+            .select('iso3, name, region')
+            .in('iso3', iso3List),
+        supabase
+            .from('country_data')
+            .select('country_iso3, indicator_code, value')
+            .in('country_iso3', iso3List)
+            .in('indicator_code', DOMAIN_CODES)
+            .eq('year', 2024),
+        supabase
+            .from('country_data')
+            .select('country_iso3, value')
+            .in('country_iso3', iso3List)
+            .eq('indicator_code', 'DERIVED.CLIMATE_CLASS')
+            .eq('year', 2023),
+    ]);
 
-    const COUNTRY_NAMES: Record<string, string> = {
-        KOR: 'South Korea', USA: 'United States', DEU: 'Germany',
-        BRA: 'Brazil', NGA: 'Nigeria', BGD: 'Bangladesh',
-        CHN: 'China', IND: 'India', JPN: 'Japan', GBR: 'United Kingdom',
-        FRA: 'France', CAN: 'Canada', AUS: 'Australia', IDN: 'Indonesia',
-        SAU: 'Saudi Arabia', ZAF: 'South Africa', MEX: 'Mexico',
-        RUS: 'Russia', TUR: 'Turkey', EGY: 'Egypt',
-    };
+    const nameMap = new Map<string, { name: string; region: string }>();
+    for (const c of (countryRes.data ?? []) as { iso3: string; name: string; region: string }[]) {
+        nameMap.set(c.iso3.trim(), { name: c.name, region: c.region ?? '' });
+    }
+
+    const domainMap = new Map<string, Record<string, number>>();
+    for (const r of (domainRes.data ?? []) as { country_iso3: string; indicator_code: string; value: number }[]) {
+        if (!domainMap.has(r.country_iso3)) domainMap.set(r.country_iso3, {});
+        domainMap.get(r.country_iso3)![r.indicator_code] = r.value;
+    }
+
+    const classMap = new Map<string, number>();
+    for (const r of (classRes.data ?? []) as { country_iso3: string; value: number }[]) {
+        classMap.set(r.country_iso3, r.value);
+    }
 
     return iso3List.map(iso3 => {
-        const countryRows = (rows || []).filter(r => r.country_iso3 === iso3);
+        const countryRows = (indicatorRes.data || []).filter(
+            (r: { country_iso3: string }) => r.country_iso3 === iso3
+        );
         const indicators: Record<string, { value: number; year: number } | null> = {};
-
         for (const code of codes) {
-            const row = countryRows.find(r => r.indicator_code === code && r.value != null);
+            const row = countryRows.find(
+                (r: { indicator_code: string; value: number | null }) => r.indicator_code === code && r.value != null
+            );
             indicators[code] = row ? { value: Number(row.value), year: row.year } : null;
         }
 
+        const dm = domainMap.get(iso3) ?? {};
+        const gradeNum = Math.round(dm['REPORT.GRADE'] ?? -1);
+        const clsNum = classMap.get(iso3);
+
+        const info = nameMap.get(iso3);
+
         return {
             iso3,
-            name: COUNTRY_NAMES[iso3] || iso3,
+            name: info?.name ?? iso3,
+            region: info?.region ?? '',
             indicators,
+            domain: {
+                emissions:      dm['REPORT.EMISSIONS_SCORE']      ?? null,
+                energy:         dm['REPORT.ENERGY_SCORE']         ?? null,
+                economy:        dm['REPORT.ECONOMY_SCORE']        ?? null,
+                responsibility: dm['REPORT.RESPONSIBILITY_SCORE'] ?? null,
+                resilience:     dm['REPORT.RESILIENCE_SCORE']     ?? null,
+                total:          dm['REPORT.TOTAL_SCORE']          ?? null,
+                grade:          gradeNum >= 0 ? (GRADE_LABELS[gradeNum] ?? 'F') : null,
+                climateClass:   clsNum != null ? (CLASS_MAP[Math.round(clsNum)] ?? null) : null,
+            },
         };
     });
   } catch {
@@ -58,7 +130,6 @@ async function getCompareData(iso3List: string[]): Promise<CountryCompareData[]>
   }
 }
 
-// Get all countries for the selector
 async function getAllCountries() {
   try {
     const supabase = createServiceClient();
