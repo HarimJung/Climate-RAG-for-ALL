@@ -16,7 +16,8 @@
       "WebSearch",
       "WebFetch",
       "Skill(generate-linkedin-card)",
-      "Skill(linkedin-caption)"
+      "Skill(linkedin-caption)",
+      "Skill(deploy)"
     ]
   }
 }
