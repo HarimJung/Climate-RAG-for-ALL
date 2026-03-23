@@ -5,63 +5,106 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ScrollFadeIn } from '@/components/climate/scroll-fade-in';
+import { Flame, Zap, TrendingUp, Globe, Shield, ArrowUpRight } from 'lucide-react';
 import type { ReportCardData } from './page';
 
-// ── Color maps ───────────────────────────────────────────────────────────────
+// ── Constants ────────────────────────────────────────────────────────────────
 
-const GRADE_COLOR: Record<string, string> = {
-  'A+': '#00A67E', A: '#00A67E', 'B+': '#10B981', B: '#10B981',
-  'C+': '#F59E0B', C: '#F59E0B', D: '#E5484D', F: '#E5484D',
+const CLASS_GRADIENT: Record<string, { from: string; to: string }> = {
+  Changer: { from: '#10B981', to: '#0D9488' },
+  Starter: { from: '#FBBF24', to: '#F97316' },
+  Talker:  { from: '#EF4444', to: '#E11D48' },
+};
+const DEFAULT_GRADIENT = { from: '#3B82F6', to: '#2563EB' };
+
+const CLASS_PILL: Record<string, { bg: string; text: string }> = {
+  Changer: { bg: '#ECFDF5', text: '#047857' },
+  Starter: { bg: '#FFFBEB', text: '#B45309' },
+  Talker:  { bg: '#FEF2F2', text: '#B91C1C' },
 };
 
-const CLASS_STYLE: Record<string, { bg: string; text: string }> = {
-  Changer: { bg: '#ECFDF5', text: '#00A67E' },
-  Starter: { bg: '#FFFBEB', text: '#F59E0B' },
-  Talker:  { bg: '#FEF2F2', text: '#E5484D' },
+const CLASS_EXPLAIN: Record<string, string> = {
+  Changer: 'CO2 declining AND renewables rising',
+  Starter: 'One condition met (CO2 or renewables)',
+  Talker: 'Neither CO2 declining nor renewables rising',
+};
+
+const GRADE_LABEL: Record<string, string> = {
+  'A+': 'Excellent', A: 'Very Good', 'B+': 'Good', B: 'Above Average',
+  'C+': 'Fair', C: 'Below Average', D: 'Poor', F: 'Very Poor',
 };
 
 const DOMAIN_META = [
-  { key: 'emissions',      label: 'Emissions',      weight: '30%', color: '#E5484D', icon: '\uD83C\uDFED', desc: 'CO2 per capita, CO2/GDP intensity, decoupling trend' },
-  { key: 'energy',         label: 'Energy',          weight: '25%', color: '#0066FF', icon: '\u26A1',       desc: 'Renewable electricity share, grid carbon intensity' },
-  { key: 'economy',        label: 'Economy',         weight: '15%', color: '#8B5CF6', icon: '\uD83D\uDCB0', desc: 'GDP per capita, climate economic efficiency' },
-  { key: 'responsibility', label: 'Responsibility',  weight: '15%', color: '#F59E0B', icon: '\uD83C\uDF21\uFE0F', desc: 'Share of global cumulative CO2 emissions' },
-  { key: 'resilience',     label: 'Resilience',      weight: '15%', color: '#00A67E', icon: '\uD83D\uDEE1\uFE0F', desc: 'ND-GAIN readiness and vulnerability scores' },
+  { key: 'emissions', label: 'Emissions', weight: '30%', color: '#E5484D', Icon: Flame, desc: 'CO2 per capita and decoupling' },
+  { key: 'energy', label: 'Energy', weight: '25%', color: '#0066FF', Icon: Zap, desc: 'Renewable share and grid intensity' },
+  { key: 'economy', label: 'Economy', weight: '15%', color: '#8B5CF6', Icon: TrendingUp, desc: 'GDP efficiency and growth' },
+  { key: 'responsibility', label: 'Responsibility', weight: '15%', color: '#F59E0B', Icon: Globe, desc: 'Cumulative CO2 share' },
+  { key: 'resilience', label: 'Resilience', weight: '15%', color: '#00A67E', Icon: Shield, desc: 'ND-GAIN readiness and vulnerability' },
 ] as const;
 
-function scoreColor(s: number | null): string {
-  if (s === null) return '#8888A0';
-  if (s >= 70) return '#00A67E';
+function sColor(s: number | null): string {
+  if (s === null) return '#94A3B8';
+  if (s >= 70) return '#10B981';
   if (s >= 40) return '#F59E0B';
-  return '#E5484D';
+  return '#EF4444';
+}
+
+function perfLabel(s: number | null): string {
+  if (s === null) return 'No data';
+  if (s >= 70) return 'Top tier';
+  if (s >= 50) return 'Moderate';
+  if (s >= 40) return 'Below avg';
+  return 'Critical';
 }
 
 function insightLine(s: number | null): string {
   if (s === null) return 'Insufficient data';
-  if (s >= 80) return 'Excellent — top tier globally';
-  if (s >= 70) return 'Strong — above average';
-  if (s >= 50) return 'Moderate — room for improvement';
-  if (s >= 40) return 'Below average — action needed';
-  return 'Urgent — lags behind peers';
+  if (s >= 80) return 'World-class performance';
+  if (s >= 70) return 'Above global average';
+  if (s >= 50) return 'Room for improvement';
+  if (s >= 40) return 'Below average performance';
+  return 'Needs urgent attention';
 }
 
-function perfLabel(s: number | null): { text: string; color: string } {
-  if (s === null) return { text: 'No data', color: '#8888A0' };
-  if (s >= 70) return { text: 'Top tier', color: '#00A67E' };
-  if (s >= 50) return { text: 'Moderate', color: '#F59E0B' };
-  if (s >= 40) return { text: 'Below avg', color: '#F59E0B' };
-  return { text: 'Needs attention', color: '#E5484D' };
+function nextGradeInfo(score: number) {
+  const t = [
+    { min: 25, g: 'D' }, { min: 40, g: 'C' }, { min: 50, g: 'C+' },
+    { min: 60, g: 'B' }, { min: 70, g: 'B+' }, { min: 80, g: 'A' }, { min: 90, g: 'A+' },
+  ];
+  const next = t.find(x => x.min > score);
+  return next ? { grade: next.g, pts: Math.ceil(next.min - score) } : null;
 }
 
-// ── Shared UI ────────────────────────────────────────────────────────────────
+// ── Gauge Arc (semi-circular, like Credify) ──────────────────────────────────
 
-function SectionDot({ label }: { label: string }) {
+function GaugeArc({ score, grade }: { score: number; grade: string }) {
+  const r = 54, circ = 2 * Math.PI * r;
+  const arcLen = circ * (240 / 360);   // 240-degree arc
+  const gapLen = circ - arcLen;         // 120-degree gap at bottom
+  const target = arcLen * (1 - score / 100);
+
   return (
-    <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-[--text-muted]">
-      <span className="inline-block h-2 w-2 rounded-full bg-[--accent-primary]" />
-      {label}
-    </p>
+    <div className="relative mx-auto h-[160px] w-[160px]">
+      <svg viewBox="0 0 130 130" className="h-full w-full" style={{ transform: 'rotate(150deg)' }}>
+        <circle cx="65" cy="65" r={r} fill="none" stroke="rgba(255,255,255,0.2)"
+          strokeWidth="12" strokeDasharray={`${arcLen} ${gapLen}`} strokeLinecap="round" />
+        <motion.circle cx="65" cy="65" r={r} fill="none" stroke="white"
+          strokeWidth="12" strokeLinecap="round"
+          strokeDasharray={`${arcLen} ${gapLen}`}
+          initial={{ strokeDashoffset: arcLen }}
+          whileInView={{ strokeDashoffset: target }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, ease: 'easeOut' }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center pb-4">
+        <span className="text-5xl font-black leading-none text-white">{grade}</span>
+      </div>
+    </div>
   );
 }
+
+// ── useCountUp ───────────────────────────────────────────────────────────────
 
 function useCountUp(end: number, dur = 1200) {
   const [v, setV] = useState(0);
@@ -77,76 +120,35 @@ function useCountUp(end: number, dur = 1200) {
   return v;
 }
 
-// ── Score Gauge (donut arc) ──────────────────────────────────────────────────
-
-function ScoreGauge({ score, grade, color }: { score: number; grade: string; color: string }) {
-  const r = 52;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - score / 100);
-
-  return (
-    <div className="relative mx-auto h-[140px] w-[140px]">
-      <svg viewBox="0 0 120 120" className="h-full w-full" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="60" cy="60" r={r} fill="none" stroke="#f1f5f9" strokeWidth="10" />
-        <motion.circle
-          cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="10"
-          strokeLinecap="round" strokeDasharray={circ}
-          initial={{ strokeDashoffset: circ }}
-          whileInView={{ strokeDashoffset: offset }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-black leading-none" style={{ color }}>{grade}</span>
-      </div>
-    </div>
-  );
-}
-
-// ── Animated progress bar ────────────────────────────────────────────────────
-
-function AnimBar({ score, color, delay = 0 }: { score: number; color: string; delay?: number }) {
-  return (
-    <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
-      <motion.div
-        className="h-full rounded-full"
-        style={{ backgroundColor: color }}
-        initial={{ width: 0 }}
-        whileInView={{ width: `${score}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease: 'easeOut', delay }}
-      />
-    </div>
-  );
-}
-
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export function ReportCardClient({ data }: { data: ReportCardData }) {
   const animScore = useCountUp(data.total);
-  const gradeColor = GRADE_COLOR[data.grade] ?? '#E5484D';
-
+  const grad = data.climateClass ? CLASS_GRADIENT[data.climateClass] : DEFAULT_GRADIENT;
+  const pill = data.climateClass ? CLASS_PILL[data.climateClass] : null;
+  const nextG = nextGradeInfo(data.total);
   const getScore = (key: string) => (data as unknown as Record<string, number | null>)[key] as number | null;
+
+  const scored = DOMAIN_META.map(d => ({ ...d, score: getScore(d.key) })).filter(d => d.score !== null);
+  const strongest = scored.length > 0 ? scored.reduce((a, b) => a.score! > b.score! ? a : b) : null;
+  const weakest = scored.length > 0 ? scored.reduce((a, b) => a.score! < b.score! ? a : b) : null;
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 pb-20">
 
-      {/* ── Section 1: Hero (compact) ─────────────────────────────────── */}
+      {/* ── Section 1: Header ─────────────────────────────────────────── */}
       <ScrollFadeIn>
-        <section className="pb-8 pt-10 text-center">
-          <span className="text-6xl leading-none">{iso3ToFlag(data.iso3)}</span>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[--text-primary] sm:text-4xl">
-            {data.name}
-          </h1>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-[--text-secondary]">
-              {data.region}
-            </span>
-            <span className="font-mono text-sm text-[--text-muted]">{data.iso3}</span>
-            {data.climateClass && (
-              <span className="rounded-full px-3 py-1 text-sm font-bold"
-                style={{ backgroundColor: CLASS_STYLE[data.climateClass].bg, color: CLASS_STYLE[data.climateClass].text }}>
+        <section className="pb-10 pt-8">
+          <div className="flex items-center gap-3">
+            <span className="text-5xl leading-none">{iso3ToFlag(data.iso3)}</span>
+            <h1 className="text-3xl font-bold text-slate-900">{data.name}</h1>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{data.region}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-xs text-slate-600">{data.iso3}</span>
+            {data.climateClass && pill && (
+              <span className="rounded-full px-3 py-1 text-xs font-medium"
+                style={{ backgroundColor: pill.bg, color: pill.text }}>
                 {data.climateClass}
               </span>
             )}
@@ -154,129 +156,190 @@ export function ReportCardClient({ data }: { data: ReportCardData }) {
         </section>
       </ScrollFadeIn>
 
-      {/* ── Section 2: Score Display (centerpiece) ────────────────────── */}
-      <ScrollFadeIn>
-        <section className="py-8">
-          <SectionDot label="Score" />
-          <div className="rounded-2xl border border-[--border-card] bg-white p-8 shadow-sm">
-            <div className="grid items-start gap-10 lg:grid-cols-[38%_62%]">
+      {/* ── Section 2: Score Dashboard ────────────────────────────────── */}
+      <section className="pb-16">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:grid-rows-[1fr_1fr]">
 
-              {/* LEFT: Gauge + Score + Print */}
-              <div className="flex flex-col items-center text-center">
-                <ScoreGauge score={data.total} grade={data.grade} color={gradeColor} />
-                <p className="mt-5 font-mono text-5xl font-bold leading-none text-[--text-primary]">
-                  {animScore.toFixed(1)}
-                  <span className="text-xl font-medium text-[--text-muted]"> / 100</span>
-                </p>
-                <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-[--text-muted]">
-                  Total Climate Score
-                </p>
-                <button onClick={() => window.print()}
-                  className="mt-5 rounded-xl border border-[--border-card] px-5 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]">
-                  Print / Save PDF
-                </button>
-              </div>
-
-              {/* RIGHT: 5 domain rows */}
-              <div className="space-y-5">
-                {DOMAIN_META.map((d, i) => {
-                  const s = getScore(d.key);
-                  return (
-                    <div key={d.key}>
-                      <div className="mb-1.5 flex items-center gap-2">
-                        <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: d.color }} />
-                        <span className="text-sm font-semibold text-[--text-primary]">{d.label}</span>
-                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-[--text-muted]">{d.weight}</span>
-                        <span className="ml-auto font-mono text-sm font-bold" style={{ color: scoreColor(s) }}>
-                          {s !== null ? s.toFixed(1) : '--'}
-                        </span>
-                      </div>
-                      {s !== null ? (
-                        <AnimBar score={s} color={d.color} delay={i * 0.1} />
-                      ) : (
-                        <div className="h-2.5 rounded-full bg-slate-100" />
-                      )}
-                      <p className="mt-1 text-xs text-[--text-muted]">{insightLine(s)}</p>
-                    </div>
-                  );
-                })}
-              </div>
-
+          {/* Hero Score Card — gradient, spans 2 rows */}
+          <ScrollFadeIn>
+            <div className="flex h-full flex-col items-center justify-center rounded-2xl p-8 text-center text-white lg:row-span-2"
+              style={{ background: `linear-gradient(to bottom right, ${grad.from}, ${grad.to})` }}>
+              <GaugeArc score={data.total} grade={data.grade} />
+              <p className="mt-4 text-5xl font-bold leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {animScore.toFixed(1)}
+              </p>
+              <p className="mt-1.5 text-sm text-white/70">Based on 67 indicators</p>
+              {nextG && (
+                <p className="text-sm text-white/70">{nextG.pts} pts to reach {nextG.grade}</p>
+              )}
+              <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
+                {data.grade} — {GRADE_LABEL[data.grade] ?? 'N/A'}
+              </span>
+              <Link href="/methodology"
+                className="mt-5 inline-flex items-center gap-1 text-sm text-white/80 transition-colors hover:text-white">
+                View Methodology
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
             </div>
-          </div>
-        </section>
-      </ScrollFadeIn>
+          </ScrollFadeIn>
 
-      {/* ── Section 3: Domain Detail Cards ─────────────────────────────── */}
-      <section className="py-16">
-        <ScrollFadeIn><SectionDot label="Breakdown" /></ScrollFadeIn>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {DOMAIN_META.map((d, i) => {
+          {/* 4 Domain cards — 2x2 on right */}
+          {DOMAIN_META.slice(0, 4).map((d, i) => {
             const s = getScore(d.key);
-            const perf = perfLabel(s);
+            const sc = sColor(s);
             return (
-              <ScrollFadeIn key={d.key} delay={i * 0.08}>
-                <div className="card-hover flex h-full flex-col rounded-2xl border border-[--border-card] bg-white p-5">
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-2xl">{d.icon}</span>
-                    <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-[--text-muted]">{d.weight}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-[--text-primary]">{d.label}</p>
-                  <p className="mt-1 font-mono text-[32px] font-bold leading-none" style={{ color: scoreColor(s) }}>
-                    {s !== null ? s.toFixed(1) : '--'}
-                  </p>
-                  <p className="mt-3 text-xs leading-relaxed text-[--text-muted]">{d.desc}</p>
-                  <div className="mt-auto pt-3">
-                    <span className="inline-block rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ backgroundColor: `${perf.color}15`, color: perf.color }}>
-                      {perf.text}
-                    </span>
-                  </div>
+              <motion.div key={d.key}
+                className="group rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 + i * 0.08, duration: 0.5 }}>
+                <div className="mb-3 flex items-start justify-between">
+                  <d.Icon className="h-5 w-5" style={{ color: sc }} />
+                  <ArrowUpRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-slate-500" />
                 </div>
-              </ScrollFadeIn>
+                <p className="text-sm font-medium text-slate-500">{d.label}</p>
+                <p className="mt-1 font-mono text-3xl font-bold" style={{ color: sc, fontVariantNumeric: 'tabular-nums' }}>
+                  {s !== null ? s.toFixed(1) : '--'}
+                </p>
+                <p className="mt-1 text-sm text-slate-400">{insightLine(s)}</p>
+                <span className="mt-3 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+                  style={{ backgroundColor: `${sc}15`, color: sc }}>
+                  {perfLabel(s)}
+                </span>
+              </motion.div>
             );
           })}
         </div>
-      </section>
 
-      {/* ── Section 4: Next Steps ──────────────────────────────────────── */}
-      <section className="py-8">
-        <ScrollFadeIn><SectionDot label="Next Steps" /></ScrollFadeIn>
-        <div className="grid gap-6 sm:grid-cols-3">
-          {[
-            { icon: iso3ToFlag(data.iso3), title: `${data.name} Deep Dive`,
-              body: 'Full data profile with 9 sections, 44+ indicators, and 23 years of trends.',
-              href: `/country/${data.iso3}`, btn: 'View Full Profile', btnColor: '#10B981', bg: '#F0FDF4' },
-            { icon: '\uD83D\uDCCA', title: 'How We Score',
-              body: '5 domains, 11 indicators, and min-max normalization across 250 countries.',
-              href: '/methodology', btn: 'Read Methodology', btnColor: '#3B82F6', bg: '#F0F9FF' },
-            { icon: '\uD83C\uDF0D', title: 'All 250 Countries',
-              body: 'Browse, filter, and compare climate report cards for every country.',
-              href: '/explore', btn: 'Explore Countries', btnColor: '#F59E0B', bg: '#FFF7ED' },
-          ].map((c, i) => (
-            <ScrollFadeIn key={c.href} delay={i * 0.1}>
-              <div className="card-hover flex h-full flex-col rounded-2xl border border-[--border-card] p-7" style={{ backgroundColor: c.bg }}>
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="text-4xl leading-none">{c.icon}</span>
-                  <span className="text-lg font-bold text-[--text-primary]">{c.title}</span>
+        {/* Resilience — full-width horizontal card */}
+        {(() => {
+          const d = DOMAIN_META[4];
+          const s = getScore(d.key);
+          const sc = sColor(s);
+          return (
+            <ScrollFadeIn delay={0.3}>
+              <div className="mt-4 flex flex-wrap items-center gap-6 rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:flex-nowrap">
+                <div className="flex shrink-0 items-center gap-3">
+                  <d.Icon className="h-6 w-6" style={{ color: sc }} />
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">{d.label}</p>
+                    <p className="font-mono text-3xl font-bold" style={{ color: sc, fontVariantNumeric: 'tabular-nums' }}>
+                      {s !== null ? s.toFixed(1) : '--'}
+                    </p>
+                  </div>
                 </div>
-                <p className="mb-6 flex-1 text-sm leading-relaxed text-[--text-secondary]">{c.body}</p>
-                <Link href={c.href}
-                  className="inline-flex items-center gap-2 self-start rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90"
-                  style={{ backgroundColor: c.btnColor }}>
-                  {c.btn}
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                  </svg>
-                </Link>
+                <div className="hidden flex-1 sm:block">
+                  <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+                    <motion.div className="h-full rounded-full" style={{ backgroundColor: d.color }}
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${s ?? 0}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, ease: 'easeOut' }} />
+                  </div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-sm text-slate-400">{insightLine(s)}</p>
+                  <span className="mt-1 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+                    style={{ backgroundColor: `${sc}15`, color: sc }}>
+                    {perfLabel(s)}
+                  </span>
+                </div>
               </div>
             </ScrollFadeIn>
-          ))}
+          );
+        })()}
+      </section>
+
+      {/* ── Section 3: Bottom row ─────────────────────────────────────── */}
+      <section className="pb-16">
+        <div className="grid gap-4 sm:grid-cols-2">
+
+          {/* What This Means */}
+          <ScrollFadeIn>
+            <div className="h-full rounded-2xl border border-slate-200 bg-white p-8">
+              <h2 className="text-lg font-semibold text-slate-900">What This Means</h2>
+              <div className="mt-6 space-y-5">
+                {strongest && (
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                      <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-slate-600">
+                      <span className="font-semibold">{strongest.label}</span> is a strength at {strongest.score!.toFixed(1)}/100
+                    </p>
+                  </div>
+                )}
+                {weakest && (
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100">
+                      <svg className="h-3.5 w-3.5 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-slate-600">
+                      <span className="font-semibold">{weakest.label}</span> needs attention at {weakest.score!.toFixed(1)}/100
+                    </p>
+                  </div>
+                )}
+                {data.climateClass && (
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100">
+                      <svg className="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-slate-600">
+                      <span className="font-semibold">{data.climateClass}:</span> {CLASS_EXPLAIN[data.climateClass]}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <Link href={`/country/${data.iso3}`}
+                className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-[--accent-primary] hover:underline">
+                See Full Country Profile
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+            </div>
+          </ScrollFadeIn>
+
+          {/* Explore More */}
+          <ScrollFadeIn delay={0.1}>
+            <div className="h-full rounded-2xl border border-slate-200 bg-white p-8">
+              <h2 className="text-lg font-semibold text-slate-900">Explore More</h2>
+              <div className="mt-6 divide-y divide-slate-100">
+                {[
+                  { icon: iso3ToFlag(data.iso3), title: `${data.name} Deep Dive`, sub: '9 sections, 44+ indicators, 23 years of data', href: `/country/${data.iso3}` },
+                  { icon: '\uD83D\uDCCA', title: 'Methodology', sub: 'How we calculate scores', href: '/methodology' },
+                  { icon: '\uD83C\uDF0D', title: 'All 250 Countries', sub: 'Browse and compare', href: '/explore' },
+                ].map(row => (
+                  <Link key={row.href} href={row.href}
+                    className="-mx-3 flex items-center gap-4 rounded-lg px-3 py-4 transition-colors hover:bg-slate-50">
+                    <span className="text-2xl">{row.icon}</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-slate-900">{row.title}</p>
+                      <p className="text-xs text-slate-400">{row.sub}</p>
+                    </div>
+                    <svg className="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </ScrollFadeIn>
         </div>
       </section>
 
-      {/* ── Back link ─────────────────────────────────────────────────── */}
-      <div className="pt-4 text-center">
-        <Link href="/report" className="inline-flex items-center gap-1 text-sm text-[--text-muted] transition-colors hover:text-[--accent-primary]">
+      {/* ── Section 4: Back link ──────────────────────────────────────── */}
+      <div className="py-12 text-center">
+        <Link href="/report" className="inline-flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-slate-600">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
