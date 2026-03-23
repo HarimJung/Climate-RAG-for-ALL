@@ -1,5 +1,5 @@
 # VisualClimate — 프로젝트 상태
-# 마지막 업데이트: 2026-03-15
+# 마지막 업데이트: 2026-03-15 (세션 2)
 
 ## 현재 상태
 - 총 커밋: 85+ | 브랜치: main only
@@ -13,6 +13,9 @@
 - 데이터 소스: WB WDI, Ember, OWID/GCP, ND-GAIN, Climate TRACE, UNFCCC NDC
 
 ## 최근 완료 작업 (역순)
+- `b7b58cf` docs: CLAUDE.md v3 restructure (454→83줄) + docs/ 9개 + memory.md + todo.md
+- 루트 정리: IEA 참조 이미지 → mockups/, 구 문서 → archive/
+- Carbon Inequality 포스터 KOR 검증: 코드 에러 없음, 타입 PASS, 빌드 PASS
 - `fbf9734` feat: Compare page redesign + 6 new Claude commands
 - `cd0bff1` feat: Phase 1 Section 9 — UI redesign + bug fixes + PostersClient refactor
 - `9dacbad` feat: linkedin card system + full refactor
@@ -30,6 +33,13 @@
 - /library 페이지: 리포트 링크 미연결
 - EMBER.CARBON.INTENSITY, DERIVED.CO2_PER_GDP, DERIVED.ENERGY_TRANSITION 미활용
 - 빈 디렉토리: src/app/data/, data/frameworks/, data/quality-reports/, data/reports/, data/risk/, data/source-registry/
+
+## 포스터 검증 로그
+- Carbon Inequality (KOR vs BGD): 2026-03-15 검증 완료
+  - PILOT_DATA 사용 (co2: KOR=11.4t, BGD=0.7t, ratio=16)
+  - TypeScript/빌드 에러 없음
+  - 잠재 리스크: html2canvas의 inline SVG 렌더링 제한 (브라우저 테스트 필요)
+  - 비파일럿 국가 선택 시 adj 필드가 국가명으로 대체됨 (headline 어색할 수 있음)
 
 ## 패턴 & 주의사항
 - SafeChart: 모든 차트를 ErrorBoundary로 감쌈
