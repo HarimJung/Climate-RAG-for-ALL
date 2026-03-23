@@ -3,22 +3,19 @@
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { ScrollFadeIn } from '@/components/climate/scroll-fade-in';
 import type { ReportCardData } from './page';
 
-// ── Grade helpers ─────────────────────────────────────────────────────────────
+// ── Grade / class color maps ─────────────────────────────────────────────────
 
 const GRADE_COLOR: Record<string, string> = {
-  'A+': '#00A67E', 'A': '#00A67E',
-  'B+': '#0066FF', 'B': '#0066FF',
-  'C+': '#F59E0B', 'C': '#F59E0B',
-  'D': '#E5484D',  'F': '#E5484D',
+  'A+': '#00A67E', A: '#00A67E', 'B+': '#0066FF', B: '#0066FF',
+  'C+': '#F59E0B', C: '#F59E0B', D: '#E5484D', F: '#E5484D',
 };
 
 const GRADE_BG: Record<string, string> = {
-  'A+': '#ECFDF5', 'A': '#ECFDF5',
-  'B+': '#EFF6FF', 'B': '#EFF6FF',
-  'C+': '#FFFBEB', 'C': '#FFFBEB',
-  'D': '#FFF1F2',  'F': '#FFF1F2',
+  'A+': '#ECFDF5', A: '#ECFDF5', 'B+': '#EFF6FF', B: '#EFF6FF',
+  'C+': '#FFFBEB', C: '#FFFBEB', D: '#FFF1F2', F: '#FFF1F2',
 };
 
 const CLASS_STYLE: Record<string, { bg: string; text: string }> = {
@@ -27,328 +24,261 @@ const CLASS_STYLE: Record<string, { bg: string; text: string }> = {
   Talker:  { bg: '#FEF2F2', text: '#E5484D' },
 };
 
-function getSoWhat(label: string, countryName: string, score: number | null): string {
-  if (score === null) return `Insufficient data for ${label} assessment.`;
-  if (score >= 70) return `${label} is a relative strength for ${countryName}. Scoring ${score.toFixed(1)}/100 puts them in the top tier among 250 countries.`;
-  if (score >= 40) return `${label} shows moderate performance. ${countryName} scores ${score.toFixed(1)}/100 — room for improvement.`;
-  return `${label} needs urgent attention. With ${score.toFixed(1)}/100, ${countryName} lags behind peers.`;
-}
+// ── Domain metadata ──────────────────────────────────────────────────────────
 
 const DOMAIN_META = [
-  { key: 'emissions',      label: 'Emissions',       weight: '30%', color: '#E5484D', description: 'CO₂/capita, CO₂/GDP intensity, decoupling trend' },
-  { key: 'energy',         label: 'Energy',          weight: '25%', color: '#0066FF', description: 'Renewable electricity share, grid carbon intensity' },
-  { key: 'economy',        label: 'Economy',         weight: '15%', color: '#8B5CF6', description: 'GDP per capita, climate economic efficiency' },
-  { key: 'responsibility', label: 'Responsibility',  weight: '15%', color: '#F59E0B', description: 'Share of global cumulative CO₂ emissions' },
-  { key: 'resilience',     label: 'Resilience',      weight: '15%', color: '#00A67E', description: 'ND-GAIN readiness and vulnerability' },
+  { key: 'emissions',      label: 'Emissions',      weight: '30%', color: '#E5484D', desc: 'CO2/capita, CO2/GDP intensity, decoupling trend' },
+  { key: 'energy',         label: 'Energy',          weight: '25%', color: '#0066FF', desc: 'Renewable electricity share, grid carbon intensity' },
+  { key: 'economy',        label: 'Economy',         weight: '15%', color: '#8B5CF6', desc: 'GDP per capita, climate economic efficiency' },
+  { key: 'responsibility', label: 'Responsibility',  weight: '15%', color: '#F59E0B', desc: 'Share of global cumulative CO2 emissions' },
+  { key: 'resilience',     label: 'Resilience',      weight: '15%', color: '#00A67E', desc: 'ND-GAIN readiness and vulnerability' },
 ] as const;
 
-// ── CountUp Hook ──────────────────────────────────────────────────────────────
-function useCountUp(end: number, duration = 1500) {
+function scoreColor(score: number | null): string {
+  if (score === null) return '#8888A0';
+  if (score >= 70) return '#00A67E';
+  if (score >= 40) return '#F59E0B';
+  return '#E5484D';
+}
+
+function insight(score: number | null): string {
+  if (score === null) return 'Insufficient data available.';
+  if (score >= 80) return 'Excellent. Top tier globally.';
+  if (score >= 70) return 'Strong performance. Above global average.';
+  if (score >= 50) return 'Moderate. Room for improvement.';
+  if (score >= 40) return 'Below average. Action needed.';
+  return 'Critical. Urgent improvement required.';
+}
+
+// ── Section dot label (matching homepage) ────────────────────────────────────
+
+function SectionDot({ label }: { label: string }) {
+  return (
+    <p className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-[--text-muted]">
+      <span className="inline-block h-2 w-2 rounded-full bg-[--accent-primary]" />
+      {label}
+    </p>
+  );
+}
+
+// ── CountUp hook ─────────────────────────────────────────────────────────────
+
+function useCountUp(end: number, duration = 1200) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     let start = 0;
-    const increment = end / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(start);
-      }
+    const step = end / (duration / 16);
+    const t = setInterval(() => {
+      start += step;
+      if (start >= end) { setCount(end); clearInterval(t); }
+      else setCount(start);
     }, 16);
-    return () => clearInterval(timer);
+    return () => clearInterval(t);
   }, [end, duration]);
   return count;
 }
 
-// ── Pentagon (Radar) Chart ────────────────────────────────────────────────────
+// ── Radar (Pentagon) chart ───────────────────────────────────────────────────
 
 function PentagonChart({ data }: { data: ReportCardData }) {
-  const cx = 150, cy = 150, r = 100;
-  const n = 5;
-  const step = (2 * Math.PI) / n;
-  const start = -Math.PI / 2; // top
+  const cx = 150, cy = 150, radius = 100;
+  const step = (2 * Math.PI) / 5;
+  const start = -Math.PI / 2;
 
   const axes = DOMAIN_META.map((d, i) => {
     const angle = start + i * step;
-    return {
-      ...d,
-      cos: Math.cos(angle),
-      sin: Math.sin(angle),
-      labelX: cx + r * 1.42 * Math.cos(angle),
-      labelY: cy + r * 1.42 * Math.sin(angle),
-    };
+    return { ...d, cos: Math.cos(angle), sin: Math.sin(angle),
+      lx: cx + radius * 1.42 * Math.cos(angle), ly: cy + radius * 1.42 * Math.sin(angle) };
   });
 
-  // Outer pentagon
-  const outerPts = axes.map(a => `${cx + r * a.cos},${cy + r * a.sin}`).join(' ');
-
-  // Grid rings at 25%, 50%, 75%
-  const gridRings = [0.25, 0.5, 0.75].map(frac =>
-    axes.map(a => `${cx + r * frac * a.cos},${cy + r * frac * a.sin}`).join(' ')
-  );
-
-  // Score polygon
-  const scoreValues: Record<string, number> = {
-    emissions:      data.emissions      ?? 0,
-    energy:         data.energy         ?? 0,
-    economy:        data.economy        ?? 0,
-    responsibility: data.responsibility ?? 0,
-    resilience:     data.resilience     ?? 0,
+  const scores: Record<string, number> = {
+    emissions: data.emissions ?? 0, energy: data.energy ?? 0,
+    economy: data.economy ?? 0, responsibility: data.responsibility ?? 0, resilience: data.resilience ?? 0,
   };
+
+  const outerPts = axes.map(a => `${cx + radius * a.cos},${cy + radius * a.sin}`).join(' ');
+  const gridRings = [0.25, 0.5, 0.75].map(f => axes.map(a => `${cx + radius * f * a.cos},${cy + radius * f * a.sin}`).join(' '));
   const scorePts = DOMAIN_META.map((d, i) => {
-    const frac = scoreValues[d.key] / 100;
-    return `${cx + r * frac * axes[i].cos},${cy + r * frac * axes[i].sin}`;
+    const f = scores[d.key] / 100;
+    return `${cx + radius * f * axes[i].cos},${cy + radius * f * axes[i].sin}`;
   }).join(' ');
 
   return (
-    <svg viewBox="0 0 300 300" className="w-full max-w-md mx-auto" aria-label="Radar chart of domain scores">
+    <svg viewBox="0 0 300 300" className="mx-auto w-full max-w-sm" aria-label="Radar chart">
       <defs>
-        <radialGradient id="radar-bg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#f8fafc" />
-          <stop offset="100%" stopColor="#f1f5f9" />
-        </radialGradient>
-        <radialGradient id="score-gradient" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#0066FF" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#0066FF" stopOpacity="0.05" />
-        </radialGradient>
+        <radialGradient id="rg-bg" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#f8fafc" /><stop offset="100%" stopColor="#f1f5f9" /></radialGradient>
+        <radialGradient id="rg-fill" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#0066FF" stopOpacity="0.25" /><stop offset="100%" stopColor="#0066FF" stopOpacity="0.05" /></radialGradient>
       </defs>
-      {/* Radial gradient background */}
-      <rect width="300" height="300" fill="url(#radar-bg)" />
-      {/* Grid rings — dashed */}
-      {gridRings.map((pts, i) => (
-        <polygon key={i} points={pts} fill="none" stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4 4" />
-      ))}
-      {/* Axis lines */}
-      {axes.map((a, i) => (
-        <line key={i} x1={cx} y1={cy} x2={cx + r * a.cos} y2={cy + r * a.sin} stroke="#E5E7EB" strokeWidth="1" />
-      ))}
-      {/* Outer pentagon */}
+      <rect width="300" height="300" fill="url(#rg-bg)" rx="16" />
+      {gridRings.map((pts, i) => <polygon key={i} points={pts} fill="none" stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4 4" />)}
+      {axes.map((a, i) => <line key={i} x1={cx} y1={cy} x2={cx + radius * a.cos} y2={cy + radius * a.sin} stroke="#E5E7EB" strokeWidth="1" />)}
       <polygon points={outerPts} fill="none" stroke="#D1D5DB" strokeWidth="1.5" />
-      {/* Score area with gradient fill */}
-      <polygon points={scorePts} fill="url(#score-gradient)" stroke="#0066FF" strokeWidth="2.5" />
-      {/* Score dots with colored glow */}
+      <polygon points={scorePts} fill="url(#rg-fill)" stroke="#0066FF" strokeWidth="2.5" />
       {DOMAIN_META.map((d, i) => {
-        const frac = scoreValues[d.key] / 100;
-        const dotX = cx + r * frac * axes[i].cos;
-        const dotY = cy + r * frac * axes[i].sin;
-        return (
-          <g key={i}>
-            {/* Glow effect */}
-            <circle cx={dotX} cy={dotY} r={10} fill={d.color} opacity="0.2" />
-            {/* Main dot */}
-            <circle cx={dotX} cy={dotY} r={6} fill={d.color} stroke="white" strokeWidth={2.5} />
-          </g>
-        );
+        const f = scores[d.key] / 100;
+        const dx = cx + radius * f * axes[i].cos, dy = cy + radius * f * axes[i].sin;
+        return (<g key={i}><circle cx={dx} cy={dy} r={10} fill={d.color} opacity="0.2" /><circle cx={dx} cy={dy} r={5} fill={d.color} stroke="white" strokeWidth={2} /></g>);
       })}
-      {/* Domain labels with score */}
-      {axes.map((a, i) => {
-        const score = scoreValues[DOMAIN_META[i].key];
-        return (
-          <text key={i} textAnchor="middle" dominantBaseline="middle">
-            <tspan x={a.labelX} dy="-6" fontSize="11" fontWeight="600" fill={DOMAIN_META[i].color}>
-              {DOMAIN_META[i].label}
-            </tspan>
-            <tspan x={a.labelX} dy="16" fontSize="10" fontWeight="700" fill={DOMAIN_META[i].color}
-              fontFamily="monospace">
-              {score != null ? score.toFixed(1) : '—'}
-            </tspan>
-          </text>
-        );
-      })}
+      {axes.map((a, i) => (
+        <text key={i} textAnchor="middle" dominantBaseline="middle">
+          <tspan x={a.lx} dy="-6" fontSize="11" fontWeight="600" fill={DOMAIN_META[i].color}>{DOMAIN_META[i].label}</tspan>
+          <tspan x={a.lx} dy="15" fontSize="10" fontWeight="700" fill={DOMAIN_META[i].color} fontFamily="monospace">{scores[DOMAIN_META[i].key].toFixed(1)}</tspan>
+        </text>
+      ))}
     </svg>
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ── Main Component ───────────────────────────────────────────────────────────
 
 export function ReportCardClient({ data }: { data: ReportCardData }) {
   const handlePrint = () => window.print();
-  const countUpValue = useCountUp(data.total);
+  const animScore = useCountUp(data.total);
 
   return (
-    <div>
-      {/* Header with Grade Badge (120px glow circle) */}
-      <div className="mb-12 flex flex-col items-center gap-6">
-        <div className="flex items-center gap-4">
+    <div className="mx-auto max-w-[1200px] px-6 pb-20">
+      {/* ── Header ──────────────────────────────────────────────────────── */}
+      <ScrollFadeIn>
+        <section className="py-16 text-center">
           <span className="text-6xl leading-none">{iso3ToFlag(data.iso3)}</span>
-          <div>
-            <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">{data.name}</h1>
-            <p className="text-lg text-[--text-muted]">{data.region} · {data.iso3}</p>
-          </div>
-        </div>
-
-        {/* Grade badge 120px with glow + class pill */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="relative">
-            {/* Glow layers */}
-            <div
-              className="absolute inset-0 rounded-full blur-2xl opacity-40"
-              style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.3)' }}
-            />
-            <div
-              className="absolute inset-0 rounded-full blur-xl opacity-30"
-              style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.15)' }}
-            />
-            {/* Main badge */}
-            <div
-              className="relative flex h-[120px] w-[120px] items-center justify-center rounded-full text-5xl font-black shadow-2xl"
-              style={{ backgroundColor: GRADE_BG[data.grade], color: GRADE_COLOR[data.grade] }}
-            >
-              {data.grade}
-            </div>
-          </div>
-          {/* Climate Class pill */}
-          {data.climateClass && (
-            <span
-              className="rounded-full px-4 py-1.5 text-sm font-semibold"
-              style={{
-                backgroundColor: CLASS_STYLE[data.climateClass].bg,
-                color: CLASS_STYLE[data.climateClass].text,
-              }}
-            >
-              {data.climateClass}
+          <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-[--text-primary] sm:text-5xl">
+            {data.name}
+          </h1>
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-[--text-secondary]">
+              {data.region}
             </span>
-          )}
-        </div>
+            <span className="font-mono text-sm text-[--text-muted]">{data.iso3}</span>
+            {data.climateClass && (
+              <span className="rounded-full px-3 py-1 text-sm font-bold"
+                style={{ backgroundColor: CLASS_STYLE[data.climateClass].bg, color: CLASS_STYLE[data.climateClass].text }}>
+                {data.climateClass}
+              </span>
+            )}
+          </div>
 
-        {/* Total score 72px mono with CountUp */}
-        <div className="text-center">
-          <p className="mb-2 text-sm font-medium uppercase tracking-wider text-[--text-muted]">Total Climate Score</p>
-          <p className="font-mono text-[72px] font-bold leading-none text-[--text-primary]">
-            {countUpValue.toFixed(1)}
-            <span className="text-3xl font-medium text-[--text-muted]">/100</span>
-          </p>
-          <button
-            onClick={handlePrint}
-            className="mt-4 rounded-lg border border-[--border-card] px-5 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
-          >
-            Print / Save PDF
-          </button>
-        </div>
-      </div>
-
-      {/* Radar Chart */}
-      <div className="mb-10 flex items-center justify-center rounded-2xl border border-[--border-card] bg-white p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <PentagonChart data={data} />
-      </div>
-
-      {/* 5 Domain Cards with Color + Progress Bar */}
-      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {DOMAIN_META.map(d => {
-          const score = (data as unknown as Record<string, number | null>)[d.key] as number | null;
-          return (
-            <div
-              key={d.key}
-              className="rounded-xl border border-[--border-card] bg-white p-5"
-              style={{ boxShadow: 'var(--shadow-card)' }}
-            >
-              {/* Domain header */}
-              <div className="mb-3 flex items-center gap-2">
-                <div className="h-4 w-4 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-sm font-semibold text-[--text-primary]">{d.label}</span>
+          {/* Grade badge */}
+          <div className="mt-10 flex flex-col items-center gap-6">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full blur-2xl opacity-30" style={{ backgroundColor: GRADE_COLOR[data.grade], transform: 'scale(1.4)' }} />
+              <div className="relative flex h-28 w-28 items-center justify-center rounded-full border-4 border-white text-5xl font-black shadow-xl"
+                style={{ backgroundColor: GRADE_BG[data.grade], color: GRADE_COLOR[data.grade] }}>
+                {data.grade}
               </div>
-              {/* Score */}
-              <p className="mb-1 font-mono text-3xl font-bold" style={{ color: d.color }}>
-                {score !== null ? score.toFixed(1) : '—'}
+            </div>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wider text-[--text-muted]">Total Climate Score</p>
+              <p className="mt-1 font-mono text-6xl font-bold leading-none text-[--text-primary]">
+                {animScore.toFixed(1)}
+                <span className="text-2xl font-medium text-[--text-muted]">/100</span>
               </p>
-              <p className="mb-3 text-xs text-[--text-muted]">{d.weight} weight</p>
-              {/* Progress bar */}
-              {score !== null && (
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div
-                    className="h-full rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${score}%`, backgroundColor: d.color }}
-                  />
+            </div>
+            <button onClick={handlePrint}
+              className="rounded-xl border border-[--border-card] px-5 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]">
+              Print / Save PDF
+            </button>
+          </div>
+        </section>
+      </ScrollFadeIn>
+
+      {/* ── Radar Chart ─────────────────────────────────────────────────── */}
+      <ScrollFadeIn>
+        <section className="py-8">
+          <SectionDot label="Overview" />
+          <div className="card-hover rounded-2xl border border-[--border-card] bg-white p-8 shadow-sm">
+            <PentagonChart data={data} />
+          </div>
+        </section>
+      </ScrollFadeIn>
+
+      {/* ── 5 Domain Score Cards ────────────────────────────────────────── */}
+      <section className="py-8">
+        <ScrollFadeIn>
+          <SectionDot label="Domain Scores" />
+        </ScrollFadeIn>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {DOMAIN_META.map((d, i) => {
+            const score = (data as unknown as Record<string, number | null>)[d.key] as number | null;
+            return (
+              <ScrollFadeIn key={d.key} delay={i * 0.08}>
+                <div className="card-hover flex h-full flex-col rounded-2xl border border-[--border-card] bg-white p-6">
+                  {/* Domain label */}
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: d.color }} />
+                    <span className="text-sm font-semibold text-[--text-primary]">{d.label}</span>
+                    <span className="ml-auto rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-[--text-muted]">{d.weight}</span>
+                  </div>
+
+                  {/* Score */}
+                  <p className="font-mono text-3xl font-bold" style={{ color: scoreColor(score) }}>
+                    {score !== null ? score.toFixed(1) : '--'}
+                  </p>
+
+                  {/* Progress bar */}
+                  {score !== null && (
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${score}%`, backgroundColor: d.color }} />
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  <p className="mt-3 text-xs leading-relaxed text-[--text-muted]">{d.desc}</p>
+
+                  {/* Insight */}
+                  <div className="mt-auto pt-3">
+                    <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium leading-relaxed" style={{ color: scoreColor(score) }}>
+                      {insight(score)}
+                    </p>
+                  </div>
                 </div>
-              )}
-              <p className="mt-2 text-xs leading-tight text-[--text-muted]">{d.description}</p>
-              {/* So What? insight */}
-              <div className="mt-3 border-t border-gray-100 pt-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[--text-muted]">So What?</p>
-                <p className="mt-1 text-xs leading-relaxed text-[--text-secondary]">
-                  {getSoWhat(d.label, data.name, score)}
-                </p>
+              </ScrollFadeIn>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── CTA Cards ───────────────────────────────────────────────────── */}
+      <section className="py-16">
+        <ScrollFadeIn>
+          <SectionDot label="Next Steps" />
+        </ScrollFadeIn>
+        <div className="grid gap-6 sm:grid-cols-3">
+          {[
+            { icon: iso3ToFlag(data.iso3), title: `${data.name} Deep Dive`, body: 'Full data profile with 9 sections, 44+ indicators, and 23 years of trends.',
+              href: `/country/${data.iso3}`, btn: 'View Full Profile', btnColor: '#10B981', bg: '#F0FDF4' },
+            { icon: '📊', title: 'How We Score', body: '5 domains, 11 indicators, and min-max normalization across 250 countries.',
+              href: '/methodology', btn: 'Read Methodology', btnColor: '#3B82F6', bg: '#F0F9FF' },
+            { icon: '🌍', title: 'All 250 Countries', body: 'Browse, filter, and compare climate report cards for every country.',
+              href: '/explore', btn: 'Explore Countries', btnColor: '#F59E0B', bg: '#FFF7ED' },
+          ].map((c, i) => (
+            <ScrollFadeIn key={c.href} delay={i * 0.1}>
+              <div className="card-hover flex h-full flex-col rounded-2xl border border-[--border-card] p-7" style={{ backgroundColor: c.bg }}>
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="text-4xl leading-none">{c.icon}</span>
+                  <span className="text-lg font-bold text-[--text-primary]">{c.title}</span>
+                </div>
+                <p className="mb-6 flex-1 text-sm leading-relaxed text-[--text-secondary]">{c.body}</p>
+                <Link href={c.href}
+                  className="inline-flex items-center gap-2 self-start rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90"
+                  style={{ backgroundColor: c.btnColor }}>
+                  {c.btn}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
               </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* CTA Cards */}
-      <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Full country profile */}
-        <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#F0FDF4' }}>
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-green-400 opacity-10 blur-3xl" />
-          <div className="relative">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="text-5xl leading-none">{iso3ToFlag(data.iso3)}</span>
-              <span className="text-xl font-bold text-[--text-primary]">{data.name}</span>
-            </div>
-            <p className="mb-6 text-base leading-relaxed text-[--text-secondary]">
-              Explore the full data profile with 9 sections, 44+ indicators, and 23 years of trends.
-            </p>
-            <Link
-              href={`/country/${data.iso3}`}
-              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
-              style={{ backgroundColor: '#10B981' }}
-            >
-              View Full Country Profile
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </div>
+            </ScrollFadeIn>
+          ))}
         </div>
+      </section>
 
-        {/* Methodology */}
-        <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#F0F9FF' }}>
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-blue-400 opacity-10 blur-3xl" />
-          <div className="relative">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="text-5xl">📊</span>
-              <span className="text-xl font-bold text-[--text-primary]">How We Score</span>
-            </div>
-            <p className="mb-6 text-base leading-relaxed text-[--text-secondary]">
-              Our methodology uses 5 domains, 11 indicators, and min-max normalization across 200+ countries.
-            </p>
-            <Link
-              href="/methodology"
-              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
-              style={{ backgroundColor: '#3B82F6' }}
-            >
-              Read Methodology
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Explore All Countries */}
-        <div className="group relative overflow-hidden rounded-2xl p-8 transition-transform hover:scale-[1.02]" style={{ backgroundColor: '#FFF7ED' }}>
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-400 opacity-10 blur-3xl" />
-          <div className="relative">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="text-5xl leading-none">🌍</span>
-              <span className="text-xl font-bold text-[--text-primary]">250 Countries</span>
-            </div>
-            <p className="mb-6 text-base leading-relaxed text-[--text-secondary]">
-              Browse, filter, and compare climate report cards for every country in the world.
-            </p>
-            <Link
-              href="/explore"
-              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
-              style={{ backgroundColor: '#F59E0B' }}
-            >
-              Explore All Countries
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Back link */}
+      {/* ── Back link ───────────────────────────────────────────────────── */}
       <div className="text-center">
-        <Link href="/report" className="text-sm text-[--text-muted] hover:text-[--text-primary]">
-          ← Back to All Report Cards
+        <Link href="/report" className="inline-flex items-center gap-1 text-sm text-[--text-muted] transition-colors hover:text-[--accent-primary]">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          Back to All Report Cards
         </Link>
       </div>
     </div>

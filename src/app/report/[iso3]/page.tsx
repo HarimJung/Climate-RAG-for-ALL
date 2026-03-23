@@ -102,17 +102,19 @@ export default async function ReportCardPage({ params }: { params: Promise<{ iso
   if (!data) notFound();
 
   return (
-    <div className="bg-[--bg-primary] px-4 py-12">
-      <div className="mx-auto max-w-3xl">
-        {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-sm text-[--text-muted]">
-          <Link href="/report" className="hover:text-[--accent-primary]">Report Card</Link>
+    <div className="bg-[--bg-primary]">
+      {/* Breadcrumb */}
+      <div className="mx-auto max-w-[1200px] px-6 pt-8">
+        <nav className="flex items-center gap-2 text-sm text-[--text-muted]">
+          <Link href="/" className="hover:text-[--accent-primary]">Home</Link>
+          <span>/</span>
+          <Link href="/report" className="hover:text-[--accent-primary]">Report Cards</Link>
           <span>/</span>
           <span className="text-[--text-secondary]">{data.name}</span>
         </nav>
-
-        <ReportCardClient data={data} />
       </div>
+
+      <ReportCardClient data={data} />
     </div>
   );
 }
