@@ -3,7 +3,17 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
-import type { CountryCard } from './page';
+export interface CountryCard {
+  iso3: string;
+  name: string;
+  region?: string;
+  co2?: number;
+  renewable?: number;
+  gdp?: number;
+  climateClass?: 'Changer' | 'Starter' | 'Talker';
+  grade?: string;
+  totalScore?: number;
+}
 
 type SortKey = 'co2-desc' | 'renewable-desc' | 'name-asc' | 'gdp-desc' | 'grade-desc';
 type FilterTab = 'all' | 'Changer' | 'Starter' | 'Talker' | 'gradeA' | 'gradeB' | 'gradeC' | 'gradeD' | 'gradeF';

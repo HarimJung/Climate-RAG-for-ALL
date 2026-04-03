@@ -27,22 +27,11 @@ const POPULAR_COUNTRIES = [
   { iso3: 'BRA', name: 'Brazil' },
 ];
 
-const CTA_COUNTRIES = [
-  { iso3: 'KOR', name: 'South Korea', grade: 'C+', score: 56.8, cls: 'Starter' as const },
-  { iso3: 'CRI', name: 'Costa Rica', grade: 'A', score: 82.1, cls: 'Changer' as const },
-  { iso3: 'USA', name: 'United States', grade: 'D', score: 34.2, cls: 'Talker' as const },
-];
-
-const GRADE_COLORS: Record<string, string> = {
-  'A+': '#00A67E', A: '#00A67E', 'B+': '#10B981', B: '#34D399',
-  'C+': '#F59E0B', C: '#F59E0B', D: '#E5484D', F: '#E5484D',
-};
-
 const CLS_COLORS: Record<string, string> = {
   Changer: '#00A67E', Starter: '#F59E0B', Talker: '#E5484D',
 };
 
-// ── Data functions ──────────────────────────────────────────────────────────
+// ── Data functions (preserved) ──────────────────────────────────────────────
 
 async function getStats() {
   try {
@@ -97,17 +86,6 @@ async function getCountryList(): Promise<{ iso3: string; name: string }[]> {
   } catch { return []; }
 }
 
-// ── Section label ───────────────────────────────────────────────────────────
-
-function SectionDot({ label }: { label: string }) {
-  return (
-    <p className="mb-4 flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wider text-[--text-muted]">
-      <span className="inline-block h-2 w-2 rounded-full bg-[--accent-primary]" />
-      {label}
-    </p>
-  );
-}
-
 // ── Page ────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
@@ -124,37 +102,48 @@ export default async function HomePage() {
   };
 
   const countryCount = stats.countries > 0 ? stats.countries : 250;
+  const indicatorCount = stats.indicators > 0 ? stats.indicators : 67;
   const dataPointStr = stats.dataPoints > 0 ? `${(stats.dataPoints / 1000).toFixed(0)}K+` : '172K+';
 
   return (
     <div>
       {/* ── 1. HERO ──────────────────────────────────────────────────────── */}
-      <section className="hero-gradient relative overflow-hidden px-6 pb-20 pt-28 sm:pt-36">
-        <div className="mx-auto max-w-3xl text-center">
+      <section className="hero-gradient relative overflow-hidden px-6 pb-20 pt-32 sm:pt-40">
+        {/* Subtle radial glow for depth */}
+        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2" aria-hidden="true">
+          <div className="h-[500px] w-[800px] rounded-full bg-[--accent-primary] opacity-[0.03] blur-[100px]" />
+        </div>
+
+        <div className="relative mx-auto max-w-3xl text-center">
           <ScrollFadeIn>
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-[--text-primary] sm:text-5xl lg:text-6xl">
-              Climate accountability{' '}
-              <span className="gradient-text">for every country.</span>
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[--border-card] bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-[--text-secondary] shadow-sm backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-[--accent-positive]" />
+              Open Climate Intelligence
+            </p>
+            <h1 className="text-[2.5rem] font-extrabold leading-[1.08] tracking-tight text-[--text-primary] sm:text-5xl lg:text-[3.75rem]">
+              Is your country keeping{' '}
+              <br className="hidden sm:block" />
+              its <span className="gradient-text">climate promises?</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-[--text-secondary]">
-              Search any country to see its climate report card — grades backed by real emissions, energy, and vulnerability data.
+            <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-[--text-secondary]">
+              {countryCount} countries graded on real emissions, energy, and resilience data.
             </p>
           </ScrollFadeIn>
 
-          <ScrollFadeIn delay={0.15}>
+          <ScrollFadeIn delay={0.12}>
             <div className="mt-10">
               <HeroSearch countries={countryList} />
             </div>
           </ScrollFadeIn>
 
-          <ScrollFadeIn delay={0.25}>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-sm text-[--text-muted]">Popular:</span>
+          <ScrollFadeIn delay={0.2}>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
+              <span className="text-xs font-medium uppercase tracking-wider text-[--text-muted]">Popular:</span>
               {POPULAR_COUNTRIES.map(c => (
                 <Link
                   key={c.iso3}
                   href={`/report/${c.iso3}`}
-                  className="rounded-full border border-[--border-card] bg-white px-3 py-1.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+                  className="rounded-full border border-[--border-card] bg-white/80 px-3.5 py-1.5 text-sm font-medium text-[--text-secondary] shadow-sm backdrop-blur transition-all hover:border-[--accent-primary] hover:text-[--accent-primary] hover:shadow-md"
                 >
                   {iso3ToFlag(c.iso3)} {c.name}
                 </Link>
@@ -162,83 +151,176 @@ export default async function HomePage() {
             </div>
           </ScrollFadeIn>
         </div>
-
-        {/* Floating badges */}
-        <ScrollFadeIn direction="left" delay={0.3} className="absolute left-6 top-32 hidden lg:block">
-          <div className="glass-card float-anim rounded-2xl px-5 py-3 shadow-lg">
-            <p className="text-2xl font-bold text-[--text-primary]">{countryCount}</p>
-            <p className="text-xs text-[--text-muted]">countries tracked</p>
-          </div>
-        </ScrollFadeIn>
-        <ScrollFadeIn direction="right" delay={0.4} className="absolute right-6 top-40 hidden lg:block">
-          <div className="glass-card float-anim rounded-2xl px-5 py-3 shadow-lg" style={{ animationDelay: '1s' }}>
-            <p className="text-2xl font-bold text-[--text-primary]">{dataPointStr}</p>
-            <p className="text-xs text-[--text-muted]">data points</p>
-          </div>
-        </ScrollFadeIn>
       </section>
 
-      {/* ── 2. PLATFORM ──────────────────────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-[1200px]">
+      {/* ── 2. TRUST STATS ───────────────────────────────────────────────── */}
+      <section className="border-y border-[--border-card] bg-white px-6 py-10">
+        <div className="mx-auto max-w-[1100px]">
           <ScrollFadeIn>
-            <SectionDot label="Platform" />
+            <div className="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-[--border-card]">
+              {[
+                { value: countryCount, label: 'Countries scored' },
+                { value: dataPointStr, label: 'Data points' },
+                { value: indicatorCount, label: 'Indicators' },
+                { value: '5', label: 'Trusted sources' },
+              ].map(stat => (
+                <div key={stat.label} className="text-center">
+                  <p className="font-mono text-3xl font-bold tracking-tight text-[--text-primary]">{stat.value}</p>
+                  <p className="mt-1 text-sm text-[--text-muted]">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+              <span className="text-xs uppercase tracking-wider text-[--text-muted]">Powered by</span>
+              {['World Bank WDI', 'Ember', 'ND-GAIN', 'OWID / GCP', 'Climate TRACE'].map(src => (
+                <span key={src} className="text-sm font-medium text-[--text-secondary]">{src}</span>
+              ))}
+            </div>
+          </ScrollFadeIn>
+        </div>
+      </section>
+
+      {/* ── 3. WHAT YOU GET ──────────────────────────────────────────────── */}
+      <section className="px-6 py-20">
+        <div className="mx-auto max-w-[1100px]">
+          <ScrollFadeIn>
             <h2 className="text-center text-3xl font-bold text-[--text-primary] sm:text-4xl">
-              Better Data, Better Accountability.
+              Three ways to understand climate action.
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-center text-lg text-[--text-secondary]">
-              We aggregate, score, and visualize — so you can focus on what matters.
+              From a single letter grade to deep data analysis and shareable visuals.
             </p>
           </ScrollFadeIn>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-3">
-            {[
-              { icon: '📡', title: '5 Trusted Sources', desc: 'World Bank, Ember, ND-GAIN, OWID, and Climate TRACE — aggregated and cross-verified.' },
-              { icon: '🌍', title: '250 Countries Scored', desc: 'Every country graded across 5 domains: Emissions, Energy, Policy, Resilience, and Social.' },
-              { icon: '📊', title: 'Shareable Posters', desc: 'Download publication-ready PNG charts designed for LinkedIn, reports, and presentations.' },
-            ].map((card, i) => (
-              <ScrollFadeIn key={card.title} delay={i * 0.1}>
-                <div className="card-hover rounded-2xl border border-[--border-card] bg-white p-8 text-center">
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-2xl">
-                    {card.icon}
+            {/* Report Card */}
+            <ScrollFadeIn delay={0}>
+              <Link href="/report" className="card-hover group flex flex-col rounded-2xl border border-[--border-card] bg-white p-7">
+                <div className="mb-5 flex h-40 items-center justify-center rounded-xl bg-[--bg-section]">
+                  <div className="text-center">
+                    <span className="inline-block rounded-lg bg-amber-50 px-4 py-2 font-mono text-4xl font-extrabold text-amber-600">
+                      C+
+                    </span>
+                    <div className="mt-3 flex items-center justify-center gap-1.5">
+                      {[72, 32, 46, 95, 91].map((v, i) => (
+                        <div key={i} className="h-1.5 w-8 overflow-hidden rounded-full bg-slate-100">
+                          <div className="h-full rounded-full" style={{ width: `${v}%`, backgroundColor: ['#0066FF','#00A67E','#F59E0B','#10B981','#8B5CF6'][i] }} />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-[--text-primary]">{card.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[--text-secondary]">{card.desc}</p>
                 </div>
-              </ScrollFadeIn>
-            ))}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-[--text-primary] group-hover:text-[--accent-primary]">Report Card</h3>
+                  <svg className="h-4 w-4 text-[--text-muted] transition-transform group-hover:translate-x-1 group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-[--text-secondary]">
+                  A single grade per country across 5 scored domains. Transparent methodology, no greenwashing.
+                </p>
+              </Link>
+            </ScrollFadeIn>
+
+            {/* Country Deep Dive */}
+            <ScrollFadeIn delay={0.1}>
+              <Link href="/explore" className="card-hover group flex flex-col rounded-2xl border border-[--border-card] bg-white p-7">
+                <div className="mb-5 flex h-40 items-center justify-center rounded-xl bg-[--bg-section]">
+                  <svg viewBox="0 0 140 70" className="h-20 w-32">
+                    <polyline fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                      points="10,55 25,50 40,52 55,40 70,35 85,28 100,22 120,14 135,10" />
+                    <polyline fill="none" stroke="#00A67E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5 3"
+                      points="10,58 25,55 40,50 55,42 70,38 85,40 100,44 120,48 135,50" />
+                    <line x1="10" y1="62" x2="135" y2="62" stroke="#E8E8ED" strokeWidth="1" />
+                    {[10,40,70,100,135].map(x => (
+                      <line key={x} x1={x} y1="62" x2={x} y2="64" stroke="#8888A0" strokeWidth="0.8" />
+                    ))}
+                  </svg>
+                </div>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-[--text-primary] group-hover:text-[--accent-primary]">Country Deep Dive</h3>
+                  <svg className="h-4 w-4 text-[--text-muted] transition-transform group-hover:translate-x-1 group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-[--text-secondary]">
+                  10 data sections per country — emissions trends, energy mix, vulnerability, and more.
+                </p>
+              </Link>
+            </ScrollFadeIn>
+
+            {/* Data Posters */}
+            <ScrollFadeIn delay={0.2}>
+              <Link href="/posters" className="card-hover group flex flex-col rounded-2xl border border-[--border-card] bg-white p-7">
+                <div className="mb-5 flex h-40 items-center justify-center rounded-xl bg-[--bg-section]">
+                  <div className="flex items-end gap-2">
+                    {/* Mini poster thumbnails */}
+                    <div className="h-20 w-14 rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm transition-transform group-hover:-rotate-3">
+                      <div className="h-2 w-6 rounded bg-blue-200" />
+                      <div className="mt-1.5 h-8 rounded bg-gradient-to-b from-blue-50 to-blue-100" />
+                      <div className="mt-1 h-1 w-8 rounded bg-slate-100" />
+                    </div>
+                    <div className="h-24 w-16 rounded-lg border border-slate-200 bg-white p-1.5 shadow-md">
+                      <div className="h-2 w-8 rounded bg-emerald-200" />
+                      <div className="mt-1.5 h-10 rounded bg-gradient-to-b from-emerald-50 to-emerald-100" />
+                      <div className="mt-1 h-1 w-10 rounded bg-slate-100" />
+                    </div>
+                    <div className="h-20 w-14 rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm transition-transform group-hover:rotate-3">
+                      <div className="h-2 w-6 rounded bg-amber-200" />
+                      <div className="mt-1.5 h-8 rounded bg-gradient-to-b from-amber-50 to-amber-100" />
+                      <div className="mt-1 h-1 w-8 rounded bg-slate-100" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-[--text-primary] group-hover:text-[--accent-primary]">Data Posters</h3>
+                  <svg className="h-4 w-4 text-[--text-muted] transition-transform group-hover:translate-x-1 group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-[--text-secondary]">
+                  Publication-ready chart PNGs. Download and share on LinkedIn in one click.
+                </p>
+              </Link>
+            </ScrollFadeIn>
           </div>
         </div>
       </section>
 
-      {/* ── 3. MAP SCOREBOARD ────────────────────────────────────────────── */}
+      {/* ── 4. MAP SCOREBOARD ────────────────────────────────────────────── */}
       <section className="bg-[--bg-section] px-6 py-20">
-        <div className="mx-auto max-w-[1200px]">
-          <div className="grid items-start gap-10 lg:grid-cols-[380px_1fr]">
+        <div className="mx-auto max-w-[1100px]">
+          <div className="grid items-start gap-10 lg:grid-cols-[340px_1fr]">
             <ScrollFadeIn direction="left">
               <div className="lg:sticky lg:top-24">
-                <SectionDot label="Scoreboard" />
-                <h2 className="text-3xl font-bold text-[--text-primary]">
+                <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[--accent-primary]">
+                  World Scoreboard
+                </p>
+                <h2 className="text-3xl font-bold leading-tight text-[--text-primary]">
                   Who is actually changing?
                 </h2>
                 <p className="mt-3 text-[--text-secondary]">
-                  Every country classified by real action — not pledges. Click any country to see its full report card.
+                  Every country classified by real outcomes — not pledges. Click any dot to see its report card.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-4">
+                <div className="mt-8 space-y-3">
                   {(['Changer', 'Starter', 'Talker'] as const).map(cls => (
-                    <div key={cls} className="flex items-center gap-2">
+                    <div key={cls} className="flex items-center gap-3 rounded-xl border border-[--border-card] bg-white px-4 py-3">
                       <span className="h-3 w-3 rounded-full" style={{ backgroundColor: CLS_COLORS[cls] }} />
-                      <span className="text-sm font-bold text-[--text-primary]">{classCounts[cls]}</span>
-                      <span className="text-sm text-[--text-muted]">{cls}s</span>
+                      <span className="flex-1 text-sm font-semibold text-[--text-primary]">{cls}s</span>
+                      <span className="font-mono text-lg font-bold text-[--text-primary]">{classCounts[cls]}</span>
                     </div>
                   ))}
                 </div>
+                <p className="mt-5 text-xs leading-relaxed text-[--text-muted]">
+                  Changers have declining CO2 and rising renewables. Starters meet one condition. Talkers meet neither.
+                </p>
+                <Link
+                  href="/explore"
+                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[--accent-primary] transition-colors hover:text-[#0052CC]"
+                >
+                  Explore all countries
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </Link>
               </div>
             </ScrollFadeIn>
 
             <ScrollFadeIn direction="right" delay={0.15}>
               {scoreboardData.length > 0 ? (
-                <HomeMap countries={scoreboardData} width={780} height={440} />
+                <HomeMap countries={scoreboardData} width={720} height={440} />
               ) : (
                 <div className="flex h-48 items-center justify-center rounded-2xl border border-[--border-card] bg-white text-sm text-[--text-muted]">
                   Loading map...
@@ -249,251 +331,26 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 4. FEATURES (3+2 bento) ──────────────────────────────────────── */}
+      {/* ── 5. CTA ───────────────────────────────────────────────────────── */}
       <section className="px-6 py-20">
-        <div className="mx-auto max-w-[1200px]">
+        <div className="mx-auto max-w-2xl text-center">
           <ScrollFadeIn>
-            <SectionDot label="Features" />
-            <h2 className="text-center text-3xl font-bold text-[--text-primary] sm:text-4xl">
-              Everything you need to hold your country accountable.
+            <h2 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">
+              Search your country.
             </h2>
-          </ScrollFadeIn>
-
-          {/* Top row: 3 cards */}
-          <div className="mt-14 grid gap-5 sm:grid-cols-3">
-            <ScrollFadeIn delay={0}>
-              <div className="card-hover flex flex-col rounded-2xl border border-[--border-card] bg-white p-6">
-                <div className="mb-4 flex h-36 items-center justify-center rounded-xl bg-slate-50">
-                  {/* Mini report card bars */}
-                  <div className="flex items-end gap-2">
-                    {[72, 45, 58, 88, 34].map((v, i) => (
-                      <div key={i} className="w-5 rounded-t" style={{ height: `${v * 0.9}px`, backgroundColor: ['#0066FF','#00A67E','#F59E0B','#10B981','#E5484D'][i] }} />
-                    ))}
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-[--text-primary]">Report Card</h3>
-                <p className="mt-1 text-sm text-[--text-secondary]">A single grade for every country. 5 domains, transparent methodology.</p>
-              </div>
-            </ScrollFadeIn>
-
-            <ScrollFadeIn delay={0.1}>
-              <div className="card-hover flex flex-col rounded-2xl border border-[--border-card] bg-white p-6">
-                <div className="mb-4 flex h-36 items-center justify-center rounded-xl bg-slate-50">
-                  {/* Mini line chart */}
-                  <svg viewBox="0 0 120 60" className="h-16 w-24 text-[--accent-primary]">
-                    <polyline fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                      points="5,50 20,45 35,48 50,35 65,30 80,22 95,18 115,10" />
-                    <polyline fill="none" stroke="#00A67E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 3"
-                      points="5,55 20,52 35,48 50,40 65,35 80,38 95,42 115,45" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-bold text-[--text-primary]">Country Deep Dive</h3>
-                <p className="mt-1 text-sm text-[--text-secondary]">10 data sections per country — from emissions to vulnerability and beyond.</p>
-              </div>
-            </ScrollFadeIn>
-
-            <ScrollFadeIn delay={0.2}>
-              <div className="card-hover flex flex-col rounded-2xl border border-[--border-card] bg-white p-6">
-                <div className="mb-4 flex h-36 items-center justify-center rounded-xl bg-slate-50">
-                  {/* Mini poster card */}
-                  <div className="w-20 rounded-lg border border-slate-200 bg-white p-2 shadow-sm">
-                    <div className="mb-1 h-2 w-10 rounded bg-slate-200" />
-                    <div className="h-8 rounded bg-gradient-to-br from-blue-100 to-emerald-100" />
-                    <div className="mt-1 h-1.5 w-12 rounded bg-slate-200" />
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-[--text-primary]">Data Posters</h3>
-                <p className="mt-1 text-sm text-[--text-secondary]">Publication-ready chart PNGs. One click to download, share on LinkedIn.</p>
-              </div>
-            </ScrollFadeIn>
-          </div>
-
-          {/* Bottom row: 2 cards */}
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <ScrollFadeIn delay={0.1}>
-              <div className="card-hover flex flex-col rounded-2xl border border-[--border-card] bg-white p-6">
-                <div className="mb-4 flex h-28 items-center justify-center gap-3 rounded-xl bg-slate-50">
-                  {(['Changer', 'Starter', 'Talker'] as const).map(cls => (
-                    <span key={cls} className="rounded-full px-3 py-1 text-xs font-bold text-white" style={{ backgroundColor: CLS_COLORS[cls] }}>
-                      {cls}
-                    </span>
-                  ))}
-                </div>
-                <h3 className="text-lg font-bold text-[--text-primary]">Greenwashing Filter</h3>
-                <p className="mt-1 text-sm text-[--text-secondary]">
-                  Three classifications based on real outcomes: Changers reduce CO2 and grow renewables. Talkers don't.
-                </p>
-              </div>
-            </ScrollFadeIn>
-
-            <ScrollFadeIn delay={0.2}>
-              <div className="card-hover flex flex-col rounded-2xl border border-[--border-card] bg-white p-6">
-                <div className="mb-4 flex h-28 flex-wrap items-center justify-center gap-2 rounded-xl bg-slate-50 px-4">
-                  {['World Bank', 'Ember', 'ND-GAIN', 'OWID', 'Climate TRACE'].map(src => (
-                    <span key={src} className="rounded-md bg-white px-2.5 py-1 text-xs font-medium text-[--text-secondary] shadow-sm">
-                      {src}
-                    </span>
-                  ))}
-                </div>
-                <h3 className="text-lg font-bold text-[--text-primary]">{stats.indicators || 67} Indicators</h3>
-                <p className="mt-1 text-sm text-[--text-secondary]">
-                  From CO2 per capita to renewable share, ND-GAIN vulnerability to NDC targets.
-                </p>
-              </div>
-            </ScrollFadeIn>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 5. LIVE PREVIEW ──────────────────────────────────────────────── */}
-      <section className="bg-[--bg-section] px-6 py-20">
-        <div className="mx-auto max-w-[1200px]">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <ScrollFadeIn direction="left">
-              <SectionDot label="Preview" />
-              <h2 className="text-3xl font-bold text-[--text-primary]">
-                Every country gets a grade.
-              </h2>
-              <p className="mt-3 text-lg text-[--text-secondary]">
-                Transparent, data-driven scores across 5 domains. No guesswork, no greenwashing — just the numbers.
-              </p>
-              <Link
-                href="/report/KOR"
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[--accent-primary] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]"
-              >
-                See South Korea's Report Card
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-            </ScrollFadeIn>
-
-            <ScrollFadeIn direction="right" delay={0.15}>
-              <div className="rounded-2xl border border-[--border-card] bg-white p-6 shadow-lg">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="text-3xl">{iso3ToFlag('KOR')}</span>
-                  <div>
-                    <p className="text-lg font-bold text-[--text-primary]">South Korea</p>
-                    <p className="text-sm text-[--text-muted]">Climate Report Card</p>
-                  </div>
-                  <span className="ml-auto rounded-lg bg-amber-50 px-3 py-1 text-lg font-bold text-amber-600">C+</span>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { label: 'Emissions', score: 69.4, color: '#0066FF' },
-                    { label: 'Energy Transition', score: 32.2, color: '#00A67E' },
-                    { label: 'Policy & Governance', score: 45.7, color: '#F59E0B' },
-                    { label: 'Resilience', score: 95.3, color: '#10B981' },
-                    { label: 'Social Equity', score: 91.3, color: '#8B5CF6' },
-                  ].map(d => (
-                    <div key={d.label}>
-                      <div className="mb-1 flex items-center justify-between">
-                        <span className="text-sm text-[--text-secondary]">{d.label}</span>
-                        <span className="font-mono text-sm font-bold text-[--text-primary]">{d.score}</span>
-                      </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                        <div className="h-full rounded-full" style={{ width: `${d.score}%`, backgroundColor: d.color }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </ScrollFadeIn>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 6. POSTER SHOWCASE ───────────────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-[1200px]">
-          <ScrollFadeIn>
-            <SectionDot label="Posters" />
-            <h2 className="text-center text-3xl font-bold text-[--text-primary]">Data that travels.</h2>
-            <p className="mx-auto mt-3 max-w-xl text-center text-[--text-secondary]">
-              Download chart posters and share climate data where it matters most.
-            </p>
-          </ScrollFadeIn>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {[
-              { title: 'CO2 Emissions Trend', subtitle: 'Per capita over 30 years', gradient: 'from-blue-500 to-cyan-400' },
-              { title: 'Energy Mix Breakdown', subtitle: 'Fossil vs Renewable share', gradient: 'from-emerald-500 to-teal-400' },
-              { title: 'Climate Risk Profile', subtitle: 'Vulnerability & Readiness', gradient: 'from-amber-500 to-orange-400' },
-            ].map((poster, i) => (
-              <ScrollFadeIn key={poster.title} delay={i * 0.1}>
-                <div className="card-hover overflow-hidden rounded-2xl border border-[--border-card] bg-white">
-                  <div className={`flex h-44 items-end bg-gradient-to-br ${poster.gradient} p-5`}>
-                    <div>
-                      <p className="text-xs font-medium text-white/70">VisualClimate</p>
-                      <p className="text-lg font-bold text-white">{poster.title}</p>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-sm text-[--text-secondary]">{poster.subtitle}</p>
-                  </div>
-                </div>
-              </ScrollFadeIn>
-            ))}
-          </div>
-
-          <ScrollFadeIn delay={0.3}>
-            <div className="mt-8 text-center">
-              <Link href="/posters" className="inline-flex items-center gap-1 text-sm font-semibold text-[--accent-primary] hover:underline">
-                See all posters
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-            </div>
-          </ScrollFadeIn>
-        </div>
-      </section>
-
-      {/* ── 7. DATA SOURCES ──────────────────────────────────────────────── */}
-      <section className="border-y border-[--border-card] bg-[--bg-section] px-6 py-10">
-        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-center gap-8 text-sm font-medium text-[--text-muted]">
-          <span className="mr-2 text-xs uppercase tracking-wider">Powered by</span>
-          {['World Bank WDI', 'Ember', 'ND-GAIN', 'OWID / GCP', 'Climate TRACE'].map(src => (
-            <span key={src} className="text-[--text-secondary]">{src}</span>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 8. CTA ───────────────────────────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-[1200px] text-center">
-          <ScrollFadeIn>
-            <h2 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">Search your country.</h2>
-            <p className="mx-auto mt-3 max-w-xl text-lg text-[--text-secondary]">
+            <p className="mx-auto mt-3 max-w-lg text-lg text-[--text-secondary]">
               Find out if your country is a Changer, Starter, or Talker.
             </p>
-            <div className="mx-auto mt-8 max-w-2xl">
+            <div className="mt-8">
               <HeroSearch countries={countryList} />
             </div>
+            <p className="mt-6 text-sm text-[--text-muted]">
+              or{' '}
+              <Link href="/explore" className="font-medium text-[--accent-primary] hover:underline">
+                browse all {countryCount} countries
+              </Link>
+            </p>
           </ScrollFadeIn>
-
-          <div className="mt-14 grid gap-6 sm:grid-cols-3">
-            {CTA_COUNTRIES.map((c, i) => (
-              <ScrollFadeIn key={c.iso3} delay={i * 0.1}>
-                <Link href={`/report/${c.iso3}`} className="card-hover block rounded-2xl border border-[--border-card] bg-white p-6 text-left transition-all hover:border-[--accent-primary]">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{iso3ToFlag(c.iso3)}</span>
-                    <div className="flex-1">
-                      <p className="font-bold text-[--text-primary]">{c.name}</p>
-                      <p className="text-xs text-[--text-muted]">{c.cls}</p>
-                    </div>
-                    <span className="rounded-lg px-3 py-1.5 text-xl font-bold" style={{ backgroundColor: `${GRADE_COLORS[c.grade]}15`, color: GRADE_COLORS[c.grade] }}>
-                      {c.grade}
-                    </span>
-                  </div>
-                  <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                    <div className="h-full rounded-full" style={{ width: `${c.score}%`, backgroundColor: GRADE_COLORS[c.grade] }} />
-                  </div>
-                  <p className="mt-2 text-right font-mono text-sm font-bold" style={{ color: GRADE_COLORS[c.grade] }}>{c.score}</p>
-                </Link>
-              </ScrollFadeIn>
-            ))}
-          </div>
         </div>
       </section>
     </div>

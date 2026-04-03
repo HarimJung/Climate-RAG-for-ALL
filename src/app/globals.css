@@ -49,11 +49,12 @@ body {
 
 /* Card hover lift */
 .card-hover {
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
 .card-hover:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
   transform: translateY(-2px);
+  border-color: #D0D0DA;
 }
 
 /* Glow effects */
@@ -90,7 +91,9 @@ body {
 
 /* Hero gradient background */
 .hero-gradient {
-  background: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(0, 102, 255, 0.04) 0%, transparent 70%),
+    linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
 }
 
 /* Float animation */

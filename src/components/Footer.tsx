@@ -15,8 +15,9 @@ const FOOTER_LINKS = {
   Resources: [
     { href: '/methodology', label: 'Methodology' },
     { href: '/about', label: 'About' },
-    { href: '/learn', label: 'Learn' },
+    { href: '/insights', label: 'Insights' },
     { href: '/guides', label: 'Guides' },
+    { href: '/library', label: 'Library' },
   ],
   'Data Partners': [
     { href: 'https://data.worldbank.org', label: 'World Bank', external: true },
