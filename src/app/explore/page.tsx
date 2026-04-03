@@ -79,14 +79,36 @@ export default async function ExplorePage() {
   const countries = await fetchAllCountries();
   const withData = countries.filter(c => c.co2 != null || c.renewable != null || c.climateClass != null).length;
 
+  const changers = countries.filter(c => c.climateClass === 'Changer').length;
+  const starters = countries.filter(c => c.climateClass === 'Starter').length;
+  const talkers  = countries.filter(c => c.climateClass === 'Talker').length;
+
   return (
-    <div className="bg-[--bg-primary] px-4 py-12">
+    <div className="bg-[--bg-primary] px-4 pt-10 pb-16">
       <div className="mx-auto max-w-7xl">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">Explore Countries</h1>
-          <p className="mt-2 text-lg text-[--text-secondary]">
-            {withData > 0 ? `${withData}` : '200'}+ countries tracked across climate action, emissions, and renewable energy
+          <h1 className="text-3xl font-bold tracking-tight text-[--text-primary] sm:text-4xl">
+            Explore Countries
+          </h1>
+          <p className="mt-2 text-base text-[--text-secondary]">
+            {withData > 0 ? withData : '200'}+ countries graded on climate performance
           </p>
+          {/* Summary pills */}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              {changers} Changers
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              {starters} Starters
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+              {talkers} Talkers
+            </span>
+          </div>
         </div>
 
         <ExploreClient countries={countries} />

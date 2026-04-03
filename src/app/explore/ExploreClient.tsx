@@ -8,11 +8,11 @@ import type { CountryCard } from './page';
 type SortKey = 'co2-desc' | 'renewable-desc' | 'name-asc' | 'gdp-desc' | 'grade-desc';
 type FilterTab = 'all' | 'Changer' | 'Starter' | 'Talker';
 
-const CLASS_COLOR: Record<string, string> = { Changer: '#10B981', Starter: '#F59E0B', Talker: '#EF4444' };
+const CLASS_COLOR: Record<string, string> = { Changer: '#00A67E', Starter: '#F59E0B', Talker: '#E5484D' };
 const CLASS_BG:    Record<string, string> = { Changer: '#ECFDF5', Starter: '#FFFBEB', Talker: '#FEF2F2' };
 
 const GRADE_COLOR: Record<string, string> = {
-  'A+': '#10B981', 'A': '#10B981',
+  'A+': '#00A67E', 'A': '#00A67E',
   'B+': '#3B82F6', 'B': '#3B82F6',
   'C+': '#F59E0B', 'C': '#F59E0B',
   'D':  '#EF4444',
@@ -38,22 +38,66 @@ const CLASS_ACCENT_GRADIENT: Record<string, string> = {
 const PAGE_SIZE = 48;
 const MAX_COMPARE = 4;
 
+/* ── Sub-components ──────────────────────────────────────────────────────── */
+
 function ClassBadge({ cls }: { cls: string }) {
   return (
-    <span className="rounded-full px-2 py-0.5 text-xs font-semibold" style={{ background: CLASS_BG[cls], color: CLASS_COLOR[cls] }}>
+    <span
+      className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+      style={{ background: CLASS_BG[cls], color: CLASS_COLOR[cls] }}
+    >
       {cls}
     </span>
   );
 }
 
-function GradeBadge({ grade }: { grade: string }) {
+function GradeBadge({ grade, score }: { grade: string; score?: number }) {
+  const bg = GRADE_BG[grade] ?? '#F3F4F6';
+  const color = GRADE_COLOR[grade] ?? '#6B7280';
   return (
-    <span
-      className="rounded-lg px-2.5 py-1 text-sm font-bold shadow-sm"
-      style={{ background: GRADE_BG[grade] ?? '#F3F4F6', color: GRADE_COLOR[grade] ?? '#6B7280' }}
-    >
-      {grade}
-    </span>
+    <div className="flex items-center gap-1.5">
+      <span
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
+        style={{ background: bg, color }}
+      >
+        {grade}
+      </span>
+      {score != null && (
+        <span className="font-mono text-xs font-medium text-[--text-muted]">
+          {Math.round(score)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ScoreBar({ score }: { score: number }) {
+  const pct = Math.max(0, Math.min(100, score));
+  const color =
+    pct >= 80 ? '#00A67E' :
+    pct >= 60 ? '#3B82F6' :
+    pct >= 40 ? '#F59E0B' : '#EF4444';
+  return (
+    <div className="h-1 w-full rounded-full bg-gray-100">
+      <div
+        className="h-1 rounded-full transition-all duration-500"
+        style={{ width: `${pct}%`, backgroundColor: color }}
+      />
+    </div>
+  );
+}
+
+function MetricRow({ label, value, unit, color }: { label: string; value?: number | null; unit: string; color?: string }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-[11px] text-[--text-muted]">{label}</span>
+      <span
+        className="font-mono text-xs font-medium"
+        style={{ color: value != null ? (color ?? 'var(--text-primary)') : 'var(--text-muted)' }}
+      >
+        {value != null ? `${unit === '%' ? value.toFixed(0) : unit === '$' ? formatGdp(value) : value.toFixed(1)}${unit === '%' ? '%' : unit === '$' ? '' : ' t'}` : '\u2014'}
+      </span>
+    </div>
   );
 }
 
@@ -65,21 +109,24 @@ function formatGdp(v: number): string {
 
 function CardSkeleton() {
   return (
-    <div className="animate-pulse rounded-xl border border-[--border-card] bg-white p-4">
+    <div className="animate-pulse rounded-2xl border border-[--border-card] bg-white p-5">
       <div className="mb-3 flex justify-between">
-        <div className="h-5 w-12 rounded bg-gray-200" />
-        <div className="h-5 w-16 rounded-full bg-gray-200" />
+        <div className="h-6 w-16 rounded bg-gray-100" />
+        <div className="h-6 w-8 rounded-lg bg-gray-100" />
       </div>
-      <div className="h-4 w-32 rounded bg-gray-200" />
-      <div className="h-3 w-20 rounded bg-gray-100 mt-1" />
-      <div className="mt-3 space-y-1.5 border-t border-[--border-card] pt-3">
-        <div className="h-3 w-full rounded bg-gray-100" />
-        <div className="h-3 w-full rounded bg-gray-100" />
-        <div className="h-3 w-2/3 rounded bg-gray-100" />
+      <div className="h-4 w-28 rounded bg-gray-100" />
+      <div className="h-3 w-20 rounded bg-gray-50 mt-1" />
+      <div className="mt-3 h-1 w-full rounded bg-gray-50" />
+      <div className="mt-3 space-y-2 pt-2">
+        <div className="h-3 w-full rounded bg-gray-50" />
+        <div className="h-3 w-full rounded bg-gray-50" />
+        <div className="h-3 w-2/3 rounded bg-gray-50" />
       </div>
     </div>
   );
 }
+
+/* ── Main Component ──────────────────────────────────────────────────────── */
 
 export function ExploreClient({ countries }: { countries: CountryCard[] }) {
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
@@ -92,7 +139,6 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
   const [selected, setSelected]   = useState<string[]>([]);
 
   useEffect(() => { setMounted(true); }, []);
-
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeTab, region, incomeGroup, search, sort]);
 
   const regions = useMemo(() => {
@@ -155,11 +201,20 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
     });
   }
 
-  const tabs: { key: FilterTab; label: string; color?: string }[] = [
-    { key: 'all',     label: `All (${counts.all})` },
-    { key: 'Changer', label: `Changer (${counts.Changer})`, color: '#10B981' },
-    { key: 'Starter', label: `Starter (${counts.Starter})`, color: '#F59E0B' },
-    { key: 'Talker',  label: `Talker (${counts.Talker})`,   color: '#EF4444' },
+  const hasActiveFilters = activeTab !== 'all' || region !== 'all' || incomeGroup !== 'all' || search !== '';
+
+  function clearFilters() {
+    setActiveTab('all');
+    setRegion('all');
+    setIncomeGroup('all');
+    setSearch('');
+  }
+
+  const tabs: { key: FilterTab; label: string; count: number; color?: string }[] = [
+    { key: 'all',     label: 'All',     count: counts.all },
+    { key: 'Changer', label: 'Changer', count: counts.Changer, color: '#00A67E' },
+    { key: 'Starter', label: 'Starter', count: counts.Starter, color: '#F59E0B' },
+    { key: 'Talker',  label: 'Talker',  count: counts.Talker,  color: '#E5484D' },
   ];
 
   return (
@@ -176,22 +231,30 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className="rounded-full border px-4 py-2 text-sm font-medium transition-all"
+                className="inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-all"
                 style={{
                   borderColor:     active ? (tab.color ?? '#0066FF') : 'var(--border-card)',
-                  backgroundColor: active ? (tab.color ? `${tab.color}18` : '#0066FF18') : 'white',
+                  backgroundColor: active ? (tab.color ? `${tab.color}14` : '#0066FF14') : 'white',
                   color:           active ? (tab.color ?? '#0066FF') : 'var(--text-secondary)',
                 }}
               >
                 {tab.label}
+                <span
+                  className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none"
+                  style={{
+                    backgroundColor: active ? (tab.color ? `${tab.color}20` : '#0066FF20') : '#F3F4F6',
+                    color: active ? (tab.color ?? '#0066FF') : 'var(--text-muted)',
+                  }}
+                >
+                  {tab.count}
+                </span>
               </button>
             );
           })}
         </div>
 
-        {/* Search + Region + Income Group + Sort row */}
+        {/* Search + dropdowns row */}
         <div className="flex flex-wrap gap-2 sm:gap-3">
-          {/* Search */}
           <div className="relative flex-1 min-w-[200px]">
             <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[--text-muted]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -200,52 +263,77 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search countries…"
-              className="w-full rounded-lg border border-[--border-card] bg-white py-2 pl-9 pr-4 text-sm text-[--text-primary] placeholder-[--text-muted] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]"
+              placeholder="Search by name or ISO code..."
+              className="w-full rounded-xl border border-[--border-card] bg-white py-2.5 pl-9 pr-4 text-sm text-[--text-primary] placeholder-[--text-muted] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]/30 focus:border-[--accent-primary]"
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[--text-muted] hover:text-[--text-primary]"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
 
-          {/* Region dropdown */}
           <select
             value={region}
             onChange={e => setRegion(e.target.value)}
-            className="rounded-lg border border-[--border-card] bg-white px-3 py-2 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]"
+            className="rounded-xl border border-[--border-card] bg-white px-3 py-2.5 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]/30 focus:border-[--accent-primary]"
           >
             {regions.map(r => (
               <option key={r} value={r}>{r === 'all' ? 'All Regions' : r}</option>
             ))}
           </select>
 
-          {/* Income Group dropdown */}
           <select
             value={incomeGroup}
             onChange={e => setIncomeGroup(e.target.value)}
-            className="rounded-lg border border-[--border-card] bg-white px-3 py-2 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]"
+            className="rounded-xl border border-[--border-card] bg-white px-3 py-2.5 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]/30 focus:border-[--accent-primary]"
           >
             {incomeGroups.map(ig => (
               <option key={ig} value={ig}>{ig === 'all' ? 'All Income Groups' : ig}</option>
             ))}
           </select>
 
-          {/* Sort */}
           <select
             value={sort}
             onChange={e => setSort(e.target.value as SortKey)}
-            className="rounded-lg border border-[--border-card] bg-white px-3 py-2 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]"
+            className="rounded-xl border border-[--border-card] bg-white px-3 py-2.5 text-sm text-[--text-primary] focus:outline-none focus:ring-2 focus:ring-[--accent-primary]/30 focus:border-[--accent-primary]"
           >
-            <option value="name-asc">Name (A → Z)</option>
-            <option value="grade-desc">Report Card Grade (high → low)</option>
-            <option value="co2-desc">CO₂ per capita (high → low)</option>
-            <option value="renewable-desc">Renewable % (high → low)</option>
-            <option value="gdp-desc">GDP per capita (high → low)</option>
+            <option value="name-asc">Name (A &rarr; Z)</option>
+            <option value="grade-desc">Grade (high &rarr; low)</option>
+            <option value="co2-desc">CO&#8322; per capita (high &rarr; low)</option>
+            <option value="renewable-desc">Renewable % (high &rarr; low)</option>
+            <option value="gdp-desc">GDP per capita (high &rarr; low)</option>
           </select>
         </div>
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-[--text-muted]">
-        Showing <strong className="text-[--text-primary]">{Math.min(visibleCount, filtered.length)}</strong> of <strong className="text-[--text-primary]">{filtered.length}</strong> {filtered.length === 1 ? 'country' : 'countries'}
-      </p>
+      {/* Results summary */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-[--text-muted]">
+          <strong className="text-[--text-primary]">{Math.min(visibleCount, filtered.length)}</strong> of{' '}
+          <strong className="text-[--text-primary]">{filtered.length}</strong> {filtered.length === 1 ? 'country' : 'countries'}
+        </p>
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="text-xs font-medium text-[--accent-primary] hover:underline"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
+      {/* Compare hint */}
+      {selected.length === 0 && (
+        <p className="text-xs text-[--text-muted] -mt-2">
+          Select up to 4 countries to compare side by side
+        </p>
+      )}
 
       {/* ── Country grid ─────────────────────────────────────────────────── */}
       {!mounted ? (
@@ -253,8 +341,23 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
           {Array.from({ length: 12 }).map((_, i) => <CardSkeleton key={i} />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex h-48 items-center justify-center rounded-xl border border-[--border-card] bg-[--bg-section] text-sm text-[--text-muted]">
-          No countries match your search
+        /* ── Empty state ──────────────────────────────────────────────── */
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[--border-card] bg-[--bg-section] py-16 px-6">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <svg className="h-6 w-6 text-[--text-muted]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-[--text-primary]">No countries found</p>
+          <p className="mt-1 text-xs text-[--text-muted]">
+            Try adjusting your search or filters
+          </p>
+          <button
+            onClick={clearFilters}
+            className="mt-4 rounded-lg bg-[--accent-primary] px-4 py-2 text-xs font-medium text-white transition-colors hover:opacity-90"
+          >
+            Reset all filters
+          </button>
         </div>
       ) : (
         <>
@@ -264,69 +367,74 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
               const accentGradient = c.climateClass ? CLASS_ACCENT_GRADIENT[c.climateClass] : 'from-blue-400 to-blue-600';
               const isSelected = selected.includes(c.iso3);
               return (
-                <div key={c.iso3} className="relative">
+                <div key={c.iso3} className="relative group/card">
                   {/* Checkbox */}
                   <button
                     onClick={() => toggleSelect(c.iso3)}
-                    className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded border transition-colors"
+                    className="absolute right-3 top-3 z-10 flex h-5 w-5 items-center justify-center rounded border-[1.5px] transition-all"
                     style={{
                       borderColor: isSelected ? '#0066FF' : '#D1D5DB',
-                      backgroundColor: isSelected ? '#0066FF' : 'white',
+                      backgroundColor: isSelected ? '#0066FF' : 'rgba(255,255,255,0.9)',
+                      opacity: isSelected ? 1 : undefined,
                     }}
                     aria-label={`Select ${c.name} for comparison`}
                   >
-                    {isSelected && (
+                    {isSelected ? (
                       <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
+                    ) : (
+                      <span className="opacity-0 group-hover/card:opacity-100 transition-opacity text-[8px] text-gray-400"></span>
                     )}
                   </button>
 
                   <Link
                     href={`/report/${c.iso3}`}
-                    className="group relative flex flex-col rounded-xl border bg-white p-4 transition-all hover:border-[--accent-primary] hover:shadow-lg"
+                    className="group relative flex flex-col rounded-2xl border bg-white transition-all hover:shadow-lg"
                     style={{
                       borderColor: isSelected ? '#0066FF' : 'var(--border-card)',
-                      boxShadow: 'var(--shadow-card)',
+                      boxShadow: isSelected ? '0 0 0 1px #0066FF' : 'var(--shadow-card)',
                     }}
                   >
-                    {/* Accent line (left edge) */}
-                    <div className={`absolute left-0 top-0 h-full w-1 rounded-l-xl bg-gradient-to-b ${accentGradient}`} />
+                    {/* Accent bar (top) */}
+                    <div className={`h-1 w-full rounded-t-2xl bg-gradient-to-r ${accentGradient}`} />
 
-                    {/* Header row */}
-                    <div className="mb-2 ml-2 flex items-center justify-between gap-2 pr-5">
-                      <span className="text-2xl leading-none">{flag}</span>
-                      <div className="flex items-center gap-1.5">
-                        {c.grade && <GradeBadge grade={c.grade} />}
-                        {c.climateClass && <ClassBadge cls={c.climateClass} />}
+                    <div className="flex flex-col p-4 pt-3">
+                      {/* Header: flag + name + grade */}
+                      <div className="flex items-start justify-between gap-2 pr-4">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="text-2xl leading-none shrink-0">{flag}</span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold leading-tight text-[--text-primary] group-hover:text-[--accent-primary] truncate">
+                              {c.name}
+                            </p>
+                            {c.region && (
+                              <p className="mt-0.5 text-[11px] text-[--text-muted] truncate">{c.region}</p>
+                            )}
+                          </div>
+                        </div>
+                        {c.grade && <GradeBadge grade={c.grade} score={c.totalScore} />}
                       </div>
-                    </div>
 
-                    {/* Name + region */}
-                    <p className="ml-2 text-sm font-semibold leading-tight text-[--text-primary] group-hover:text-[--accent-primary]">
-                      {c.name}
-                    </p>
-                    {c.region && <p className="ml-2 mt-0.5 text-xs text-[--text-muted] truncate">{c.region}</p>}
+                      {/* Score bar */}
+                      {c.totalScore != null && (
+                        <div className="mt-3">
+                          <ScoreBar score={c.totalScore} />
+                        </div>
+                      )}
 
-                    {/* Metrics */}
-                    <div className="ml-2 mt-3 space-y-1.5 border-t border-[--border-card] pt-3">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-[--text-muted]">CO₂/cap</span>
-                        <span className="font-mono font-medium text-[--text-primary]">
-                          {c.co2 != null ? `${c.co2.toFixed(1)} t` : '—'}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-[--text-muted]">Renewable</span>
-                        <span className="font-mono font-medium" style={{ color: c.renewable != null ? '#00A67E' : 'var(--text-muted)' }}>
-                          {c.renewable != null ? `${c.renewable.toFixed(0)}%` : '—'}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-[--text-muted]">GDP/cap</span>
-                        <span className="font-mono font-medium text-[--text-primary]">
-                          {c.gdp != null ? formatGdp(c.gdp) : '—'}
-                        </span>
+                      {/* Class badge */}
+                      {c.climateClass && (
+                        <div className="mt-2.5">
+                          <ClassBadge cls={c.climateClass} />
+                        </div>
+                      )}
+
+                      {/* Metrics */}
+                      <div className="mt-3 space-y-1.5 border-t border-[--border-card] pt-3">
+                        <MetricRow label="CO\u2082/capita" value={c.co2} unit="t" />
+                        <MetricRow label="Renewable" value={c.renewable} unit="%" color="#00A67E" />
+                        <MetricRow label="GDP/capita" value={c.gdp} unit="$" />
                       </div>
                     </div>
                   </Link>
@@ -337,12 +445,12 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
 
           {/* Load More */}
           {hasMore && (
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-center pt-4">
               <button
                 onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
-                className="rounded-lg border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+                className="rounded-xl border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary] hover:shadow-sm"
               >
-                Load more ({filtered.length - visibleCount} remaining)
+                Show more ({filtered.length - visibleCount} remaining)
               </button>
             </div>
           )}
@@ -350,47 +458,71 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
       )}
 
       {/* Footer */}
-      <p className="text-center text-sm text-[--text-muted]">
-        {counts.all} countries tracked &mdash; Source: World Bank, Ember, ND-GAIN, OWID, Climate TRACE
+      <p className="text-center text-xs text-[--text-muted] pt-4">
+        Source: World Bank, Ember, ND-GAIN, OWID, Climate TRACE
       </p>
 
       {/* Bottom CTA */}
-      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+      <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Link
           href="/posters"
-          className="rounded-lg border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
+          className="rounded-xl border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]"
         >
           Download Posters
         </Link>
         <Link
           href="/report"
-          className="rounded-lg bg-[#0066FF] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
+          className="rounded-xl bg-[#0066FF] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
         >
           View Report Cards
         </Link>
       </div>
 
       {/* ── Sticky Compare Bar ─────────────────────────────────────────── */}
-      {selected.length >= 2 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[--border-card] bg-white px-4 py-3 shadow-lg">
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[--text-primary]">
-                {selected.length} countries selected
-              </span>
+      {selected.length >= 1 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[--border-card] bg-white/95 backdrop-blur-sm px-4 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {/* Selected country flags */}
+              <div className="flex -space-x-1">
+                {selected.map(iso3 => (
+                  <span
+                    key={iso3}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-gray-50 text-sm"
+                  >
+                    {iso3ToFlag(iso3)}
+                  </span>
+                ))}
+              </div>
+              <div>
+                <span className="text-sm font-medium text-[--text-primary]">
+                  {selected.length} {selected.length === 1 ? 'country' : 'countries'} selected
+                </span>
+                {selected.length < 2 && (
+                  <span className="ml-1.5 text-xs text-[--text-muted]">
+                    (select {2 - selected.length} more to compare)
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => setSelected([])}
-                className="text-xs text-[--text-muted] underline hover:text-[--text-primary]"
+                className="text-xs text-[--text-muted] hover:text-[--text-primary] underline-offset-2 hover:underline"
               >
                 Clear
               </button>
             </div>
-            <Link
-              href={`/compare?countries=${selected.join(',')}`}
-              className="rounded-lg bg-[#0066FF] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
-            >
-              Compare {selected.length} countries
-            </Link>
+            {selected.length >= 2 ? (
+              <Link
+                href={`/compare?countries=${selected.join(',')}`}
+                className="rounded-xl bg-[#0066FF] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
+              >
+                Compare {selected.length} countries
+              </Link>
+            ) : (
+              <span className="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-medium text-[--text-muted] cursor-not-allowed">
+                Compare
+              </span>
+            )}
           </div>
         </div>
       )}

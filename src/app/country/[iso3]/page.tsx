@@ -335,6 +335,38 @@ export default async function CountryPage({ params }: Props) {
   const decoupling = latestByCode['DERIVED.DECOUPLING'];
   const pm25 = latestByCode['EN.ATM.PM25.MC.M3'];
 
+  // Score snapshot
+  const reportTotal = latestByCode['REPORT.TOTAL'];
+  const reportGradeRaw = latestByCode['REPORT.GRADE'];
+  const grade = reportGradeRaw ? GRADE_LABELS_COUNTRY[Math.round(reportGradeRaw.value)] : null;
+  const gradeColor = grade ? GRADE_COLOR_COUNTRY[grade] : '#6B7280';
+  const gradeBg = grade ? GRADE_BG_COUNTRY[grade] : '#F9FAFB';
+  const climateClassRaw = latestByCode['DERIVED.CLIMATE_CLASS'];
+  const climateClass = climateClassRaw
+    ? (climateClassRaw.value === 1 ? 'Changer' : climateClassRaw.value === 2 ? 'Starter' : 'Talker')
+    : null;
+  const classColor = climateClass === 'Changer' ? '#00A67E' : climateClass === 'Starter' ? '#F59E0B' : '#E5484D';
+
+  // Auto-generated insights (max 3)
+  const insights: { text: string; color: string }[] = [];
+  if (co2) {
+    const level = co2.value > 10 ? 'high' : co2.value > 5 ? 'above average' : co2.value > 2 ? 'moderate' : 'low';
+    insights.push({ text: `CO\u2082 at ${co2.value.toFixed(1)}t per capita \u2014 ${level} by global standards`, color: co2.value > 5 ? '#E5484D' : '#00A67E' });
+  }
+  if (renewable) {
+    let txt = `Renewable electricity at ${renewable.value.toFixed(1)}%`;
+    if (renewableChange != null) {
+      txt += renewableChange > 0
+        ? `, up ${renewableChange.toFixed(1)}pp over 5 years`
+        : `, down ${Math.abs(renewableChange).toFixed(1)}pp over 5 years`;
+    }
+    insights.push({ text: txt, color: renewable.value > 30 ? '#00A67E' : '#F59E0B' });
+  }
+  if (ndVuln) {
+    const vb = getVulnerabilityBadge(ndVuln.value);
+    insights.push({ text: `Climate vulnerability: ${vb.label.toLowerCase()} (ND-GAIN ${ndVuln.value.toFixed(3)})`, color: vb.dotColor });
+  }
+
   const formatGdpTotal = (pcap: number, pop: number) => {
     const total = pcap * pop;
     if (total >= 1e12) return `$${(total / 1e12).toFixed(2)}T`;
@@ -352,91 +384,140 @@ export default async function CountryPage({ params }: Props) {
         })}
       />
 
-      {/* Header */}
-      <section className="border-b border-[--border-card] bg-white px-4 py-10 sm:py-14">
+      {/* Context bar */}
+      <nav className="border-b border-[--border-card] bg-[--bg-section] px-4 py-2.5">
+        <div className="mx-auto flex max-w-[1200px] items-center gap-1.5 text-xs text-[--text-muted]">
+          <Link href="/explore" className="transition-colors hover:text-[--accent-primary]">Explore</Link>
+          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
+          <span>{country.sub_region || country.region}</span>
+          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
+          <span className="font-medium text-[--text-secondary]">{country.name}</span>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="border-b border-[--border-card] bg-white px-4 pt-8 pb-10 sm:pt-12 sm:pb-12">
         <div className="mx-auto max-w-[1200px]">
-          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center">
-            {country.flag_url && (
-              <Image
-                src={country.flag_url}
-                alt={`${country.name} flag`}
-                width={72}
-                height={54}
-                className="rounded-lg shadow"
-                unoptimized
-              />
-            )}
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-3xl font-semibold text-[--text-primary] sm:text-4xl">{country.name}</h1>
-                {(() => {
-                  const gradeRaw = latestByCode['REPORT.GRADE'];
-                  if (!gradeRaw) return null;
-                  const grade = GRADE_LABELS_COUNTRY[Math.round(gradeRaw.value)];
-                  if (!grade) return null;
-                  return (
-                    <Link
-                      href={`/report/${country.iso3}`}
-                      className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-sm font-bold transition-opacity hover:opacity-80"
-                      style={{
-                        borderColor: GRADE_COLOR_COUNTRY[grade],
-                        backgroundColor: GRADE_BG_COUNTRY[grade],
-                        color: GRADE_COLOR_COUNTRY[grade],
-                      }}
-                      title="View full Report Card"
-                    >
-                      Grade {grade}
-                    </Link>
-                  );
-                })()}
-                {vulnerability && (
-                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${vulnerability.bgColor} ${vulnerability.textColor}`}>
-                    <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: vulnerability.dotColor }} />
-                    {vulnerability.label}
-                  </span>
-                )}
-              </div>
-              <p className="mt-1 text-[--text-secondary]">
-                {country.sub_region || country.region}
-                {country.income_group && ` · ${country.income_group}`}
-                {country.population && ` · Pop. ${Number(country.population).toLocaleString()}`}
-              </p>
-              {vulnerability && (
-                <p className="mt-1 text-xs text-[--text-muted]">
-                  ND-GAIN Vulnerability: {vulnerability.score.toFixed(3)} ({vulnerability.year})
-                </p>
+          {/* Identity + Score snapshot */}
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+            {/* Left: flag + name + meta */}
+            <div className="flex items-start gap-5">
+              {country.flag_url && (
+                <Image
+                  src={country.flag_url}
+                  alt={`${country.name} flag`}
+                  width={72}
+                  height={54}
+                  className="mt-1 rounded-lg shadow-sm"
+                  unoptimized
+                />
               )}
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight text-[--text-primary] sm:text-4xl">{country.name}</h1>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[--text-secondary]">
+                  <span>{country.sub_region || country.region}</span>
+                  {country.income_group && (
+                    <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium">{country.income_group}</span>
+                  )}
+                  {country.population && (
+                    <span className="text-[--text-muted]">
+                      {'Pop. '}
+                      {(() => {
+                        const n = Number(country.population);
+                        if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
+                        if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+                        if (n >= 1e3) return `${(n / 1e3).toFixed(0)}K`;
+                        return n.toLocaleString();
+                      })()}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
+
+            {/* Right: core score card */}
+            {grade && (
+              <Link
+                href={`/report/${country.iso3}`}
+                className="group flex items-center gap-5 rounded-2xl border border-[--border-card] bg-white px-6 py-5 transition-shadow hover:shadow-md"
+                style={{ boxShadow: 'var(--shadow-card)' }}
+              >
+                <div
+                  className="flex h-[72px] w-[72px] flex-shrink-0 items-center justify-center rounded-full border-[3px]"
+                  style={{ borderColor: gradeColor, backgroundColor: gradeBg }}
+                >
+                  <span className="font-mono text-2xl font-bold" style={{ color: gradeColor }}>{grade}</span>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-[--text-muted]">Climate Score</p>
+                  <p className="font-mono text-2xl font-bold text-[--text-primary]">
+                    {reportTotal ? Math.round(reportTotal.value) : '\u2014'}
+                    <span className="text-sm font-normal text-[--text-muted]"> / 100</span>
+                  </p>
+                  <div className="mt-1 flex items-center gap-2">
+                    {climateClass && (
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+                        style={{ backgroundColor: classColor }}
+                      >
+                        {climateClass}
+                      </span>
+                    )}
+                    {vulnerability && (
+                      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${vulnerability.bgColor} ${vulnerability.textColor}`}>
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: vulnerability.dotColor }} />
+                        {vulnerability.label}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <svg className="ml-1 h-4 w-4 flex-shrink-0 text-[--text-muted] opacity-0 transition-opacity group-hover:opacity-100" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+              </Link>
+            )}
           </div>
 
-          {/* 4 key stat cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Key metrics */}
+          <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard
-              title="CO2 per capita"
-              value={co2 ? co2.value.toFixed(2) : '—'}
-              unit="t CO2e"
+              title="CO\u2082 per capita"
+              value={co2 ? co2.value.toFixed(1) : '\u2014'}
+              unit="t CO\u2082e"
               source={co2 ? `${co2.source} (${co2.year})` : undefined}
             />
             <StatCard
               title="GDP"
-              value={gdp && country.population ? formatGdpTotal(gdp.value, Number(country.population)) : (gdp ? `$${gdp.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '—')}
+              value={gdp && country.population ? formatGdpTotal(gdp.value, Number(country.population)) : (gdp ? `$${gdp.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '\u2014')}
               unit={gdp && country.population ? `($${(gdp.value / 1000).toFixed(1)}k/capita)` : 'per capita'}
               source={gdp ? `World Bank (${gdp.year})` : undefined}
             />
             <StatCard
               title="Renewable electricity"
-              value={renewable ? renewable.value.toFixed(1) : '—'}
+              value={renewable ? renewable.value.toFixed(1) : '\u2014'}
               unit="%"
               trend={renewableChange != null ? { direction: renewableChange > 0 ? 'up' : 'down', label: `${renewableChange > 0 ? '+' : ''}${renewableChange.toFixed(1)}pp (5yr)` } : undefined}
               source={renewable ? `Ember (${renewable.year})` : undefined}
             />
             <StatCard
               title="Vulnerability"
-              value={ndVuln ? ndVuln.value.toFixed(3) : '—'}
+              value={ndVuln ? ndVuln.value.toFixed(3) : '\u2014'}
               unit="ND-GAIN index"
               source={ndVuln ? `ND-GAIN (${ndVuln.year})` : undefined}
             />
           </div>
+
+          {/* Top 3 insights */}
+          {insights.length > 0 && (
+            <div className="mt-6 rounded-xl border border-[--border-card] bg-[--bg-section] px-5 py-4">
+              <ul className="space-y-2.5">
+                {insights.map((ins, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-[--text-secondary]">
+                    <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: ins.color }} />
+                    <span>{ins.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 

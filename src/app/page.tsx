@@ -6,6 +6,7 @@ import { HeroSearch } from '@/components/HeroSearch';
 import { HomeMap } from '@/components/HomeMap';
 import { iso3ToFlag } from '@/lib/iso3ToFlag';
 import { ScrollFadeIn } from '@/components/climate/scroll-fade-in';
+import { WhoItsFor, WhyTrustThis, HowItWorks } from '@/components/HomePhase2';
 
 export const metadata = createMetaTags({
   title: 'VisualClimate — Climate Accountability Through Data',
@@ -331,8 +332,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 5. CTA ───────────────────────────────────────────────────────── */}
-      <section className="px-6 py-20">
+      {/* ── Phase 2 sections ────────────────────────────────────────────── */}
+      <WhoItsFor />
+      <WhyTrustThis />
+      <HowItWorks />
+
+      {/* ── 8. FINAL CTA ─────────────────────────────────────────────────── */}
+      <section className="border-t border-[--border-card] bg-[--bg-section] px-6 py-20">
         <div className="mx-auto max-w-2xl text-center">
           <ScrollFadeIn>
             <h2 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">
