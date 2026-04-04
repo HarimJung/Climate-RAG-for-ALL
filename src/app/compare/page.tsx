@@ -164,22 +164,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     ]);
 
     return (
-        <div className="min-h-screen px-4 py-8">
-            <div className="mx-auto max-w-7xl">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">
-                        Compare Countries
-                    </h1>
-                    <p className="mt-2 text-lg text-[--text-secondary]">
-                        Side-by-side climate indicator comparison across countries
-                    </p>
-                </div>
-                <CompareClient
-                    initialData={compareData}
-                    allCountries={allCountries}
-                    selectedIso3={iso3List}
-                />
-            </div>
-        </div>
+        <CompareClient
+            initialData={compareData}
+            allCountries={allCountries}
+            selectedIso3={iso3List}
+        />
     );
 }

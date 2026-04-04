@@ -26,38 +26,66 @@ const GUIDES = [
 
 export default function GuidesPage() {
     return (
-        <div className="px-4 py-12">
-            <div className="mx-auto max-w-4xl">
-                <h1 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">Climate Guides</h1>
-                <p className="mt-4 text-lg text-[--text-secondary]">
-                    Expert guides on climate data, sustainability reporting, and ESG frameworks for professionals.
-                </p>
+        <div className="px-6 py-20">
+            <div className="mx-auto max-w-[1100px]">
 
-                <div className="mt-12 space-y-6">
+                {/* Header */}
+                <div className="mb-14">
+                    <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[--border-card] bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-secondary]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[--accent-primary]" />
+                        Guides
+                    </p>
+                    <h1 className="text-[2rem] font-extrabold leading-tight tracking-tight text-[--text-primary] sm:text-4xl">
+                        Climate Guides
+                    </h1>
+                    <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-[--text-secondary]">
+                        Expert guides on climate data, sustainability reporting, and ESG frameworks for professionals.
+                    </p>
+                </div>
+
+                {/* Guide cards */}
+                <div className="space-y-4">
                     {GUIDES.map((guide) => (
                         <Link
                             key={guide.slug}
                             href={`/guides/${guide.slug}`}
-                            className="group block rounded-xl border border-[--border-card] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
+                            className="card-hover group block rounded-2xl border border-[--border-card] bg-white p-6"
                             style={{ boxShadow: 'var(--shadow-card)' }}
                         >
                             <div className="flex items-center gap-3">
-                                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-[--accent-primary]">
+                                <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-[--accent-primary]">
                                     {guide.category}
                                 </span>
-                                <span className="text-sm text-[--text-muted]">{guide.readTime}</span>
+                                <span className="text-[12px] text-[--text-muted]">{guide.readTime}</span>
                             </div>
-                            <h2 className="mt-3 text-xl font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">{guide.title}</h2>
-                            <p className="mt-2 text-[--text-secondary]">{guide.description}</p>
-                            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-[--accent-primary]">
+                            <h2 className="mt-3 text-[17px] font-bold text-[--text-primary] transition-colors group-hover:text-[--accent-primary]">
+                                {guide.title}
+                            </h2>
+                            <p className="mt-2 text-[14px] leading-relaxed text-[--text-secondary]">{guide.description}</p>
+                            <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-semibold text-[--accent-primary]">
                                 Read guide
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                 </svg>
                             </span>
                         </Link>
                     ))}
                 </div>
+
+                {/* Bottom CTA */}
+                <section className="mt-14 rounded-2xl border border-[--border-card] bg-[--bg-section] p-8 text-center">
+                    <p className="text-lg font-bold text-[--text-primary]">See the data in action</p>
+                    <p className="mt-1.5 text-[14px] text-[--text-secondary]">Explore country report cards powered by the data sources described in these guides.</p>
+                    <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                        <Link href="/explore" className="rounded-lg bg-[--accent-primary] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0052CC]">
+                            Explore all countries
+                        </Link>
+                        <Link href="/methodology" className="rounded-lg border border-[--border-card] bg-white px-5 py-2.5 text-[13px] font-semibold text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]">
+                            Read methodology
+                        </Link>
+                    </div>
+                </section>
+
             </div>
         </div>
     );

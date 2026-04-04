@@ -2,17 +2,17 @@
 
 :root {
   --bg-primary: #FFFFFF;
-  --bg-section: #F8F9FA;
+  --bg-section: #F6F6F4;
   --bg-card: #FFFFFF;
-  --border-card: #E8E8ED;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
+  --border-card: #E5E5E0;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.05);
   --accent-primary: #0066FF;
   --accent-positive: #00A67E;
   --accent-negative: #E5484D;
   --accent-warning: #F59E0B;
-  --text-primary: #1A1A2E;
-  --text-secondary: #4A4A6A;
-  --text-muted: #8888A0;
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
   --chart-1: #0066FF;
   --chart-2: #00A67E;
   --chart-3: #F59E0B;
@@ -49,12 +49,12 @@ body {
 
 /* Card hover lift */
 .card-hover {
-  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
 }
 .card-hover:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
-  transform: translateY(-2px);
-  border-color: #D0D0DA;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+  border-color: #D1D1CC;
 }
 
 /* Glow effects */
@@ -83,7 +83,7 @@ body {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #0066FF 0%, #00A67E 100%);
+  background: linear-gradient(135deg, #0052CC 0%, #0066FF 50%, #3B82F6 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -92,8 +92,8 @@ body {
 /* Hero gradient background */
 .hero-gradient {
   background:
-    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(0, 102, 255, 0.04) 0%, transparent 70%),
-    linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0, 102, 255, 0.03) 0%, transparent 60%),
+    linear-gradient(180deg, #FAFAF8 0%, #FFFFFF 100%);
 }
 
 /* Float animation */

@@ -13,7 +13,6 @@ import { AirQualityPoster } from './renderers/AirQualityPoster';
 import { TransitionRacePoster, type RaceEntry } from './renderers/TransitionRacePoster';
 import { WorldScoreboardPoster } from './renderers/WorldScoreboardPoster';
 
-import { PosterHeroSection } from '@/components/posters/hero-section';
 import { BentoSection, type BentoPoster } from '@/components/posters/bento-section';
 import { Toolbar, type ViewMode, type FilterType } from '@/components/posters/toolbar';
 import { PosterExplorer, type PosterType, POSTER_DEFS } from '@/components/posters/poster-explorer';
@@ -64,6 +63,17 @@ const CATEGORIES: { value: string; label: string }[] = [
   { value: 'inequality',  label: 'Inequality' },
   { value: 'air',         label: 'Air Quality' },
 ];
+
+// ── Poster type descriptions ─────────────────────────────────────────────────
+
+const POSTER_INFO: Record<PosterType, { headline: string; description: string }> = {
+  scoreboard:  { headline: 'World Scoreboard',  description: 'Changer, Starter, or Talker classification for 200+ countries on a single map.' },
+  energy:      { headline: 'Energy Flow',       description: 'Renewable vs fossil electricity mix breakdown for any country.' },
+  gap:         { headline: 'Paris Gap',         description: 'CO\u2082 emissions trend before and after the 2015 Paris Agreement.' },
+  race:        { headline: 'Transition Race',   description: 'Renewable electricity share ranking across all tracked countries.' },
+  inequality:  { headline: 'Carbon Inequality', description: 'Per capita CO\u2082 comparison between two countries side by side.' },
+  air:         { headline: 'Air Quality',       description: 'PM2.5 air pollution levels compared against the WHO guideline of 5 \u00b5g/m\u00b3.' },
+};
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ── Main PostersClient ──────────────────────────────────────────────────────
@@ -122,7 +132,7 @@ export function PostersClient() {
 
   function renderPoster(type: PosterType) {
     if (loading && type !== 'scoreboard' && type !== 'race') {
-      return <div className="flex aspect-square items-center justify-center text-sm text-[#8888A0]">Loading&hellip;</div>;
+      return <div className="flex aspect-square items-center justify-center text-sm text-[--text-muted]">Loading&hellip;</div>;
     }
     switch (type) {
       case 'energy':     return <EnergyFlowPoster country={country} metrics={metrics} />;
@@ -180,6 +190,7 @@ export function PostersClient() {
   }
 
   const lightboxDef = lightbox ? POSTER_DEFS.find(d => d.id === lightbox) : null;
+  const lightboxInfo = lightbox ? POSTER_INFO[lightbox] : null;
 
   const filteredDefs = useMemo(() => {
     if (filter === 'all') return POSTER_DEFS;
@@ -251,8 +262,48 @@ export function PostersClient() {
   return (
     <LayoutGroup>
       <div className="min-h-screen bg-white">
-        <PosterHeroSection totalPosters={6} totalCountries={countriesList.length} />
+        {/* ── Hero ─────────────────────────────────────────────────────────── */}
+        <section className="hero-gradient px-6 pb-12 pt-28 sm:pt-32">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Data Posters</p>
+            <h1 className="mt-2 text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] text-[--text-primary] sm:text-[2.75rem] lg:text-[3.25rem]">
+              Data tells the story
+            </h1>
+            <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-[--text-secondary] sm:text-base">
+              6 poster types. {countriesList.length}+ countries. Download as PNG and share on LinkedIn.
+            </p>
 
+            {/* Mini poster type pills */}
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+              {POSTER_DEFS.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => { setFilter(p.id); document.getElementById('posters')?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[--border-card] bg-white px-3 py-1.5 text-[12px] font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: p.categoryColor }} />
+                  {p.title}
+                </button>
+              ))}
+            </div>
+
+            {/* Trust stats */}
+            <div className="mx-auto mt-8 grid max-w-sm grid-cols-3 gap-4">
+              {[
+                { value: '6', label: 'Poster types' },
+                { value: `${countriesList.length}+`, label: 'Countries' },
+                { value: '1080px', label: 'PNG output' },
+              ].map(stat => (
+                <div key={stat.label} className="text-center">
+                  <p className="font-mono text-xl font-bold tracking-[-0.02em] text-[--text-primary]">{stat.value}</p>
+                  <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-[--text-muted]">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Featured Bento ───────────────────────────────────────────────── */}
         <BentoSection
           posters={bentoPosters}
           totalTypes={6}
@@ -260,6 +311,42 @@ export function PostersClient() {
           onPosterClick={handlePosterClick}
         />
 
+        {/* ── What's included ──────────────────────────────────────────────── */}
+        <section className="border-y border-[--border-card] bg-[--bg-section] px-6 py-14">
+          <div className="mx-auto max-w-5xl">
+            <p className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Poster types</p>
+            <h2 className="mt-2 text-center text-xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-2xl">
+              Six perspectives on climate data
+            </h2>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {(Object.entries(POSTER_INFO) as [PosterType, { headline: string; description: string }][]).map(([type, info]) => {
+                const def = POSTER_DEFS.find(d => d.id === type);
+                return (
+                  <button
+                    key={type}
+                    onClick={() => { setFilter(type); document.getElementById('posters')?.scrollIntoView({ behavior: 'smooth' }); }}
+                    className="group flex flex-col rounded-xl border border-[--border-card] bg-white p-5 text-left transition-all hover:shadow-md hover:border-[--accent-primary]/30"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: def?.categoryColor }} />
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.08em]" style={{ color: def?.categoryColor }}>
+                        {def?.category}
+                      </span>
+                    </div>
+                    <h3 className="mt-2 text-[15px] font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">
+                      {info.headline}
+                    </h3>
+                    <p className="mt-1.5 text-[12px] leading-relaxed text-[--text-secondary]">
+                      {info.description}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Toolbar + Explorer ───────────────────────────────────────────── */}
         <Toolbar
           activeCategory={filter}
           onCategoryChange={setFilter}
@@ -286,22 +373,31 @@ export function PostersClient() {
           countryName={country.name}
         />
 
-        {/* Bottom CTA */}
-        <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-12">
+        {/* ── Bottom CTA ───────────────────────────────────────────────────── */}
+        <section className="border-t border-[--border-card] bg-[--bg-section] px-6 py-14">
           <div className="mx-auto max-w-xl text-center">
-            <p className="text-lg font-semibold text-[--text-primary]">Want the full story?</p>
-            <p className="mt-1 text-sm text-[--text-secondary]">View any country&#39;s report card with grades across 5 domains.</p>
-            <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Link href="/explore" className="rounded-lg bg-[--accent-primary] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Go deeper</p>
+            <h2 className="mt-2 text-xl font-bold tracking-[-0.02em] text-[--text-primary]">
+              Want the full story?
+            </h2>
+            <p className="mt-2 text-sm text-[--text-secondary]">
+              View any country&#39;s report card with grades across 5 scored domains.
+            </p>
+            <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Link href="/explore" className="rounded-xl bg-[--accent-primary] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]">
                 Explore all countries
               </Link>
-              <Link href="/report" className="rounded-lg border border-[--border-card] bg-white px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]">
+              <Link href="/report" className="rounded-xl border border-[--border-card] bg-white px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]">
                 View report cards
               </Link>
             </div>
+            <p className="mt-5 text-[10px] text-[--text-muted]">
+              visualclimate.org
+            </p>
           </div>
         </section>
 
+        {/* ── Lightbox ──────────────────────────────────────────────────────── */}
         <PosterLightbox
           open={lightbox !== null}
           onClose={() => setLightbox(null)}
@@ -310,6 +406,7 @@ export function PostersClient() {
           categoryLabel={lightboxDef?.category}
           categoryColor={lightboxDef?.categoryColor}
           bgColor={lightboxDef?.bgColor}
+          description={lightboxInfo?.description}
           stats={lightbox ? getLightboxStats(lightbox) : []}
           downloading={downloading === lightbox}
           onDownload={lightbox ? () => handleDownload(lightbox) : undefined}

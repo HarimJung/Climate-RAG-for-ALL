@@ -385,8 +385,8 @@ export default async function CountryPage({ params }: Props) {
       />
 
       {/* Context bar */}
-      <nav className="border-b border-[--border-card] bg-[--bg-section] px-4 py-2.5">
-        <div className="mx-auto flex max-w-[1200px] items-center gap-1.5 text-xs text-[--text-muted]">
+      <nav className="border-b border-[--border-card] bg-[--bg-section] px-4 py-2">
+        <div className="mx-auto flex max-w-[1200px] items-center gap-1.5 text-[11px] text-[--text-muted]">
           <Link href="/explore" className="transition-colors hover:text-[--accent-primary]">Explore</Link>
           <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>
           <span>{country.sub_region || country.region}</span>
@@ -396,32 +396,31 @@ export default async function CountryPage({ params }: Props) {
       </nav>
 
       {/* Hero */}
-      <section className="border-b border-[--border-card] bg-white px-4 pt-8 pb-10 sm:pt-12 sm:pb-12">
+      <section className="border-b border-[--border-card] bg-white px-4 pt-8 pb-8 sm:pt-10 sm:pb-10">
         <div className="mx-auto max-w-[1200px]">
           {/* Identity + Score snapshot */}
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             {/* Left: flag + name + meta */}
-            <div className="flex items-start gap-5">
+            <div className="flex items-start gap-4">
               {country.flag_url && (
                 <Image
                   src={country.flag_url}
                   alt={`${country.name} flag`}
-                  width={72}
-                  height={54}
-                  className="mt-1 rounded-lg shadow-sm"
+                  width={64}
+                  height={48}
+                  className="mt-0.5 rounded-lg shadow-sm"
                   unoptimized
                 />
               )}
               <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-[--text-primary] sm:text-4xl">{country.name}</h1>
-                <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[--text-secondary]">
+                <h1 className="text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">{country.name}</h1>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[13px] text-[--text-secondary]">
                   <span>{country.sub_region || country.region}</span>
                   {country.income_group && (
-                    <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium">{country.income_group}</span>
+                    <span className="rounded bg-[--bg-section] px-2 py-0.5 text-[11px] font-medium">{country.income_group}</span>
                   )}
                   {country.population && (
                     <span className="text-[--text-muted]">
-                      {'Pop. '}
                       {(() => {
                         const n = Number(country.population);
                         if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
@@ -439,32 +438,31 @@ export default async function CountryPage({ params }: Props) {
             {grade && (
               <Link
                 href={`/report/${country.iso3}`}
-                className="group flex items-center gap-5 rounded-2xl border border-[--border-card] bg-white px-6 py-5 transition-shadow hover:shadow-md"
-                style={{ boxShadow: 'var(--shadow-card)' }}
+                className="group flex items-center gap-4 rounded-xl border border-[--border-card] bg-white px-5 py-4 transition-shadow hover:shadow-md"
               >
                 <div
-                  className="flex h-[72px] w-[72px] flex-shrink-0 items-center justify-center rounded-full border-[3px]"
+                  className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border-2"
                   style={{ borderColor: gradeColor, backgroundColor: gradeBg }}
                 >
-                  <span className="font-mono text-2xl font-bold" style={{ color: gradeColor }}>{grade}</span>
+                  <span className="font-mono text-xl font-bold tracking-[-0.02em]" style={{ color: gradeColor }}>{grade}</span>
                 </div>
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-[--text-muted]">Climate Score</p>
-                  <p className="font-mono text-2xl font-bold text-[--text-primary]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[--text-muted]">Climate Score</p>
+                  <p className="font-mono text-xl font-bold tracking-[-0.02em] text-[--text-primary]">
                     {reportTotal ? Math.round(reportTotal.value) : '\u2014'}
-                    <span className="text-sm font-normal text-[--text-muted]"> / 100</span>
+                    <span className="text-[12px] font-normal text-[--text-muted]"> / 100</span>
                   </p>
-                  <div className="mt-1 flex items-center gap-2">
+                  <div className="mt-1 flex items-center gap-1.5">
                     {climateClass && (
                       <span
-                        className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+                        className="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold text-white"
                         style={{ backgroundColor: classColor }}
                       >
                         {climateClass}
                       </span>
                     )}
                     {vulnerability && (
-                      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${vulnerability.bgColor} ${vulnerability.textColor}`}>
+                      <span className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium ${vulnerability.bgColor} ${vulnerability.textColor}`}>
                         <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: vulnerability.dotColor }} />
                         {vulnerability.label}
                       </span>
@@ -477,7 +475,7 @@ export default async function CountryPage({ params }: Props) {
           </div>
 
           {/* Key metrics */}
-          <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard
               title="CO\u2082 per capita"
               value={co2 ? co2.value.toFixed(1) : '\u2014'}
@@ -507,11 +505,11 @@ export default async function CountryPage({ params }: Props) {
 
           {/* Top 3 insights */}
           {insights.length > 0 && (
-            <div className="mt-6 rounded-xl border border-[--border-card] bg-[--bg-section] px-5 py-4">
-              <ul className="space-y-2.5">
+            <div className="mt-5 rounded-xl border border-[--border-card] bg-[--bg-section] px-5 py-3.5">
+              <ul className="space-y-2">
                 {insights.map((ins, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-[--text-secondary]">
-                    <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: ins.color }} />
+                  <li key={i} className="flex items-start gap-2 text-[13px] text-[--text-secondary]">
+                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: ins.color }} />
                     <span>{ins.text}</span>
                   </li>
                 ))}
@@ -540,9 +538,9 @@ export default async function CountryPage({ params }: Props) {
       />
 
       {/* Data Sources (accordion by category) */}
-      <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-12">
+      <section className="border-t border-[--border-card] bg-[--bg-section] px-4 py-10">
         <div className="mx-auto max-w-[1200px]">
-          <h2 className="mb-6 text-xl font-semibold text-[--text-primary]">Data Sources</h2>
+          <h2 className="mb-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Data Sources</h2>
           {/* Derived Indicators Methodology */}
           <details className="group mb-4 rounded-xl border border-[--border-card] bg-white overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
             <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-semibold text-[--text-primary] hover:bg-gray-50">

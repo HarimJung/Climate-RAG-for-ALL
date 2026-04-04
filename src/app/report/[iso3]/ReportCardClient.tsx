@@ -61,25 +61,25 @@ function nextGrade(score: number) {
 // ── Score Ring ────────────────────────────────────────────────────────────────
 
 function ScoreRing({ score, grade }: { score: number; grade: string }) {
-  const r = 80;
+  const r = 76;
   const circ = 2 * Math.PI * r;
   const filled = circ * (score / 100);
   const color = scoreColor(score);
 
   return (
-    <div className="relative mx-auto h-[200px] w-[200px]">
+    <div className="relative mx-auto h-[180px] w-[180px]">
       <svg viewBox="0 0 200 200" className="h-full w-full -rotate-90">
-        <circle cx="100" cy="100" r={r} fill="none" stroke="#F1F5F9" strokeWidth="12" />
+        <circle cx="100" cy="100" r={r} fill="none" stroke="#F1F1EE" strokeWidth="8" />
         <motion.circle
-          cx="100" cy="100" r={r} fill="none" stroke={color} strokeWidth="12"
+          cx="100" cy="100" r={r} fill="none" stroke={color} strokeWidth="10"
           strokeLinecap="round" strokeDasharray={String(circ)}
           initial={{ strokeDashoffset: circ }}
           animate={{ strokeDashoffset: circ - filled }}
-          transition={{ duration: 1.4, ease: 'easeOut' }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="font-mono text-5xl font-black tracking-tight" style={{ color }}>
+        <span className="font-mono text-[3rem] font-bold tracking-[-0.04em]" style={{ color }}>
           {grade}
         </span>
       </div>
@@ -116,56 +116,56 @@ function DomainCard(
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: 0.15 + index * 0.07, duration: 0.4 }}
-      className="rounded-2xl border border-[#E8E8ED] bg-white p-5"
+      transition={{ delay: 0.12 + index * 0.06, duration: 0.35 }}
+      className="rounded-xl border border-[--border-card] bg-white p-4"
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg"
-            style={{ backgroundColor: `${dc}10` }}>
-            <Icon className="h-4 w-4" style={{ color: dc }} />
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg"
+            style={{ backgroundColor: `${dc}0D` }}>
+            <Icon className="h-3.5 w-3.5" style={{ color: dc }} />
           </div>
-          <span className="text-sm font-semibold text-[--text-primary]">{label}</span>
+          <span className="text-[13px] font-semibold text-[--text-primary]">{label}</span>
         </div>
-        <span className="rounded-md bg-slate-50 px-2 py-0.5 font-mono text-[10px] text-slate-400">
+        <span className="font-mono text-[10px] text-[--text-muted]">
           {weight}%
         </span>
       </div>
 
-      <div className="mt-4 flex items-baseline gap-1.5">
-        <span className="font-mono text-3xl font-bold"
+      <div className="mt-3 flex items-baseline gap-1">
+        <span className="font-mono text-2xl font-bold tracking-[-0.03em]"
           style={{ color, fontVariantNumeric: 'tabular-nums' }}>
           {score !== null ? score.toFixed(1) : '\u2014'}
         </span>
-        <span className="text-sm text-slate-400">/100</span>
+        <span className="text-[12px] text-[--text-muted]">/100</span>
       </div>
 
       {score !== null && (
-        <div className="mt-3">
-          <div className="relative h-2 overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-2.5">
+          <div className="relative h-1.5 overflow-hidden rounded-full bg-[--bg-section]">
             <motion.div
               className="absolute inset-y-0 left-0 rounded-full"
               style={{ backgroundColor: dc }}
               initial={{ width: 0 }}
               whileInView={{ width: `${score}%` }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 + index * 0.07 }}
+              transition={{ duration: 0.7, ease: 'easeOut', delay: 0.25 + index * 0.06 }}
             />
             {globalAvg !== null && (
               <div
-                className="absolute top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-slate-900/40"
+                className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 rounded-full bg-[--text-primary]/30"
                 style={{ left: `${Math.min(globalAvg, 100)}%` }}
                 title={`Global avg: ${globalAvg.toFixed(1)}`}
               />
             )}
           </div>
-          <div className="mt-1.5 flex items-center justify-between text-[11px]">
+          <div className="mt-1 flex items-center justify-between text-[10px]">
             <span className="font-medium" style={{ color }}>{perfLabel(score)}</span>
             {globalAvg !== null && (
-              <span className="text-slate-400">avg {globalAvg.toFixed(0)}</span>
+              <span className="text-[--text-muted]">avg {globalAvg.toFixed(0)}</span>
             )}
           </div>
         </div>
@@ -198,18 +198,18 @@ export function ReportCardClient(
     <div className="mx-auto max-w-[960px] px-6 pb-20">
 
       {/* ── Country Header ─────────────────────────────────────────────── */}
-      <section className="pb-2 pt-6">
+      <section className="pb-2 pt-8">
         <div className="flex items-center gap-3">
-          <span className="text-4xl leading-none">{iso3ToFlag(data.iso3)}</span>
+          <span className="text-3xl leading-none">{iso3ToFlag(data.iso3)}</span>
           <div>
-            <h1 className="text-2xl font-bold text-[--text-primary]">{data.name}</h1>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[--text-muted]">
+            <h1 className="text-xl font-bold tracking-[-0.01em] text-[--text-primary]">{data.name}</h1>
+            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-[--text-muted]">
               <span>{data.region}</span>
-              <span className="text-slate-300">&middot;</span>
+              <span>&middot;</span>
               <span className="font-mono">{data.iso3}</span>
               {peerContext?.incomeGroup && (
                 <>
-                  <span className="text-slate-300">&middot;</span>
+                  <span>&middot;</span>
                   <span>{peerContext.incomeGroup}</span>
                 </>
               )}
@@ -220,35 +220,35 @@ export function ReportCardClient(
 
       {/* ── Score Hero ─────────────────────────────────────────────────── */}
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mt-4 rounded-3xl border border-[#E8E8ED] bg-white p-8 text-center sm:p-10"
+        transition={{ duration: 0.45 }}
+        className="mt-4 rounded-2xl border border-[--border-card] bg-white p-8 text-center sm:p-10"
       >
         <ScoreRing score={data.total} grade={data.grade} />
 
-        <p className="mt-2 font-mono text-4xl font-bold text-[--text-primary]"
+        <p className="mt-3 font-mono text-[2rem] font-bold tracking-[-0.03em] text-[--text-primary]"
           style={{ fontVariantNumeric: 'tabular-nums' }}>
           {animScore.toFixed(1)}
-          <span className="text-lg font-normal text-[--text-muted]"> /100</span>
+          <span className="text-base font-normal text-[--text-muted]"> /100</span>
         </p>
 
-        <p className="mt-1 text-sm text-[--text-secondary]">
+        <p className="mt-0.5 text-[13px] text-[--text-secondary]">
           {GRADE_LABEL[data.grade] ?? 'N/A'}
         </p>
 
         {/* Badges */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           {pill && data.climateClass && (
             <span
-              className="rounded-full border px-3 py-1 text-xs font-semibold"
+              className="rounded-md border px-2.5 py-0.5 text-[11px] font-semibold"
               style={{ backgroundColor: pill.bg, color: pill.text, borderColor: pill.border }}
             >
               {data.climateClass}
             </span>
           )}
           {ng && (
-            <span className="rounded-full bg-slate-50 px-3 py-1 text-xs text-[--text-muted]">
+            <span className="rounded-md bg-[--bg-section] px-2.5 py-0.5 text-[11px] text-[--text-muted]">
               {Math.ceil(ng.min - data.total)} pts to {ng.g}
             </span>
           )}
@@ -256,16 +256,16 @@ export function ReportCardClient(
 
         {/* Peer context */}
         {peerContext && peerContext.globalRank > 0 && (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-[--text-secondary]">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[13px] text-[--text-secondary]">
             <span>
-              <span className="font-semibold text-[--text-primary]">
+              <span className="font-mono font-semibold text-[--text-primary]">
                 #{peerContext.globalRank}
               </span>{' '}
               of {peerContext.globalTotal} globally
             </span>
             {peerContext.incomeGroupRank != null && peerContext.incomeGroupTotal != null && (
               <span>
-                <span className="font-semibold text-[--text-primary]">
+                <span className="font-mono font-semibold text-[--text-primary]">
                   #{peerContext.incomeGroupRank}
                 </span>{' '}
                 of {peerContext.incomeGroupTotal} in {peerContext.incomeGroup}
@@ -277,7 +277,7 @@ export function ReportCardClient(
 
       {/* ── Domain Breakdown ───────────────────────────────────────────── */}
       <section className="mt-6">
-        <h2 className="mb-4 text-lg font-semibold text-[--text-primary]">
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[--text-muted]">
           Domain Breakdown
         </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -291,8 +291,8 @@ export function ReportCardClient(
       </section>
 
       {/* ── Insights ───────────────────────────────────────────────────── */}
-      <section className="mt-6 rounded-2xl border border-[#E8E8ED] bg-white p-6">
-        <h2 className="text-base font-semibold text-[--text-primary]">Key Insights</h2>
+      <section className="mt-5 rounded-xl border border-[--border-card] bg-white p-5">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[--text-muted]">Key Insights</h2>
         <div className="mt-4 space-y-3">
           {best && (
             <div className="flex items-start gap-3">
@@ -356,41 +356,41 @@ export function ReportCardClient(
 
       {/* ── CTA ────────────────────────────────────────────────────────── */}
       <motion.section
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.2, duration: 0.4 }}
-        className="mt-6"
+        transition={{ delay: 0.15, duration: 0.35 }}
+        className="mt-5"
       >
         <Link
           href={`/country/${data.iso3}`}
-          className="group flex items-center justify-between rounded-2xl border border-[#E8E8ED] bg-white p-6 transition-all hover:border-[--accent-primary] hover:shadow-md"
+          className="group flex items-center justify-between rounded-xl border border-[--border-card] bg-white p-5 transition-all hover:border-[--accent-primary] hover:shadow-sm"
         >
           <div>
-            <p className="text-lg font-semibold text-[--text-primary]">
+            <p className="text-[15px] font-semibold text-[--text-primary]">
               Explore {data.name}&apos;s Full Profile
             </p>
-            <p className="mt-0.5 text-sm text-[--text-muted]">
+            <p className="mt-0.5 text-[12px] text-[--text-muted]">
               9 sections &middot; 44+ indicators &middot; interactive charts
             </p>
           </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[--accent-primary] text-white transition-transform group-hover:translate-x-1">
-            <ArrowRight className="h-5 w-5" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[--accent-primary] text-white transition-transform group-hover:translate-x-0.5">
+            <ArrowRight className="h-4 w-4" />
           </div>
         </Link>
 
         <div className="mt-3 flex items-center justify-center gap-4">
           <Link href="/methodology"
-            className="flex items-center gap-1 text-sm text-[--text-muted] transition-colors hover:text-[--accent-primary]">
-            Methodology <ChevronRight className="h-3.5 w-3.5" />
+            className="flex items-center gap-0.5 text-[12px] text-[--text-muted] transition-colors hover:text-[--accent-primary]">
+            Methodology <ChevronRight className="h-3 w-3" />
           </Link>
           <Link href="/explore"
-            className="flex items-center gap-1 text-sm text-[--text-muted] transition-colors hover:text-[--accent-primary]">
-            All Countries <ChevronRight className="h-3.5 w-3.5" />
+            className="flex items-center gap-0.5 text-[12px] text-[--text-muted] transition-colors hover:text-[--accent-primary]">
+            All Countries <ChevronRight className="h-3 w-3" />
           </Link>
           <Link href="/report"
-            className="flex items-center gap-1 text-sm text-[--text-muted] transition-colors hover:text-[--accent-primary]">
-            All Report Cards <ChevronRight className="h-3.5 w-3.5" />
+            className="flex items-center gap-0.5 text-[12px] text-[--text-muted] transition-colors hover:text-[--accent-primary]">
+            All Report Cards <ChevronRight className="h-3 w-3" />
           </Link>
         </div>
       </motion.section>

@@ -12,23 +12,21 @@ const PERSONAS = [
 
 export function WhoItsFor() {
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-[1100px]">
+    <section className="px-6 py-16 sm:py-20">
+      <div className="mx-auto max-w-[1000px]">
         <ScrollFadeIn>
-          <h2 className="text-center text-3xl font-bold text-[--text-primary] sm:text-4xl">
-            Built for people who need the numbers.
+          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Who it&apos;s for</p>
+          <h2 className="mt-3 text-center text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
+            Built for people who need the numbers
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-lg text-[--text-secondary]">
-            Whether you&apos;re writing policy, teaching a class, or filing a disclosure.
-          </p>
         </ScrollFadeIn>
 
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {PERSONAS.map((persona, i) => (
-            <ScrollFadeIn key={persona.role} delay={i * 0.08}>
-              <div className="rounded-2xl border border-[--border-card] bg-white p-6">
-                <p className="text-sm font-bold text-[--accent-primary]">{persona.role}</p>
-                <p className="mt-2 text-sm leading-relaxed text-[--text-secondary]">{persona.action}</p>
+            <ScrollFadeIn key={persona.role} delay={i * 0.06}>
+              <div className="rounded-xl border-l-2 border-l-[--accent-primary] border border-[--border-card] bg-white px-5 py-5">
+                <p className="text-[13px] font-semibold text-[--text-primary]">{persona.role}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-[--text-secondary]">{persona.action}</p>
               </div>
             </ScrollFadeIn>
           ))}
@@ -41,41 +39,42 @@ export function WhoItsFor() {
 // ── Why Trust This ──────────────────────────────────────────────────────────
 
 const TRUST_STATS = [
-  { stat: '5', label: 'Independent data sources', detail: 'World Bank, Ember, ND-GAIN, OWID, Climate TRACE' },
+  { stat: '5', label: 'Independent sources', detail: 'World Bank, Ember, ND-GAIN, OWID, Climate TRACE' },
   { stat: '67', label: 'Indicators per country', detail: 'Emissions, energy, economy, resilience, responsibility' },
   { stat: '0', label: 'Subjective inputs', detail: 'No expert panels, no opinion weights, no pay-to-rank' },
 ];
 
 export function WhyTrustThis() {
   return (
-    <section className="border-y border-[--border-card] bg-[--bg-section] px-6 py-20">
-      <div className="mx-auto max-w-[1100px]">
+    <section className="border-y border-[--border-card] bg-[--bg-section] px-6 py-16 sm:py-20">
+      <div className="mx-auto max-w-[900px]">
         <ScrollFadeIn>
-          <h2 className="text-center text-3xl font-bold text-[--text-primary] sm:text-4xl">
+          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Trust</p>
+          <h2 className="mt-3 text-center text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
             No opinions. Just data.
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-lg text-[--text-secondary]">
+          <p className="mx-auto mt-3 max-w-md text-center text-[14px] text-[--text-secondary]">
             Every grade is computed from public datasets with an open methodology.
           </p>
         </ScrollFadeIn>
 
-        <div className="mx-auto mt-14 grid max-w-3xl gap-8 sm:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-2xl gap-10 sm:grid-cols-3">
           {TRUST_STATS.map((item, i) => (
-            <ScrollFadeIn key={item.label} delay={i * 0.1}>
+            <ScrollFadeIn key={item.label} delay={i * 0.08}>
               <div className="text-center">
-                <p className="font-mono text-4xl font-bold text-[--text-primary]">{item.stat}</p>
-                <p className="mt-2 text-sm font-semibold text-[--text-primary]">{item.label}</p>
-                <p className="mt-1 text-xs leading-relaxed text-[--text-muted]">{item.detail}</p>
+                <p className="font-mono text-[2.5rem] font-bold tracking-[-0.04em] text-[--text-primary]">{item.stat}</p>
+                <p className="mt-1 text-[13px] font-semibold text-[--text-primary]">{item.label}</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[--text-muted]">{item.detail}</p>
               </div>
             </ScrollFadeIn>
           ))}
         </div>
 
-        <ScrollFadeIn delay={0.3}>
+        <ScrollFadeIn delay={0.25}>
           <div className="mt-10 text-center">
-            <Link href="/methodology" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[--accent-primary] transition-colors hover:text-[#0052CC]">
+            <Link href="/methodology" className="inline-flex items-center gap-1 text-[13px] font-semibold text-[--accent-primary] transition-colors hover:text-[#0052CC]">
               Read the full methodology
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
             </Link>
           </div>
         </ScrollFadeIn>
@@ -94,26 +93,24 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-[1100px]">
+    <section className="px-6 py-16 sm:py-20">
+      <div className="mx-auto max-w-[900px]">
         <ScrollFadeIn>
-          <h2 className="text-center text-3xl font-bold text-[--text-primary] sm:text-4xl">
-            From raw data to a letter grade.
+          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Process</p>
+          <h2 className="mt-3 text-center text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
+            From raw data to a letter grade
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-lg text-[--text-secondary]">
-            Three steps, fully transparent. No black boxes.
-          </p>
         </ScrollFadeIn>
 
-        <div className="mx-auto mt-14 grid max-w-3xl gap-0 sm:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-2xl gap-0 sm:grid-cols-3">
           {STEPS.map((item, i) => (
-            <ScrollFadeIn key={item.step} delay={i * 0.1}>
-              <div className="relative px-6 py-8 text-center sm:py-0">
+            <ScrollFadeIn key={item.step} delay={i * 0.08}>
+              <div className="relative px-6 py-6 text-center sm:py-0">
                 {i > 0 && <div className="absolute left-0 top-0 hidden h-full w-px bg-[--border-card] sm:block" />}
-                {i > 0 && <div className="mx-auto mb-6 h-px w-12 bg-[--border-card] sm:hidden" />}
-                <p className="font-mono text-xs font-bold tracking-widest text-[--accent-primary]">{item.step}</p>
-                <p className="mt-2 text-lg font-bold text-[--text-primary]">{item.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-[--text-secondary]">{item.desc}</p>
+                {i > 0 && <div className="mx-auto mb-4 h-px w-10 bg-[--border-card] sm:hidden" />}
+                <p className="font-mono text-[11px] font-bold tracking-[0.1em] text-[--accent-primary]">{item.step}</p>
+                <p className="mt-2 text-base font-bold text-[--text-primary]">{item.title}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-[--text-secondary]">{item.desc}</p>
               </div>
             </ScrollFadeIn>
           ))}

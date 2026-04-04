@@ -109,42 +109,33 @@ export default async function HomePage() {
   return (
     <div>
       {/* ── 1. HERO ──────────────────────────────────────────────────────── */}
-      <section className="hero-gradient relative overflow-hidden px-6 pb-20 pt-32 sm:pt-40">
-        {/* Subtle radial glow for depth */}
-        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2" aria-hidden="true">
-          <div className="h-[500px] w-[800px] rounded-full bg-[--accent-primary] opacity-[0.03] blur-[100px]" />
-        </div>
-
+      <section className="hero-gradient relative overflow-hidden px-6 pb-16 pt-28 sm:pt-36">
         <div className="relative mx-auto max-w-3xl text-center">
           <ScrollFadeIn>
-            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[--border-card] bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-[--text-secondary] shadow-sm backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-[--accent-positive]" />
-              Open Climate Intelligence
-            </p>
-            <h1 className="text-[2.5rem] font-extrabold leading-[1.08] tracking-tight text-[--text-primary] sm:text-5xl lg:text-[3.75rem]">
+            <h1 className="text-[2.5rem] font-bold leading-[1.06] tracking-[-0.03em] text-[--text-primary] sm:text-[3.25rem] lg:text-[3.75rem]">
               Is your country keeping{' '}
               <br className="hidden sm:block" />
               its <span className="gradient-text">climate promises?</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-[--text-secondary]">
-              {countryCount} countries graded on real emissions, energy, and resilience data.
+            <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-[--text-secondary]">
+              {countryCount} countries graded on real emissions, energy, and resilience data. Open methodology. No opinions.
             </p>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={0.12}>
-            <div className="mt-10">
+            <div className="mt-9">
               <HeroSearch countries={countryList} />
             </div>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={0.2}>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
-              <span className="text-xs font-medium uppercase tracking-wider text-[--text-muted]">Popular:</span>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-[--text-muted]">Popular</span>
               {POPULAR_COUNTRIES.map(c => (
                 <Link
                   key={c.iso3}
                   href={`/report/${c.iso3}`}
-                  className="rounded-full border border-[--border-card] bg-white/80 px-3.5 py-1.5 text-sm font-medium text-[--text-secondary] shadow-sm backdrop-blur transition-all hover:border-[--accent-primary] hover:text-[--accent-primary] hover:shadow-md"
+                  className="rounded-lg border border-[--border-card] bg-white px-3 py-1.5 text-[13px] font-medium text-[--text-secondary] transition-colors hover:border-[--accent-primary] hover:text-[--accent-primary]"
                 >
                   {iso3ToFlag(c.iso3)} {c.name}
                 </Link>
@@ -155,26 +146,28 @@ export default async function HomePage() {
       </section>
 
       {/* ── 2. TRUST STATS ───────────────────────────────────────────────── */}
-      <section className="border-y border-[--border-card] bg-white px-6 py-10">
-        <div className="mx-auto max-w-[1100px]">
+      <section className="border-y border-[--border-card] bg-white px-6 py-8">
+        <div className="mx-auto max-w-[960px]">
           <ScrollFadeIn>
-            <div className="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-[--border-card]">
+            <div className="grid grid-cols-2 gap-y-5 sm:grid-cols-4">
               {[
-                { value: countryCount, label: 'Countries scored' },
+                { value: countryCount, label: 'Countries' },
                 { value: dataPointStr, label: 'Data points' },
                 { value: indicatorCount, label: 'Indicators' },
-                { value: '5', label: 'Trusted sources' },
+                { value: '5', label: 'Sources' },
               ].map(stat => (
                 <div key={stat.label} className="text-center">
-                  <p className="font-mono text-3xl font-bold tracking-tight text-[--text-primary]">{stat.value}</p>
-                  <p className="mt-1 text-sm text-[--text-muted]">{stat.label}</p>
+                  <p className="font-mono text-[2rem] font-bold tracking-[-0.03em] text-[--text-primary]">{stat.value}</p>
+                  <p className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.08em] text-[--text-muted]">{stat.label}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-              <span className="text-xs uppercase tracking-wider text-[--text-muted]">Powered by</span>
-              {['World Bank WDI', 'Ember', 'ND-GAIN', 'OWID / GCP', 'Climate TRACE'].map(src => (
-                <span key={src} className="text-sm font-medium text-[--text-secondary]">{src}</span>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-[--border-card] pt-4">
+              {['World Bank', 'Ember', 'ND-GAIN', 'OWID / GCP', 'Climate TRACE'].map((src, i) => (
+                <span key={src} className="flex items-center gap-2 text-[12px] text-[--text-muted]">
+                  {i > 0 && <span className="text-[--border-card]">&middot;</span>}
+                  {src}
+                </span>
               ))}
             </div>
           </ScrollFadeIn>
@@ -182,99 +175,84 @@ export default async function HomePage() {
       </section>
 
       {/* ── 3. WHAT YOU GET ──────────────────────────────────────────────── */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-[1100px]">
+      <section className="px-6 py-16 sm:py-20">
+        <div className="mx-auto max-w-[1000px]">
           <ScrollFadeIn>
-            <h2 className="text-center text-3xl font-bold text-[--text-primary] sm:text-4xl">
-              Three ways to understand climate action.
+            <p className="text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">The platform</p>
+            <h2 className="mt-3 text-center text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
+              Three ways to understand climate action
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-lg text-[--text-secondary]">
-              From a single letter grade to deep data analysis and shareable visuals.
-            </p>
           </ScrollFadeIn>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-3">
+          <div className="mt-12 grid gap-5 sm:grid-cols-3">
             {/* Report Card */}
             <ScrollFadeIn delay={0}>
-              <Link href="/report" className="card-hover group flex flex-col rounded-2xl border border-[--border-card] bg-white p-7">
-                <div className="mb-5 flex h-40 items-center justify-center rounded-xl bg-[--bg-section]">
+              <Link href="/report" className="card-hover group flex flex-col rounded-xl border border-[--border-card] bg-white p-6">
+                <div className="mb-5 flex h-36 items-center justify-center rounded-lg bg-[--bg-section]">
                   <div className="text-center">
-                    <span className="inline-block rounded-lg bg-amber-50 px-4 py-2 font-mono text-4xl font-extrabold text-amber-600">
+                    <span className="inline-block font-mono text-[2.5rem] font-bold tracking-[-0.04em] text-amber-600">
                       C+
                     </span>
-                    <div className="mt-3 flex items-center justify-center gap-1.5">
+                    <div className="mt-2 flex items-center justify-center gap-1">
                       {[72, 32, 46, 95, 91].map((v, i) => (
-                        <div key={i} className="h-1.5 w-8 overflow-hidden rounded-full bg-slate-100">
+                        <div key={i} className="h-1 w-7 overflow-hidden rounded-full bg-slate-100">
                           <div className="h-full rounded-full" style={{ width: `${v}%`, backgroundColor: ['#0066FF','#00A67E','#F59E0B','#10B981','#8B5CF6'][i] }} />
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-[--text-primary] group-hover:text-[--accent-primary]">Report Card</h3>
-                  <svg className="h-4 w-4 text-[--text-muted] transition-transform group-hover:translate-x-1 group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                </div>
-                <p className="mt-1.5 text-sm leading-relaxed text-[--text-secondary]">
-                  A single grade per country across 5 scored domains. Transparent methodology, no greenwashing.
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[--text-muted]">01</p>
+                <h3 className="mt-1 text-[15px] font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">Report Card</h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[--text-secondary]">
+                  One grade per country across 5 scored domains. Transparent methodology.
                 </p>
               </Link>
             </ScrollFadeIn>
 
             {/* Country Deep Dive */}
             <ScrollFadeIn delay={0.1}>
-              <Link href="/explore" className="card-hover group flex flex-col rounded-2xl border border-[--border-card] bg-white p-7">
-                <div className="mb-5 flex h-40 items-center justify-center rounded-xl bg-[--bg-section]">
-                  <svg viewBox="0 0 140 70" className="h-20 w-32">
-                    <polyline fill="none" stroke="#0066FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+              <Link href="/explore" className="card-hover group flex flex-col rounded-xl border border-[--border-card] bg-white p-6">
+                <div className="mb-5 flex h-36 items-center justify-center rounded-lg bg-[--bg-section]">
+                  <svg viewBox="0 0 140 70" className="h-16 w-28">
+                    <polyline fill="none" stroke="#0066FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                       points="10,55 25,50 40,52 55,40 70,35 85,28 100,22 120,14 135,10" />
-                    <polyline fill="none" stroke="#00A67E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5 3"
+                    <polyline fill="none" stroke="#00A67E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 3"
                       points="10,58 25,55 40,50 55,42 70,38 85,40 100,44 120,48 135,50" />
-                    <line x1="10" y1="62" x2="135" y2="62" stroke="#E8E8ED" strokeWidth="1" />
-                    {[10,40,70,100,135].map(x => (
-                      <line key={x} x1={x} y1="62" x2={x} y2="64" stroke="#8888A0" strokeWidth="0.8" />
-                    ))}
+                    <line x1="10" y1="64" x2="135" y2="64" stroke="#E5E5E0" strokeWidth="0.5" />
                   </svg>
                 </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-[--text-primary] group-hover:text-[--accent-primary]">Country Deep Dive</h3>
-                  <svg className="h-4 w-4 text-[--text-muted] transition-transform group-hover:translate-x-1 group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                </div>
-                <p className="mt-1.5 text-sm leading-relaxed text-[--text-secondary]">
-                  10 data sections per country — emissions trends, energy mix, vulnerability, and more.
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[--text-muted]">02</p>
+                <h3 className="mt-1 text-[15px] font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">Country Deep Dive</h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[--text-secondary]">
+                  10 data sections per country. Emissions, energy, vulnerability, and more.
                 </p>
               </Link>
             </ScrollFadeIn>
 
             {/* Data Posters */}
             <ScrollFadeIn delay={0.2}>
-              <Link href="/posters" className="card-hover group flex flex-col rounded-2xl border border-[--border-card] bg-white p-7">
-                <div className="mb-5 flex h-40 items-center justify-center rounded-xl bg-[--bg-section]">
-                  <div className="flex items-end gap-2">
-                    {/* Mini poster thumbnails */}
-                    <div className="h-20 w-14 rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm transition-transform group-hover:-rotate-3">
-                      <div className="h-2 w-6 rounded bg-blue-200" />
-                      <div className="mt-1.5 h-8 rounded bg-gradient-to-b from-blue-50 to-blue-100" />
-                      <div className="mt-1 h-1 w-8 rounded bg-slate-100" />
+              <Link href="/posters" className="card-hover group flex flex-col rounded-xl border border-[--border-card] bg-white p-6">
+                <div className="mb-5 flex h-36 items-center justify-center rounded-lg bg-[--bg-section]">
+                  <div className="flex items-end gap-1.5">
+                    <div className="h-16 w-11 rounded border border-[--border-card] bg-white p-1 shadow-sm transition-transform group-hover:-rotate-3">
+                      <div className="h-1.5 w-5 rounded-sm bg-blue-200" />
+                      <div className="mt-1 h-6 rounded-sm bg-gradient-to-b from-blue-50 to-blue-100" />
                     </div>
-                    <div className="h-24 w-16 rounded-lg border border-slate-200 bg-white p-1.5 shadow-md">
-                      <div className="h-2 w-8 rounded bg-emerald-200" />
-                      <div className="mt-1.5 h-10 rounded bg-gradient-to-b from-emerald-50 to-emerald-100" />
-                      <div className="mt-1 h-1 w-10 rounded bg-slate-100" />
+                    <div className="h-20 w-14 rounded border border-[--border-card] bg-white p-1 shadow-sm">
+                      <div className="h-1.5 w-7 rounded-sm bg-emerald-200" />
+                      <div className="mt-1 h-9 rounded-sm bg-gradient-to-b from-emerald-50 to-emerald-100" />
                     </div>
-                    <div className="h-20 w-14 rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm transition-transform group-hover:rotate-3">
-                      <div className="h-2 w-6 rounded bg-amber-200" />
-                      <div className="mt-1.5 h-8 rounded bg-gradient-to-b from-amber-50 to-amber-100" />
-                      <div className="mt-1 h-1 w-8 rounded bg-slate-100" />
+                    <div className="h-16 w-11 rounded border border-[--border-card] bg-white p-1 shadow-sm transition-transform group-hover:rotate-3">
+                      <div className="h-1.5 w-5 rounded-sm bg-amber-200" />
+                      <div className="mt-1 h-6 rounded-sm bg-gradient-to-b from-amber-50 to-amber-100" />
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-[--text-primary] group-hover:text-[--accent-primary]">Data Posters</h3>
-                  <svg className="h-4 w-4 text-[--text-muted] transition-transform group-hover:translate-x-1 group-hover:text-[--accent-primary]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                </div>
-                <p className="mt-1.5 text-sm leading-relaxed text-[--text-secondary]">
-                  Publication-ready chart PNGs. Download and share on LinkedIn in one click.
+                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[--text-muted]">03</p>
+                <h3 className="mt-1 text-[15px] font-semibold text-[--text-primary] group-hover:text-[--accent-primary]">Data Posters</h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[--text-secondary]">
+                  Publication-ready chart PNGs. Download and share on LinkedIn.
                 </p>
               </Link>
             </ScrollFadeIn>
@@ -283,38 +261,38 @@ export default async function HomePage() {
       </section>
 
       {/* ── 4. MAP SCOREBOARD ────────────────────────────────────────────── */}
-      <section className="bg-[--bg-section] px-6 py-20">
+      <section className="border-y border-[--border-card] bg-[--bg-section] px-6 py-16 sm:py-20">
         <div className="mx-auto max-w-[1100px]">
-          <div className="grid items-start gap-10 lg:grid-cols-[340px_1fr]">
+          <div className="grid items-start gap-10 lg:grid-cols-[300px_1fr]">
             <ScrollFadeIn direction="left">
               <div className="lg:sticky lg:top-24">
-                <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[--accent-primary]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">
                   World Scoreboard
                 </p>
-                <h2 className="text-3xl font-bold leading-tight text-[--text-primary]">
-                  Who is actually changing?
+                <h2 className="mt-2 text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-[1.75rem]">
+                  Who is actually<br />changing?
                 </h2>
-                <p className="mt-3 text-[--text-secondary]">
-                  Every country classified by real outcomes — not pledges. Click any dot to see its report card.
+                <p className="mt-3 text-[13px] leading-relaxed text-[--text-secondary]">
+                  Every country classified by real outcomes, not pledges.
                 </p>
-                <div className="mt-8 space-y-3">
+                <div className="mt-6 space-y-2">
                   {(['Changer', 'Starter', 'Talker'] as const).map(cls => (
-                    <div key={cls} className="flex items-center gap-3 rounded-xl border border-[--border-card] bg-white px-4 py-3">
-                      <span className="h-3 w-3 rounded-full" style={{ backgroundColor: CLS_COLORS[cls] }} />
-                      <span className="flex-1 text-sm font-semibold text-[--text-primary]">{cls}s</span>
-                      <span className="font-mono text-lg font-bold text-[--text-primary]">{classCounts[cls]}</span>
+                    <div key={cls} className="flex items-center gap-3 rounded-lg bg-white px-4 py-2.5 border border-[--border-card]">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CLS_COLORS[cls] }} />
+                      <span className="flex-1 text-[13px] font-medium text-[--text-primary]">{cls}s</span>
+                      <span className="font-mono text-base font-bold tracking-[-0.02em] text-[--text-primary]">{classCounts[cls]}</span>
                     </div>
                   ))}
                 </div>
-                <p className="mt-5 text-xs leading-relaxed text-[--text-muted]">
-                  Changers have declining CO2 and rising renewables. Starters meet one condition. Talkers meet neither.
+                <p className="mt-4 text-[11px] leading-relaxed text-[--text-muted]">
+                  Changers: declining CO2 + rising renewables. Starters: one condition. Talkers: neither.
                 </p>
                 <Link
                   href="/explore"
-                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[--accent-primary] transition-colors hover:text-[#0052CC]"
+                  className="mt-5 inline-flex items-center gap-1 text-[13px] font-semibold text-[--accent-primary] transition-colors hover:text-[#0052CC]"
                 >
                   Explore all countries
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
                 </Link>
               </div>
             </ScrollFadeIn>
@@ -323,7 +301,7 @@ export default async function HomePage() {
               {scoreboardData.length > 0 ? (
                 <HomeMap countries={scoreboardData} width={720} height={440} />
               ) : (
-                <div className="flex h-48 items-center justify-center rounded-2xl border border-[--border-card] bg-white text-sm text-[--text-muted]">
+                <div className="flex h-48 items-center justify-center rounded-xl border border-[--border-card] bg-white text-sm text-[--text-muted]">
                   Loading map...
                 </div>
               )}
@@ -338,19 +316,19 @@ export default async function HomePage() {
       <HowItWorks />
 
       {/* ── 8. FINAL CTA ─────────────────────────────────────────────────── */}
-      <section className="border-t border-[--border-card] bg-[--bg-section] px-6 py-20">
-        <div className="mx-auto max-w-2xl text-center">
+      <section className="border-t border-[--border-card] bg-[--bg-section] px-6 py-16">
+        <div className="mx-auto max-w-xl text-center">
           <ScrollFadeIn>
-            <h2 className="text-3xl font-bold text-[--text-primary] sm:text-4xl">
-              Search your country.
+            <h2 className="text-2xl font-bold tracking-[-0.02em] text-[--text-primary]">
+              Search your country
             </h2>
-            <p className="mx-auto mt-3 max-w-lg text-lg text-[--text-secondary]">
-              Find out if your country is a Changer, Starter, or Talker.
+            <p className="mx-auto mt-2 max-w-sm text-[14px] text-[--text-secondary]">
+              Changer, Starter, or Talker — find out where your country stands.
             </p>
-            <div className="mt-8">
+            <div className="mt-7">
               <HeroSearch countries={countryList} />
             </div>
-            <p className="mt-6 text-sm text-[--text-muted]">
+            <p className="mt-5 text-[13px] text-[--text-muted]">
               or{' '}
               <Link href="/explore" className="font-medium text-[--accent-primary] hover:underline">
                 browse all {countryCount} countries

@@ -84,27 +84,24 @@ export default async function ExplorePage() {
   const talkers  = countries.filter(c => c.climateClass === 'Talker').length;
 
   return (
-    <div className="bg-[--bg-primary] px-4 pt-10 pb-16">
+    <div className="bg-[--bg-primary] px-4 pt-8 pb-16">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-[--text-primary] sm:text-4xl">
-            Explore Countries
+        <div className="mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Explore</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
+            {withData > 0 ? withData : '200'}+ countries
           </h1>
-          <p className="mt-2 text-base text-[--text-secondary]">
-            {withData > 0 ? withData : '200'}+ countries graded on climate performance
-          </p>
-          {/* Summary pills */}
-          <div className="mt-4 flex flex-wrap gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-700">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               {changers} Changers
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-700">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
               {starters} Starters
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-red-700">
               <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
               {talkers} Talkers
             </span>

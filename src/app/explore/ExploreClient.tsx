@@ -43,7 +43,7 @@ const MAX_COMPARE = 4;
 function ClassBadge({ cls }: { cls: string }) {
   return (
     <span
-      className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+      className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
       style={{ background: CLASS_BG[cls], color: CLASS_COLOR[cls] }}
     >
       {cls}
@@ -55,15 +55,15 @@ function GradeBadge({ grade, score }: { grade: string; score?: number }) {
   const bg = GRADE_BG[grade] ?? '#F3F4F6';
   const color = GRADE_COLOR[grade] ?? '#6B7280';
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1">
       <span
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
+        className="flex h-7 w-7 items-center justify-center rounded-md text-[13px] font-bold"
         style={{ background: bg, color }}
       >
         {grade}
       </span>
       {score != null && (
-        <span className="font-mono text-xs font-medium text-[--text-muted]">
+        <span className="font-mono text-[11px] font-medium text-[--text-muted]">
           {Math.round(score)}
         </span>
       )}
@@ -390,26 +390,26 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
 
                   <Link
                     href={`/report/${c.iso3}`}
-                    className="group relative flex flex-col rounded-2xl border bg-white transition-all hover:shadow-lg"
+                    className="group relative flex flex-col rounded-xl border bg-white transition-all hover:shadow-md"
                     style={{
                       borderColor: isSelected ? '#0066FF' : 'var(--border-card)',
-                      boxShadow: isSelected ? '0 0 0 1px #0066FF' : 'var(--shadow-card)',
+                      boxShadow: isSelected ? '0 0 0 1px #0066FF' : undefined,
                     }}
                   >
                     {/* Accent bar (top) */}
-                    <div className={`h-1 w-full rounded-t-2xl bg-gradient-to-r ${accentGradient}`} />
+                    <div className={`h-0.5 w-full rounded-t-xl bg-gradient-to-r ${accentGradient}`} />
 
                     <div className="flex flex-col p-4 pt-3">
                       {/* Header: flag + name + grade */}
                       <div className="flex items-start justify-between gap-2 pr-4">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <span className="text-2xl leading-none shrink-0">{flag}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-xl leading-none shrink-0">{flag}</span>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold leading-tight text-[--text-primary] group-hover:text-[--accent-primary] truncate">
+                            <p className="text-[13px] font-semibold leading-tight text-[--text-primary] group-hover:text-[--accent-primary] truncate">
                               {c.name}
                             </p>
                             {c.region && (
-                              <p className="mt-0.5 text-[11px] text-[--text-muted] truncate">{c.region}</p>
+                              <p className="mt-0.5 text-[10px] text-[--text-muted] truncate">{c.region}</p>
                             )}
                           </div>
                         </div>
@@ -418,20 +418,20 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
 
                       {/* Score bar */}
                       {c.totalScore != null && (
-                        <div className="mt-3">
+                        <div className="mt-2.5">
                           <ScoreBar score={c.totalScore} />
                         </div>
                       )}
 
                       {/* Class badge */}
                       {c.climateClass && (
-                        <div className="mt-2.5">
+                        <div className="mt-2">
                           <ClassBadge cls={c.climateClass} />
                         </div>
                       )}
 
                       {/* Metrics */}
-                      <div className="mt-3 space-y-1.5 border-t border-[--border-card] pt-3">
+                      <div className="mt-2.5 space-y-1 border-t border-[--border-card] pt-2.5">
                         <MetricRow label="CO\u2082/capita" value={c.co2} unit="t" />
                         <MetricRow label="Renewable" value={c.renewable} unit="%" color="#00A67E" />
                         <MetricRow label="GDP/capita" value={c.gdp} unit="$" />
