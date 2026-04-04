@@ -88,8 +88,11 @@ export default async function ExplorePage() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-muted]">Explore</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
+          <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-[--border-card] bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[--text-secondary]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[--accent-primary]" />
+            Explore
+          </p>
+          <h1 className="text-2xl font-bold tracking-[-0.02em] text-[--text-primary] sm:text-3xl">
             {withData > 0 ? withData : '200'}+ countries
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-3">

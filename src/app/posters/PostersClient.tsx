@@ -384,16 +384,13 @@ export function PostersClient() {
               View any country&#39;s report card with grades across 5 scored domains.
             </p>
             <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Link href="/explore" className="rounded-xl bg-[--accent-primary] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0052CC]">
+              <Link href="/explore" className="rounded-lg bg-[--accent-primary] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0052CC]">
                 Explore all countries
               </Link>
-              <Link href="/report" className="rounded-xl border border-[--border-card] bg-white px-6 py-3 text-sm font-semibold text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]">
-                View report cards
+              <Link href="/methodology" className="rounded-lg border border-[--border-card] bg-white px-5 py-2.5 text-[13px] font-semibold text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]">
+                Read methodology
               </Link>
             </div>
-            <p className="mt-5 text-[10px] text-[--text-muted]">
-              visualclimate.org
-            </p>
           </div>
         </section>
 

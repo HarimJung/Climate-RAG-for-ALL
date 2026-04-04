@@ -448,7 +448,7 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
             <div className="flex justify-center pt-4">
               <button
                 onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
-                className="rounded-xl border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary] hover:shadow-sm"
+                className="rounded-lg border border-[--border-card] bg-white px-6 py-2.5 text-[13px] font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary] hover:shadow-sm"
               >
                 Show more ({filtered.length - visibleCount} remaining)
               </button>
@@ -465,16 +465,16 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
       {/* Bottom CTA */}
       <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Link
-          href="/posters"
-          className="rounded-xl border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]"
+          href="/methodology"
+          className="rounded-lg border border-[--border-card] bg-white px-5 py-2.5 text-[13px] font-semibold text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]"
         >
-          Download Posters
+          Read methodology
         </Link>
         <Link
-          href="/report"
-          className="rounded-xl bg-[#0066FF] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
+          href="/posters"
+          className="rounded-lg bg-[--accent-primary] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0052CC]"
         >
-          View Report Cards
+          Download posters
         </Link>
       </div>
 
@@ -514,12 +514,12 @@ export function ExploreClient({ countries }: { countries: CountryCard[] }) {
             {selected.length >= 2 ? (
               <Link
                 href={`/compare?countries=${selected.join(',')}`}
-                className="rounded-xl bg-[#0066FF] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]"
+                className="rounded-lg bg-[--accent-primary] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0052CC]"
               >
                 Compare {selected.length} countries
               </Link>
             ) : (
-              <span className="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-medium text-[--text-muted] cursor-not-allowed">
+              <span className="rounded-lg bg-gray-100 px-5 py-2.5 text-[13px] font-medium text-[--text-muted] cursor-not-allowed">
                 Compare
               </span>
             )}

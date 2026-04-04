@@ -643,7 +643,7 @@ export default async function CountryPage({ params }: Props) {
       <section className="border-t border-[--border-card] bg-white px-4 py-12">
         <div className="mx-auto grid max-w-[1200px] gap-4 sm:grid-cols-2">
           <Link
-            href="/compare"
+            href={`/compare?countries=${country.iso3}`}
             className="flex items-center justify-center gap-2 rounded-xl border border-[--accent-primary] bg-[--accent-primary] p-5 text-center font-medium text-white transition-all hover:opacity-90"
           >
             Compare with other countries
@@ -652,11 +652,11 @@ export default async function CountryPage({ params }: Props) {
             </svg>
           </Link>
           <Link
-            href="/dashboard"
+            href="/explore"
             className="flex items-center justify-center gap-2 rounded-xl border border-[--border-card] bg-white p-5 text-center font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]"
             style={{ boxShadow: 'var(--shadow-card)' }}
           >
-            View all countries
+            Explore all countries
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>

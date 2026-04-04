@@ -545,18 +545,14 @@ export function CompareClient({ initialData, allCountries, selectedIso3 }: Props
                         {/* ── Bottom CTA ───────────────────────────────────────── */}
                         <div className="flex flex-col items-center gap-3 pt-4 sm:flex-row sm:justify-center">
                             <Link href="/explore"
-                                className="rounded-xl border border-[--border-card] bg-white px-6 py-2.5 text-sm font-medium text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]">
+                                className="rounded-lg border border-[--border-card] bg-white px-6 py-2.5 text-[13px] font-semibold text-[--text-secondary] transition-all hover:border-[--accent-primary] hover:text-[--accent-primary]">
                                 Back to Explore
                             </Link>
                             <Link href="/posters"
-                                className="rounded-xl bg-[#0066FF] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0052CC]">
+                                className="rounded-lg bg-[--accent-primary] px-6 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0052CC]">
                                 Download Posters
                             </Link>
                         </div>
-
-                        <p className="text-center text-[10px] text-[--text-muted]">
-                            visualclimate.org
-                        </p>
                     </div>
                 ) : (
                     /* ── Empty State ────────────────────────────────────────── */
